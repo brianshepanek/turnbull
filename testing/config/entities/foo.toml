@@ -1,0 +1,11 @@
+name = "foo"
+[[fields]]
+    name = "title"
+    package = ""
+    type = "string"
+[[fields]]
+    name = "bars"
+    package = ""
+    slice = true
+    type = "Bar"                               
+        
