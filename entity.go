@@ -1,17 +1,13 @@
 package turnbull
 
 import(
-	"strings"
 	"github.com/dave/jennifer/jen"
-	"github.com/gertd/go-pluralize"
-	"github.com/iancoleman/strcase"
 )
 
-func buildEntityFile(entity entity) (*jen.File, error){
+func buildScaffoldEntityFile(entity entity) (*jen.File, error){
 
 	// Entities
-	pluralize := pluralize.NewClient()
-	f := jen.NewFile(pluralize.Plural(entityName))
+	f := jen.NewFile(packageName())
 
 	// Struct
 	entityStruct, err := entityToStruct(entity)
@@ -34,6 +30,14 @@ func buildEntityFile(entity entity) (*jen.File, error){
 			return nil, err
 		}
 		f.Add(entityGetter)
+
+		if field.Primary {
+			entityGetter, err := fieldToPrimaryGetter(entity, field)
+			if err != nil {
+				return nil, err
+			}
+			f.Add(entityGetter)
+		}
 	}
 	
 	// Setters
@@ -48,25 +52,20 @@ func buildEntityFile(entity entity) (*jen.File, error){
 	// JSON
 	if entity.JSON {
 
+		entityMarshalJSON, err := entityMarshalJSON(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(entityMarshalJSON)
+
+		entityUnmarshalJSON, err := entityUnmarshalJSON(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(entityUnmarshalJSON)
 	}
 
 	return f, nil
-}
-
-func structId(entity entity)(string){
-	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, entityName}, stringSeparator))
-}
-
-func interfaceId(entity entity)(string){
-	return strcase.ToCamel(strings.Join([]string{entity.Name, entityName}, stringSeparator))
-}
-
-func getterId(field field)(string){
-	return strcase.ToCamel(field.Name)
-}
-
-func setterId(field field)(string){
-	return strcase.ToCamel(strings.Join([]string{setterVerb, field.Name}, stringSeparator))
 }
 
 func entityToStruct(entity entity) (jen.Code, error){
@@ -82,7 +81,7 @@ func entityToStruct(entity entity) (jen.Code, error){
 	for _, field := range entity.Fields {
 
 		// Field to Struct Field
-		code, err := fieldToStructField(field)
+		code, err := fieldToStructField(entity, field)
 		if err != nil {
 			return nil, err
 		}
@@ -105,14 +104,19 @@ func entityToStruct(entity entity) (jen.Code, error){
 
 }
 
-func fieldToStructField(field field) (jen.Code, error){
+func fieldToStructField(entity entity, field field) (jen.Code, error){
 
 	// Vars
 	var resp jen.Statement
 
 	// ID
 	if field.Name != "" {
-		resp.Id(field.Name)
+		resp.Id(structFieldId(field))
+	}
+
+	// Op
+	if field.Op != "" {
+		resp.Op(field.Op)
 	}
 
 	// Slice
@@ -122,8 +126,49 @@ func fieldToStructField(field field) (jen.Code, error){
 
 	// Qual
 	if field.Type != "" {
-		resp.Qual(field.Package, field.Type)
+		if field.Type == "self" {
+			resp.Qual(scaffoldEntitiesFilePath(), interfaceId(entity))
+		} else {
+			resp.Qual(field.Package, field.Type)
+		}
 	} 
+
+	return &resp, nil
+}
+
+func fieldToJSONStructField(entity entity, field field) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// ID
+	if field.Name != "" {
+		resp.Id(getterId(field))
+	}
+
+	// Op
+	if field.Op != "" {
+		resp.Op(field.Op)
+	}
+
+	// Slice
+	if field.Slice {
+		resp.Index()
+	}
+
+	// Qual
+	if field.Type != "" {
+		if field.Type == "self" {
+			resp.Qual(scaffoldEntitiesFilePath(), interfaceId(entity))
+		} else {
+			resp.Qual(field.Package, field.Type)
+		}
+	} 
+
+	// Tags
+	if field.Name != "" {
+		resp.Tag(map[string]string{"json": tagId(field)})
+	}
 
 	return &resp, nil
 }
@@ -151,6 +196,21 @@ func entityToInterface(entity entity) (jen.Code, error){
 		// Append
 		methods = append(methods, code)
 		
+		// Primary
+		if field.Primary {
+
+			code, err := fieldToPrimaryInterfaceGetter(field)
+			if err != nil {
+				return nil, err
+			}
+
+			// Append
+			methods = append(methods, code)
+
+		}
+
+		
+		
 	}
 
 	// Setters
@@ -172,6 +232,9 @@ func entityToInterface(entity entity) (jen.Code, error){
 			jen.Index().Byte(),
 			jen.Error(),
 		)))
+		methods = append(methods, jen.Id("UnmarshalJSON").Params(jen.Id("data").Index().Byte()).Parens(jen.List(
+			jen.Error(),
+		)))
 	}
 	
 
@@ -187,6 +250,30 @@ func entityToInterface(entity entity) (jen.Code, error){
 
 	return &resp, nil
 
+}
+
+func fieldToPrimaryInterfaceGetter(field field) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// ID
+	if field.Name != "" {
+		resp.Id("Primary")
+		resp.Params()
+	}
+
+	// Slice
+	if field.Slice {
+		resp.Index()
+	}
+
+	// Qual
+	if field.Type != "" {
+		resp.Qual(field.Package, field.Type)
+	} 
+
+	return &resp, nil
 }
 
 func fieldToInterfaceGetter(field field) (jen.Code, error){
@@ -251,7 +338,7 @@ func fieldToGetter(entity entity, field field) (jen.Code, error){
 	// ID
 	if field.Name != "" {
 		resp.Params(
-			jen.Id(structId(entity)).Op("*").Qual("", structId(entity)),
+			jen.Id("m").Op("*").Qual("", structId(entity)),
 		).Id(getterId(field)).Params()
 	}
 
@@ -268,7 +355,45 @@ func fieldToGetter(entity entity, field field) (jen.Code, error){
 	// Return
 	resp.Block(
 		jen.Return(
-			jen.Id(structId(entity) + "." + field.Name),
+			jen.Id("m" + "." + structFieldId(field)),
+		),
+	)
+
+	
+
+	return &resp, nil
+}
+
+
+func fieldToPrimaryGetter(entity entity, field field) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Func
+	resp.Func()
+
+	// ID
+	if field.Name != "" {
+		resp.Params(
+			jen.Id("m").Op("*").Qual("", structId(entity)),
+		).Id("Primary").Params()
+	}
+
+	// Slice
+	if field.Slice {
+		resp.Index()
+	}
+
+	// Qual
+	if field.Type != "" {
+		resp.Qual(field.Package, field.Type)
+	} 
+
+	// Return
+	resp.Block(
+		jen.Return(
+			jen.Id("m" + "." + structFieldId(field)),
 		),
 	)
 
@@ -288,9 +413,9 @@ func fieldToSetter(entity entity, field field) (jen.Code, error){
 	// ID
 	if field.Name != "" {
 		resp.Params(
-			jen.Id(structId(entity)).Op("*").Qual("", structId(entity)),
+			jen.Id("m").Op("*").Qual("", structId(entity)),
 		).Id(setterId(field))
-		args.Id(field.Name)
+		args.Id(structFieldId(field))
 	}
 
 	// Slice
@@ -308,9 +433,163 @@ func fieldToSetter(entity entity, field field) (jen.Code, error){
 
 	// Block
 	resp.Block(
-		jen.Id(structId(entity) + "." + field.Name).Op("=").Id(field.Name),
+		jen.Id("m" + "." + structFieldId(field)).Op("=").Id(structFieldId(field)),
 	)
 	
+
+	return &resp, nil
+}
+
+func entityMarshalJSON(entity entity) (jen.Code, error){
+
+
+	// Vars
+	var resp jen.Statement
+
+	// Func
+	resp.Func()
+
+	// ID
+	resp.Params(
+		jen.Id("m").Op("*").Qual("", structId(entity)),
+	).
+	Id("MarshalJSON").
+	Params().
+	Parens(
+		jen.List(
+			jen.Index().Byte(),
+			jen.Error(),
+		),
+	)	
+
+	var jsonStruct []jen.Code
+	jsonStructDict := make(jen.Dict)
+	for _, field := range entity.Fields {
+		code, err := fieldToJSONStructField(entity, field)
+		if err != nil {
+			return nil, err
+		}
+		jsonStruct = append(jsonStruct, code)
+		jsonStructDict[jen.Id(getterId(field))] = jen.Id("m").Dot(getterId(field)).Call()
+		
+	}
+
+	// Block
+	resp.Block(
+
+		jen.Type().Id("jsonStructPrivate").Struct(jsonStruct...),
+
+		jen.Id("jsonStruct").
+		Op(":=").
+		Qual("", "jsonStructPrivate").
+		Values(jsonStructDict),
+
+		jen.Return().
+		Qual("encoding/json", "Marshal").
+		Call(
+			jen.Op("&").
+			Id("jsonStruct"),
+		),
+	)
+
+	return &resp, nil
+}
+
+func entityUnmarshalJSON(entity entity) (jen.Code, error){
+
+
+	// Vars
+	var resp jen.Statement
+
+	// Func
+	resp.Func()
+
+	// ID
+	resp.Params(
+		jen.Id("m").Op("*").Qual("", structId(entity)),
+	).
+	Id("UnmarshalJSON").
+	Params(
+		jen.Id("data").Index().Byte(),
+	).
+	Parens(
+		jen.List(
+			jen.Error(),
+		),
+	)	
+
+	var jsonStruct []jen.Code
+	var jsonSetterFunctions []jen.Code
+	// jsonStructDict := make(jen.Dict)
+	for _, field := range entity.Fields {
+		code, err := fieldToJSONStructField(entity, field)
+		if err != nil {
+			return nil, err
+		}
+		jsonStruct = append(jsonStruct, code)
+
+		jsonSetterFunctions = append(jsonSetterFunctions, jen.Id("m").
+			Dot(setterId(field)).
+			Call(
+				jen.Id("jsonStruct").
+				Dot(getterId(field)),
+			),
+		)
+		// jsonStructDict[jen.Id(getterId(field))] = jen.Id("m").Dot(getterId(field)).Call()
+		
+	}
+
+	// Block
+	var block []jen.Code
+
+
+	block = append(block, 
+		jen.Type().
+		Id("jsonStructPrivate").
+		Struct(jsonStruct...),
+	)
+	block = append(block, 
+		jen.Id("jsonStruct").
+		Op(":=").
+		Qual("", "jsonStructPrivate").
+		Values(),
+	)
+	block = append(block, 
+		jen.Err().
+		Op(":=").
+		Qual("encoding/json", "Unmarshal").
+		Call(
+			jen.Id("data"),
+			jen.Op("&").
+			Id("jsonStruct"),
+		),
+	)
+	block = append(block, 
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil(),
+		).
+		Block(
+			jen.Return(
+				jen.List(
+					jen.Err(),
+				),
+			),
+		),
+	)
+	for _, jsonSetterFunction := range jsonSetterFunctions {
+		block = append(block, jsonSetterFunction)
+	}
+	block = append(block, jen.Return(
+		jen.List(
+			jen.Nil(),
+		),
+	),)
+
+	resp.Block(
+		block...,
+	)
 
 	return &resp, nil
 }

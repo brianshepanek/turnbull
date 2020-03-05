@@ -45,17 +45,17 @@ func TestBuildEntity(t *testing.T){
 	testEntityResp := string(entityFileBytes)
 
 	// Parse Entity Config
-	entityFilePointer, err := buildEntityFile(testEntityReq)
+	entityFilePointer, err := buildScaffoldEntityFile(testEntityReq)
 
 	// Return
 	if err != nil {
-		t.Errorf(`buildEntity() failed with error %v`, err)
+		t.Errorf(`buildEbuildScaffoldEntityFilentity() failed with error %v`, err)
 	} else {
 		if entityFilePointer == nil {
-			t.Errorf(`buildEntity() failed, entityFilePointer is nil`)
+			t.Errorf(`buildScaffoldEntityFile() failed, entityFilePointer is nil`)
 		} else {
 			if !reflect.DeepEqual(entityFilePointer.GoString(), testEntityResp){
-				t.Errorf(`buildEntity() failed, expected %v, got %v`, testEntityResp, entityFilePointer.GoString())
+				t.Errorf(`buildScaffoldEntityFile() failed, expected %v, got %v`, testEntityResp, entityFilePointer.GoString())
 			} else {
 	
 			}
@@ -89,7 +89,7 @@ func TestEntityToStruct(t *testing.T){
 func TestFieldToStructField(t *testing.T){
 
 	// Parse Entity Config
-	structFieldPointer, err := fieldToStructField(testFieldReq)
+	structFieldPointer, err := fieldToStructField(testEntityReq, testFieldReq)
 
 	// Return
 	if err != nil {

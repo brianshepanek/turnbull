@@ -1,0 +1,44 @@
+name = "bar"
+json = true
+[[fields]]
+    name = "slug"
+    package = ""
+    type = "string" 
+    primary = true
+
+[[fields]]
+    name = "title"
+    package = ""
+    type = "string"     
+
+[[fields]]
+    name = "subtitle"
+    package = ""
+    type = "int64"
+
+[[fields]]
+    name = "tags"
+    package = ""
+    slice = true
+    type = "string"  
+
+[[fields]]
+    name = "created"
+    package = "time"
+    type = "Time"      
+
+[[methods]]
+    name = "add"
+    type = "add"   
+
+[[methods]]
+    name = "find_all"
+    type = "browse"  
+
+[[methods]]
+    name = "find_one"
+    type = "read" 
+
+[[methods]]
+    name = "count_em_up"
+    type = "count" 

@@ -1,0 +1,20 @@
+name = "foo"
+[[fields]]
+    name = "id"
+    package = ""
+    type = "string"
+    primary = true
+[[fields]]
+    name = "Title"
+    package = ""
+    type = "string"
+[[fields]]
+    name = "Things"
+    package = ""
+    slice = true
+    type = "string"
+
+ [[methods]]
+    name = "add"
+    type = "add"                               
+        

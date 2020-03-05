@@ -24,7 +24,7 @@ func TestBuild(t *testing.T){
 func TestLoadConfig(t *testing.T){
 
 	// Test Data
-	testConfig := &config{
+	testConfig := &configEntity{
 		entities : []entity{
 			
 			entity{

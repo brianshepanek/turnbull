@@ -1,0 +1,42 @@
+type = "browse"
+
+[presenter]
+    
+    [[presenter.arguments]]
+        name = "ctx"
+        package = "context"
+        type = "Context"
+
+    [[presenter.arguments]]
+        slice = true
+        name = "req"
+        type = "self" 
+
+    [[presenter.return_values]]
+        slice = true
+        op = "*"
+        type = "self"     
+
+    [[presenter.return_values]]
+        type = "error"   
+
+[repository]
+
+    [[repository.arguments]]
+        name = "ctx"
+        package = "context"
+        type = "Context"
+
+    [[repository.arguments]]
+        name = "req"
+        type = "interface{}" 
+
+    [[repository.return_values]]
+        name = "resp"
+        slice = true
+        op = "*"
+        type = "self"     
+
+    [[repository.return_values]]
+        name = "err"
+        type = "error"    

@@ -1,6 +1,0 @@
-name = "bar"
-[[fields]]
-    name = "title"
-    package = ""
-    type = "string"                             
-        
