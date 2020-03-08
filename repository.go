@@ -61,37 +61,125 @@ func buildScaffoldInterfaceRepositoryFile(entity entity) (*jen.File, error){
 
 		if entityMethod.Type == "add" {
 			block = append(block, 
-				jen.Err().
-				Op("=").
+				jen.Return(
+					jen.Id("r").
+					Dot("driver").
+					Dot("Write").
+					Call(
+						jen.Id("r").Dot("collection"),
+						jen.Id("req").
+						Dot("Primary").
+						Call(),
+						jen.Id("req"),
+					),
+				),
+			)	
+		} else if entityMethod.Type == "read"{
+			block = append(block, 
+				jen.Return(
+					jen.Id("r").
+					Dot("driver").
+					Dot("Read").
+					Call(
+						jen.Id("r").Dot("collection"),
+						jen.Id("req").
+						Dot("Primary").
+						Call(),
+						jen.Id("req"),
+					),
+				),
+			)	
+		} else if entityMethod.Type == "delete"{
+			block = append(block, 
+				jen.Return(
+					jen.Id("r").
+					Dot("driver").
+					Dot("Delete").
+					Call(
+						jen.Id("r").Dot("collection"),
+						jen.Id("req").
+						Dot("Primary").
+						Call(),
+					),
+				),
+			)	
+		} else if entityMethod.Type == "browse"{
+			block = append(block, 
+				jen.List(
+					jen.Id("records"),
+					jen.Err(),
+				).
+				Op(":=").
 				Id("r").
 				Dot("driver").
-				Dot("Write").
+				Dot("ReadAll").
 				Call(
-					jen.Id("r").Dot("collection"),
-					jen.Id("req").
-					Dot("Primary").
-					Call(),
-					jen.Id("req"),
+					jen.Id("r").
+					Dot("collection"),
 				),
 				jen.If(
 					jen.Err().
 					Op("!=").
-					Nil(),
-				).
-				Block(
-					jen.Return(
-						jen.List(
-							jen.Nil(),
+					Nil().
+					Block(
+						jen.Return(
 							jen.Err(),
 						),
 					),
 				),
+				jen.For(
+					jen.List(
+						jen.Id("_"),
+						jen.Id("record"),
+					).
+					Op(":=").
+					Range().
+					Id("records").
+					Block(
+						jen.
+						Id("rec").
+						Op(":=").
+						Qual(scaffoldEntitiesFilePath(), interfaceConstructorId(entity)).
+						Call(),
+						jen.Err().
+						Op(":=").
+						Qual("encoding/json", "Unmarshal").
+						Call(
+							jen.Index().
+							Byte().
+							Call(
+								jen.Id("record"),
+							),
+							jen.Id("rec"),
+						),
+						jen.If(
+							jen.Err().
+							Op("!=").
+							Nil().
+							Block(
+								jen.Return(
+									jen.Err(),
+								),
+							),
+						),
+						jen.Id("resp").
+						Dot("Append").
+						Call(
+							jen.Id("rec"),
+						),
+					),
+				),
+				jen.Return(
+					jen.Nil(),
+				),
 			)	
+		} else {
+			block = append(block, jen.Return(
+				jen.Nil(),
+				jen.Nil(),
+			))
 		}
-		block = append(block, jen.Return(
-			jen.Nil(),
-			jen.Nil(),
-		))
+		
 
 		functions = append(functions, 
 			jen.Func().

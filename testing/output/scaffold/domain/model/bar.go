@@ -12,6 +12,9 @@ type BarScaffoldStruct struct {
 	tags     []string
 	created  time.Time
 }
+
+type BarsScaffoldStruct []BarScaffoldInterface
+
 type BarScaffoldInterface interface {
 	Slug() string
 	Primary() string
@@ -24,43 +27,90 @@ type BarScaffoldInterface interface {
 	SetSubtitle(subtitle int64)
 	SetTags(tags []string)
 	SetCreated(created time.Time)
+	SetAll(req BarScaffoldInterface)
 	MarshalJSON() ([]byte, error)
 	UnmarshalJSON(data []byte) error
 }
+type BarsScaffoldInterface interface {
+	Len() int
+	Append(req BarScaffoldInterface)
+	Elements() []BarScaffoldInterface
+}
 
+func NewBarScaffoldStruct() BarScaffoldInterface {
+	return &BarScaffoldStruct{}
+}
+
+func NewBarsScaffoldStruct() BarsScaffoldInterface {
+	return &BarsScaffoldStruct{}
+}
+
+func (m *BarsScaffoldStruct) Len() int {
+	if m != nil {
+		return len(*m)
+	}
+	return 0
+}
+func (m *BarsScaffoldStruct) Append(req BarScaffoldInterface) {
+	if m != nil {
+		*m = append(*m, req)
+	}
+}
+func (m *BarsScaffoldStruct) Elements() []BarScaffoldInterface {
+	return *m
+}
 func (m *BarScaffoldStruct) Slug() string {
 	return m.slug
 }
+
 func (m *BarScaffoldStruct) Primary() string {
 	return m.slug
 }
+
 func (m *BarScaffoldStruct) Title() string {
 	return m.title
 }
+
 func (m *BarScaffoldStruct) Subtitle() int64 {
 	return m.subtitle
 }
+
 func (m *BarScaffoldStruct) Tags() []string {
 	return m.tags
 }
+
 func (m *BarScaffoldStruct) Created() time.Time {
 	return m.created
 }
+
 func (m *BarScaffoldStruct) SetSlug(slug string) {
 	m.slug = slug
 }
+
 func (m *BarScaffoldStruct) SetTitle(title string) {
 	m.title = title
 }
+
 func (m *BarScaffoldStruct) SetSubtitle(subtitle int64) {
 	m.subtitle = subtitle
 }
+
 func (m *BarScaffoldStruct) SetTags(tags []string) {
 	m.tags = tags
 }
+
 func (m *BarScaffoldStruct) SetCreated(created time.Time) {
 	m.created = created
 }
+
+func (m *BarScaffoldStruct) SetAll(req BarScaffoldInterface) {
+	m.SetSlug(req.Slug())
+	m.SetTitle(req.Title())
+	m.SetSubtitle(req.Subtitle())
+	m.SetTags(req.Tags())
+	m.SetCreated(req.Created())
+}
+
 func (m *BarScaffoldStruct) MarshalJSON() ([]byte, error) {
 	type jsonStructPrivate struct {
 		Slug     string    `json:"slug"`
@@ -78,6 +128,7 @@ func (m *BarScaffoldStruct) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(&jsonStruct)
 }
+
 func (m *BarScaffoldStruct) UnmarshalJSON(data []byte) error {
 	type jsonStructPrivate struct {
 		Slug     string    `json:"slug"`

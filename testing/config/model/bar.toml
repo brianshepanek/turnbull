@@ -42,3 +42,7 @@ json = true
 [[methods]]
     name = "count_em_up"
     type = "count" 
+
+[[methods]]
+    name = "bye_bye"
+    type = "delete"     

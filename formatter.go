@@ -3,7 +3,7 @@ package turnbull
 import(
 	"strings"
 	"os"
-	// "github.com/gertd/go-pluralize"
+	"github.com/gertd/go-pluralize"
 	"github.com/iancoleman/strcase"
 )
 
@@ -58,6 +58,11 @@ func structId(entity entity)(string){
 	return strcase.ToCamel(strings.Join([]string{entity.Name, config.scaffoldName, "struct"}, config.stringSeparator))
 }
 
+func sliceStructId(entity entity)(string){
+	pluralize := pluralize.NewClient()
+	return strcase.ToCamel(strings.Join([]string{pluralize.Plural(entity.Name), config.scaffoldName, "struct"}, config.stringSeparator))
+}
+
 func interactorStructId(entity entity)(string){
 	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, config.scaffoldName, config.interactorName}, config.stringSeparator))
 }
@@ -69,6 +74,20 @@ func structFieldId(field field)(string){
 
 func interfaceId(entity entity)(string){
 	return strcase.ToCamel(strings.Join([]string{entity.Name, config.scaffoldName, "interface"}, config.stringSeparator))
+}
+
+func sliceInterfaceId(entity entity)(string){
+	pluralize := pluralize.NewClient()
+	return strcase.ToCamel(strings.Join([]string{pluralize.Plural(entity.Name), config.scaffoldName, "interface"}, config.stringSeparator))
+}
+
+func interfaceConstructorId(entity entity)(string){
+	return strcase.ToCamel(strings.Join([]string{"new", entity.Name, config.scaffoldName, "struct"}, config.stringSeparator))
+}
+
+func sliceInterfaceConstructorId(entity entity)(string){
+	pluralize := pluralize.NewClient()
+	return strcase.ToCamel(strings.Join([]string{"new", pluralize.Plural(entity.Name), config.scaffoldName, "struct"}, config.stringSeparator))
 }
 
 func getterId(field field)(string){

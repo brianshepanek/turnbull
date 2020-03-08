@@ -30,10 +30,5 @@ type = "add"
         type = "self" 
 
     [[repository.return_values]]
-        name = "resp"
-        op = "*"
-        type = "self"     
-
-    [[repository.return_values]]
         name = "err"
         type = "error"    

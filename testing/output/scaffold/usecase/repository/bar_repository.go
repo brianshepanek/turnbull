@@ -6,8 +6,9 @@ import (
 )
 
 type BarScaffoldRepository interface {
-	Add(ctx context.Context, req model.BarScaffoldInterface) (resp *model.BarScaffoldInterface, err error)
-	FindAll(ctx context.Context, req interface{}) (resp *[]model.BarScaffoldInterface, err error)
-	FindOne(ctx context.Context, req interface{}) (resp *model.BarScaffoldInterface, err error)
+	Add(ctx context.Context, req model.BarScaffoldInterface) (err error)
+	FindAll(ctx context.Context, req interface{}, resp model.BarsScaffoldInterface) (err error)
+	FindOne(ctx context.Context, req model.BarScaffoldInterface) (err error)
 	CountEmUp(ctx context.Context, req interface{}) (resp *int, err error)
+	ByeBye(ctx context.Context, req model.BarScaffoldInterface) (err error)
 }

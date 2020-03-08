@@ -31,10 +31,9 @@ type = "browse"
         name = "req"
         type = "interface{}" 
 
-    [[repository.return_values]]
+    [[repository.arguments]]
         name = "resp"
         slice = true
-        op = "*"
         type = "self"     
 
     [[repository.return_values]]

@@ -6,5 +6,5 @@ import (
 )
 
 type FooScaffoldRepository interface {
-	Add(ctx context.Context, req model.FooScaffoldInterface) (resp *model.FooScaffoldInterface, err error)
+	Add(ctx context.Context, req model.FooScaffoldInterface) (err error)
 }

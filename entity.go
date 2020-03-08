@@ -15,6 +15,15 @@ func buildScaffoldEntityFile(entity entity) (*jen.File, error){
 		return nil, err
 	}
 	f.Add(entityStruct)
+	f.Line()
+
+	// Slice Struct
+	entitySliceStruct, err := entityToSliceStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(entitySliceStruct)
+	f.Line()
 
 	// Interface
 	entityInterface, err := entityToInterface(entity)
@@ -23,6 +32,50 @@ func buildScaffoldEntityFile(entity entity) (*jen.File, error){
 	}
 	f.Add(entityInterface)
 
+	// Slice Interface
+	entitySliceInterface, err := entityToSliceInterface(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(entitySliceInterface)
+
+	// Interface Constructor Function
+	interfaceConstructorFunction, err := interfaceConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(interfaceConstructorFunction)
+	f.Line()
+
+	// Slice Interface Constructor Function
+	sliceInterfaceConstructorFunction, err := sliceInterfaceConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(sliceInterfaceConstructorFunction)
+	f.Line()
+
+	// Len
+	lenFunction, err := lenFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(lenFunction)
+
+	// Append
+	appendFunction, err := appendFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(appendFunction)
+
+	// Elements
+	elementsFunction, err := elementsFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(elementsFunction)
+
 	// Getters
 	for _, field := range entity.Fields {
 		entityGetter, err := fieldToGetter(entity, field)
@@ -30,6 +83,7 @@ func buildScaffoldEntityFile(entity entity) (*jen.File, error){
 			return nil, err
 		}
 		f.Add(entityGetter)
+		f.Line()
 
 		if field.Primary {
 			entityGetter, err := fieldToPrimaryGetter(entity, field)
@@ -37,6 +91,7 @@ func buildScaffoldEntityFile(entity entity) (*jen.File, error){
 				return nil, err
 			}
 			f.Add(entityGetter)
+			f.Line()
 		}
 	}
 	
@@ -47,7 +102,16 @@ func buildScaffoldEntityFile(entity entity) (*jen.File, error){
 			return nil, err
 		}
 		f.Add(entitySetter)
+		f.Line()
 	}
+
+	// Set All Setter
+	setAllSetter, err := setAllSetter(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(setAllSetter)
+	f.Line()
 
 	// JSON
 	if entity.JSON {
@@ -57,15 +121,39 @@ func buildScaffoldEntityFile(entity entity) (*jen.File, error){
 			return nil, err
 		}
 		f.Add(entityMarshalJSON)
+		f.Line()
 
 		entityUnmarshalJSON, err := entityUnmarshalJSON(entity)
 		if err != nil {
 			return nil, err
 		}
 		f.Add(entityUnmarshalJSON)
+		f.Line()
 	}
 
 	return f, nil
+}
+
+func entityToSliceStruct(entity entity) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Struct
+	resp.Type()
+
+	// Type
+	if entity.Name != "" {
+		resp.Id(sliceStructId(entity))
+	}
+
+	// Index
+	resp.Index()
+
+	// Type
+	resp.Qual("", interfaceId(entity))
+
+	return &resp, nil
 }
 
 func entityToStruct(entity entity) (jen.Code, error){
@@ -120,14 +208,22 @@ func fieldToStructField(entity entity, field field) (jen.Code, error){
 	}
 
 	// Slice
-	if field.Slice {
-		resp.Index()
+	if field.Type != "self" {
+		if field.Slice {
+			resp.Index()
+		}
 	}
+	
 
 	// Qual
 	if field.Type != "" {
 		if field.Type == "self" {
-			resp.Qual(scaffoldEntitiesFilePath(), interfaceId(entity))
+			if field.Slice {
+				resp.Qual(scaffoldEntitiesFilePath(), sliceInterfaceId(entity))
+			} else {
+				resp.Qual(scaffoldEntitiesFilePath(), interfaceId(entity))
+			}
+			
 		} else {
 			resp.Qual(field.Package, field.Type)
 		}
@@ -209,8 +305,6 @@ func entityToInterface(entity entity) (jen.Code, error){
 
 		}
 
-		
-		
 	}
 
 	// Setters
@@ -225,6 +319,15 @@ func entityToInterface(entity entity) (jen.Code, error){
 		// Append
 		methods = append(methods, code)
 	}
+
+	// Set All
+	code, err := setAllInterfaceSetter(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Append
+	methods = append(methods, code)
 
 	// Marshal JSON
 	if entity.JSON{
@@ -247,6 +350,43 @@ func entityToInterface(entity entity) (jen.Code, error){
 	if len(methods) > 0 {
 		resp.Interface(methods...)
 	}
+
+	return &resp, nil
+
+}
+
+func entityToSliceInterface(entity entity) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Interface
+	resp.Type()
+
+	// Methods
+	var methods []jen.Code
+
+	// Len
+	methods = append(methods, jen.Id("Len").Params().Parens(jen.List(
+		jen.Int(),
+	)))
+
+	// Append
+	methods = append(methods, jen.Id("Append").Params(jen.Id("req").Qual("", interfaceId(entity))))
+
+	// Elements
+	methods = append(methods, jen.Id("Elements").Params().Parens(jen.List(
+		jen.Index().
+		Qual("", interfaceId(entity)),
+	)))
+
+	// Type
+	if entity.Name != "" {
+		resp.Id(sliceInterfaceId(entity))
+	}
+
+	// Methods
+	resp.Interface(methods...)
 
 	return &resp, nil
 
@@ -325,6 +465,183 @@ func fieldToInterfaceSetter(field field) (jen.Code, error){
 	resp.Params(&args)
 
 	return &resp, nil
+}
+
+func setAllInterfaceSetter(entity entity) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// ID
+	resp.Id("SetAll").
+	Params(
+		jen.Id("req").
+		Qual("", interfaceId(entity)),
+	)
+	
+	return &resp, nil
+}
+
+func interfaceConstructorFunction(entity entity) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Func
+	resp.Func().
+	Id(interfaceConstructorId(entity)).
+	Params().
+	List(
+		jen.Id(interfaceId(entity)),
+	).
+	Block(
+		jen.Return(
+			jen.Op("&").
+			Id(structId(entity)).
+			Values(),
+		),
+	)
+
+	return &resp, nil
+
+}
+
+func sliceInterfaceConstructorFunction(entity entity) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Func
+	resp.Func().
+	Id(sliceInterfaceConstructorId(entity)).
+	Params().
+	List(
+		jen.Id(sliceInterfaceId(entity)),
+	).
+	Block(
+		jen.Return(
+			jen.Op("&").
+			Id(sliceStructId(entity)).
+			Values(),
+		),
+	)
+
+	return &resp, nil
+
+}
+
+func lenFunction(entity entity) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Func
+	resp.Func()
+
+
+	resp.Params(
+		jen.Id("m").
+		Op("*").
+		Qual("", sliceStructId(entity)),
+	).
+	Id("Len").
+	Params().
+	List(
+		jen.Int(),
+	).
+	Block(
+		jen.If(
+			jen.Id("m").
+			Op("!=").
+			Nil(),
+		).
+		Block(
+			jen.Return(
+				jen.Len(
+					jen.Op("*").
+					Id("m"),
+				),
+			),
+		),
+		jen.Return(
+			jen.Lit(0),
+		),
+	)
+
+	return &resp, nil
+
+}
+
+func appendFunction(entity entity) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Func
+	resp.Func()
+
+
+	resp.Params(
+		jen.Id("m").
+		Op("*").
+		Qual("", sliceStructId(entity)),
+	).
+	Id("Append").
+	Params(
+		jen.Id("req").
+		Qual("", interfaceId(entity)),
+	).
+	Block(
+		jen.If(
+			jen.Id("m").
+			Op("!=").
+			Nil(),
+		).
+		Block(
+			jen.Op("*").
+			Id("m").
+			Op("=").
+			Append(
+				jen.Op("*").
+				Id("m"),
+				jen.Id("req"),
+			),
+		),
+	)
+
+	return &resp, nil
+
+}
+
+func elementsFunction(entity entity) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Func
+	resp.Func()
+
+
+	resp.Params(
+		jen.Id("m").
+		Op("*").
+		Qual("", sliceStructId(entity)),
+	).
+	Id("Elements").
+	Params().
+	List(
+		jen.Index().
+		Id(interfaceId(entity)),
+	).
+	Block(
+		jen.Return(
+			jen.Op("*").
+			Id("m"),
+		),
+	)
+
+	return &resp, nil
+
 }
 
 func fieldToGetter(entity entity, field field) (jen.Code, error){
@@ -434,6 +751,49 @@ func fieldToSetter(entity entity, field field) (jen.Code, error){
 	// Block
 	resp.Block(
 		jen.Id("m" + "." + structFieldId(field)).Op("=").Id(structFieldId(field)),
+	)
+	
+
+	return &resp, nil
+}
+
+func setAllSetter(entity entity) (jen.Code, error){
+
+	// Vars
+	var resp jen.Statement
+	var block []jen.Code
+
+	// Func
+	resp.Func()
+
+	// ID
+	resp.Params(
+		jen.Id("m").Op("*").Qual("", structId(entity)),
+	).
+	Id("SetAll").
+	Params(
+		jen.Id("req").
+		Qual("", interfaceId(entity)),
+	)
+	
+	// Block
+	for _, field := range entity.Fields {
+	
+		block = append(block,
+			jen.Id("m").
+			Dot(setterId(field)).
+			Call(
+				jen.Id("req").
+				Dot(getterId(field)).
+				Call(),
+			),
+		)
+		
+	}
+	
+	// Block
+	resp.Block(
+		block...,
 	)
 	
 

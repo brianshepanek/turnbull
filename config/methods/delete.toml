@@ -1,4 +1,4 @@
-type = "read"
+type = "delete"
 
 [presenter]
     

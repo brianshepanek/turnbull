@@ -17,10 +17,6 @@ func NewScribbleFooScaffoldRepository(driver *golangscribble.Driver, collection 
 		driver:     driver,
 	}
 }
-func (r *scribbleFooScaffoldRepository) Add(ctx context.Context, req model.FooScaffoldInterface) (resp *model.FooScaffoldInterface, err error) {
-	err = r.driver.Write(r.collection, req.Primary(), req)
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
+func (r *scribbleFooScaffoldRepository) Add(ctx context.Context, req model.FooScaffoldInterface) (err error) {
+	return r.driver.Write(r.collection, req.Primary(), req)
 }

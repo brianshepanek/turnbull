@@ -21,9 +21,9 @@ func NewFooScaffoldInteractor(r repository.FooScaffoldRepository, p presenter.Fo
 }
 
 func (i *fooScaffoldInteractor) Add(ctx context.Context, req model.FooScaffoldInterface) (*model.FooScaffoldInterface, error) {
-	resp, err := i.FooScaffoldRepository.Add(ctx, req)
+	err := i.FooScaffoldRepository.Add(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return i.FooScaffoldPresenter.Add(ctx, *resp)
+	return i.FooScaffoldPresenter.Add(ctx, req)
 }
