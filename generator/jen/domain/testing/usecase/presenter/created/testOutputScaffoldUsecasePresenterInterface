@@ -1,0 +1,5 @@
+type FooScaffoldPresenter interface {
+	Add(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
+	Read(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
+	Browse(ctx context.Context, req entity.FoosScaffoldInterface) (*entity.FoosScaffoldInterface, error)
+}

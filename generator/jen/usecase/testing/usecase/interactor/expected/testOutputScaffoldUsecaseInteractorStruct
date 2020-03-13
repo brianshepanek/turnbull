@@ -1,0 +1,4 @@
+type fooScaffoldInteractor struct {
+	repository repository.FooScaffoldRepository
+	repository presenter.FooScaffoldPresenter
+}

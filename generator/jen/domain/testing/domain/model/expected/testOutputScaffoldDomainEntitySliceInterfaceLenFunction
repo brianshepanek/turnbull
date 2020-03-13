@@ -1,0 +1,6 @@
+func (m *FoosScaffoldStruct) Len() int {
+	if m != nil {
+		return len(*m)
+	}
+	return 0
+}

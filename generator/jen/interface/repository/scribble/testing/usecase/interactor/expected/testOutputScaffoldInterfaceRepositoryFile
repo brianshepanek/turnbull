@@ -1,0 +1,46 @@
+package repository
+
+import (
+	"context"
+	"encoding/json"
+	entity "github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
+	golangscribble "github.com/nanobox-io/golang-scribble"
+)
+
+type scribbleFooScaffoldRepository struct {
+	driver     *golangscribble.Driver
+	collection string
+}
+
+func NewScribbleFooScaffoldRepository(driver *golangscribble.Driver, collection string) *scribbleFooScaffoldRepository {
+	return &scribbleFooScaffoldRepository{
+		collection: collection,
+		driver:     driver,
+	}
+}
+func Count(ctx context.Context, req interface{}, count *int) error {}
+func Browse(ctx context.Context, req interface{}, req entity.FoosScaffoldInterface) error {
+	records, err := r.driver.ReadAll(r.collection)
+	if err != nil {
+		return err
+	}
+	for _, record := range records {
+		rec := entity.FooScaffoldInterface()
+		err := json.Unmarshal([]byte(record), rec)
+		if err != nil {
+			return err
+		}
+		resp.Append(rec)
+	}
+	return nil
+}
+func Read(ctx context.Context, req interface{}, req entity.FooScaffoldInterface) error {
+	return r.driver.Read(r.collection, req.Primary(), req)
+}
+func Edit(ctx context.Context, req entity.FooScaffoldInterface) error {}
+func Add(ctx context.Context, req entity.FooScaffoldInterface) error {
+	return r.driver.Write(r.collection, req.Primary(), req)
+}
+func Delete(ctx context.Context, req entity.FooScaffoldInterface) error {
+	return r.driver.Delete(r.collection, req.Primary())
+}

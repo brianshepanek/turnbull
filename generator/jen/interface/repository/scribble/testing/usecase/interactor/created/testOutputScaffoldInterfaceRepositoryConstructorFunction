@@ -1,0 +1,6 @@
+func NewScribbleFooScaffoldRepository(driver *golangscribble.Driver, collection string) *scribbleFooScaffoldRepository {
+	return &scribbleFooScaffoldRepository{
+		collection: collection,
+		driver:     driver,
+	}
+}

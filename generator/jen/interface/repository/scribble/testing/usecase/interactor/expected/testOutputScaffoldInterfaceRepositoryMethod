@@ -1,0 +1,3 @@
+func Add(ctx context.Context, req entity.FooScaffoldInterface) error {
+	return r.driver.Write(r.collection, req.Primary(), req)
+}

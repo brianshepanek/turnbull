@@ -1,0 +1,7 @@
+func (i *fooScaffoldInteractor) Add(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error) {
+	err := i.repository.Add(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return i.presenter.Add(ctx, req)
+}

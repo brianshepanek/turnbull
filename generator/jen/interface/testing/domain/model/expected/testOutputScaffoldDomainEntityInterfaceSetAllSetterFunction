@@ -1,0 +1,4 @@
+func (m *FooScaffoldStruct) SetAll(req FooScaffoldInterface) {
+	m.SetString(req.String())
+	m.SetInt(req.Int())
+}

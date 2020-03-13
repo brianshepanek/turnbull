@@ -1,0 +1,11 @@
+func (m *FooScaffoldStruct) MarshalJSON() ([]byte, error) {
+	type jsonStructPrivate struct {
+		String string `json:"string"`
+		Int    int    `json:"int"`
+	}
+	jsonStruct := jsonStructPrivate{
+		Int:    m.Int(),
+		String: m.String(),
+	}
+	return json.Marshal(&jsonStruct)
+}

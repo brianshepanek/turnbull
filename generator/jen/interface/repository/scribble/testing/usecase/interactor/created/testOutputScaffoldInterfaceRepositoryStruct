@@ -1,0 +1,4 @@
+type scribbleFooScaffoldRepository struct {
+	driver     *golangscribble.Driver
+	collection string
+}

@@ -1,0 +1,3 @@
+func (m *FoosScaffoldStruct) Elements() []FoosScaffoldInterface {
+	return *m
+}

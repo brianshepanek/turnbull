@@ -1,0 +1,9 @@
+type FooScaffoldInterface interface {
+	String() string
+	Int() int
+	SetString(string string)
+	SetInt(int int)
+	SetAll()
+	MarshalJSON() ([]byte, error)
+	UnmarshalJSON(data []byte) error
+}

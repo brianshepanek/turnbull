@@ -1,0 +1,3 @@
+func NewFooScaffoldInteractor(r repository.FooScaffoldRepository, p presenter.FooScaffoldPresenter) FooScaffoldInteractor {
+	return &fooScaffoldInteractor{r, p}
+}
