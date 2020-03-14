@@ -1,0 +1,4 @@
+func (c *httpFooScaffoldController) Add(w http.ResponseWriter, r http.Request) {
+	w.WriteHeader(http.StatusOK)
+	json.json.NewEncoder(w).Encode(interface{})
+}

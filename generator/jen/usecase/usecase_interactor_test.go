@@ -168,26 +168,26 @@ func TestScaffoldUsecaseInteractorConstructorFunction(t *testing.T){
 func TestScaffoldUsecaseInteractorInterfaceFunction(t *testing.T){
 
 	// Build
-	statement, err := testInteractorGenerator.scaffoldUsecaseInteractorInterfaceFunction(testMethod, testEntity)
+	statement, err := testInteractorGenerator.scaffoldUsecaseInteractorMethod(testMethod, testEntity)
 
 	// Return
 	if err != nil {
-		t.Errorf(`scaffoldUsecaseInteractorInterfaceFunction() failed with error %v`, err)
+		t.Errorf(`scaffoldUsecaseInteractorMethod() failed with error %v`, err)
 	}
 
 	f, err := os.Create("./testing/usecase/interactor/created/" + testOutputScaffoldUsecaseInteractorInterfaceFunctionName)
 	if err != nil {
-		t.Errorf(`scaffoldUsecaseInteractorInterfaceFunction() failed with error %v`, err)
+		t.Errorf(`scaffoldUsecaseInteractorMethod() failed with error %v`, err)
 	}
 	buf := &bytes.Buffer{}
 	err = statement.Render(buf)
 	if err != nil {
-		t.Errorf(`scaffoldUsecaseInteractorInterfaceFunction() failed with error %v`, err)
+		t.Errorf(`scaffoldUsecaseInteractorMethod() failed with error %v`, err)
 	}
 	_, err = f.Write(buf.Bytes())
 
 	if buf.String() != testOutputScaffoldUsecaseInteractorInterfaceFunction {
-		t.Errorf(`scaffoldUsecaseInteractorInterfaceFunction() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseInteractorInterfaceFunction, buf.String())
+		t.Errorf(`scaffoldUsecaseInteractorMethod() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseInteractorInterfaceFunction, buf.String())
 	}
 	
 }

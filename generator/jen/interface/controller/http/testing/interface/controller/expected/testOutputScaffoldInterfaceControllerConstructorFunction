@@ -1,0 +1,3 @@
+func NewHttpFooScaffoldController(interactor interactor.FooScaffoldInteractor) *httpFooScaffoldController {
+	return &httpFooScaffoldController{interactor}
+}

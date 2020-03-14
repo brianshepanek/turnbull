@@ -9,7 +9,7 @@ import (
 
 type fooScaffoldInteractor struct {
 	repository repository.FooScaffoldRepository
-	repository presenter.FooScaffoldPresenter
+	presenter  presenter.FooScaffoldPresenter
 }
 type FooScaffoldInteractor interface {
 	Add(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)

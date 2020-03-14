@@ -1,0 +1,39 @@
+package controller
+
+import (
+	"encoding/json"
+	interactor "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
+	"net/http"
+)
+
+type httpFooScaffoldController struct {
+	interactor interactor.FooScaffoldInteractor
+}
+
+func NewHttpFooScaffoldController(interactor interactor.FooScaffoldInteractor) *httpFooScaffoldController {
+	return &httpFooScaffoldController{interactor}
+}
+func (c *httpFooScaffoldController) Count(w http.ResponseWriter, r http.Request) {
+	w.WriteHeader(http.StatusOK)
+	json.json.NewEncoder(w).Encode(interface{})
+}
+func (c *httpFooScaffoldController) Browse(w http.ResponseWriter, r http.Request) {
+	w.WriteHeader(http.StatusOK)
+	json.json.NewEncoder(w).Encode(interface{})
+}
+func (c *httpFooScaffoldController) Read(w http.ResponseWriter, r http.Request) {
+	w.WriteHeader(http.StatusOK)
+	json.json.NewEncoder(w).Encode(interface{})
+}
+func (c *httpFooScaffoldController) Edit(w http.ResponseWriter, r http.Request) {
+	w.WriteHeader(http.StatusOK)
+	json.json.NewEncoder(w).Encode(interface{})
+}
+func (c *httpFooScaffoldController) Add(w http.ResponseWriter, r http.Request) {
+	w.WriteHeader(http.StatusOK)
+	json.json.NewEncoder(w).Encode(interface{})
+}
+func (c *httpFooScaffoldController) Delete(w http.ResponseWriter, r http.Request) {
+	w.WriteHeader(http.StatusOK)
+	json.json.NewEncoder(w).Encode(interface{})
+}

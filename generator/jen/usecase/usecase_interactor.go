@@ -22,7 +22,7 @@ type InteractorGenerator interface{
 	scaffoldUsecaseInteractorInterface(entity model.Entity) (jen.Statement, error)
 	scaffoldUsecaseInteractorInterfaceMethod(method model.Method, entity model.Entity) (jen.Statement, error)
 	scaffoldUsecaseInteractorConstructorFunction(entity model.Entity) (jen.Statement, error)
-	scaffoldUsecaseInteractorInterfaceFunction(method model.Method, entity model.Entity) (jen.Statement, error)
+	scaffoldUsecaseInteractorMethod(method model.Method, entity model.Entity) (jen.Statement, error)
 
 }
 
@@ -68,7 +68,7 @@ func (interactorGenerator *interactorGenerator) ScaffoldFile(entity model.Entity
 	for _, method := range entity.Methods {
 
 		// Function
-		function, err := interactorGenerator.scaffoldUsecaseInteractorInterfaceFunction(method, entity)
+		function, err := interactorGenerator.scaffoldUsecaseInteractorMethod(method, entity)
 		if err != nil {
 			return nil, err
 		}
@@ -122,7 +122,7 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorStruct(
 		return nil, err
 	}
 
-	presenterPackageName , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryPackageName()
+	presenterPackageName , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterPackageName()
 	if err != nil {
 		return nil, err
 	}
@@ -254,7 +254,7 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorConstru
 
 }
 
-func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorInterfaceFunction(method model.Method, entity model.Entity) (jen.Statement, error){
+func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorMethod(method model.Method, entity model.Entity) (jen.Statement, error){
 
 	// Vars
 	var resp jen.Statement

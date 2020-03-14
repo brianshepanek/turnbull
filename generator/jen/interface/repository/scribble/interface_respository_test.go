@@ -85,10 +85,10 @@ func init(){
 	testHelperGenerator := helper.New(formatter)
 	testRepositoryGenerator = NewRepositoryGenerator(conf, formatter, testHelperGenerator)
 
-	testOutputScaffoldInterfaceRepositoryFileFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldInterfaceRepositoryFileName)
-	testOutputScaffoldInterfaceRepositoryStructFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldInterfaceRepositoryStructName)
-	testOutputScaffoldInterfaceRepositoryConstructorFunctionFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldInterfaceRepositoryConstructorFunctionName)
-	testOutputScaffoldInterfaceRepositoryMethodFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldInterfaceRepositoryMethodName)
+	testOutputScaffoldInterfaceRepositoryFileFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryFileName)
+	testOutputScaffoldInterfaceRepositoryStructFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryStructName)
+	testOutputScaffoldInterfaceRepositoryConstructorFunctionFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryConstructorFunctionName)
+	testOutputScaffoldInterfaceRepositoryMethodFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryMethodName)
 	
 	testOutputScaffoldInterfaceRepositoryFile = string(testOutputScaffoldInterfaceRepositoryFileFile)
 	testOutputScaffoldInterfaceRepositoryStruct = string(testOutputScaffoldInterfaceRepositoryStructFile)
@@ -108,7 +108,7 @@ func TestScaffoldInterfaceRepositoryFile(t *testing.T){
 		t.Errorf(`scaffoldInterfaceRepositoryFile() failed with error %v`, err)
 	}
 
-	f, err := os.Create("./testing/usecase/interactor/created/" + testOutputScaffoldInterfaceRepositoryFileName)
+	f, err := os.Create("./testing/interface/repository/created/" + testOutputScaffoldInterfaceRepositoryFileName)
 	if err != nil {
 		t.Errorf(`scaffoldInterfaceRepositoryFile() failed with error %v`, err)
 	}
@@ -136,7 +136,7 @@ func TestScaffoldInterfaceRepositoryStruct(t *testing.T){
 		t.Errorf(`scaffoldInterfaceRepositoryStruct() failed with error %v`, err)
 	}
 
-	f, err := os.Create("./testing/usecase/interactor/created/" + testOutputScaffoldInterfaceRepositoryStructName)
+	f, err := os.Create("./testing/interface/repository/created/" + testOutputScaffoldInterfaceRepositoryStructName)
 	if err != nil {
 		t.Errorf(`scaffoldInterfaceRepositoryStruct() failed with error %v`, err)
 	}
@@ -164,7 +164,7 @@ func TestScaffoldInterfaceRepositoryConstructorFunction(t *testing.T){
 		t.Errorf(`scaffoldInterfaceRepositoryConstructorFunction() failed with error %v`, err)
 	}
 
-	f, err := os.Create("./testing/usecase/interactor/created/" + testOutputScaffoldInterfaceRepositoryConstructorFunctionName)
+	f, err := os.Create("./testing/interface/repository/created/" + testOutputScaffoldInterfaceRepositoryConstructorFunctionName)
 	if err != nil {
 		t.Errorf(`scaffoldInterfaceRepositoryConstructorFunction() failed with error %v`, err)
 	}
@@ -192,7 +192,7 @@ func TestScaffoldInterfaceRepositoryMethod(t *testing.T){
 		t.Errorf(`scaffoldInterfaceRepositoryMethod() failed with error %v`, err)
 	}
 
-	f, err := os.Create("./testing/usecase/interactor/created/" + testOutputScaffoldInterfaceRepositoryMethodName)
+	f, err := os.Create("./testing/interface/repository/created/" + testOutputScaffoldInterfaceRepositoryMethodName)
 	if err != nil {
 		t.Errorf(`scaffoldInterfaceRepositoryMethod() failed with error %v`, err)
 	}

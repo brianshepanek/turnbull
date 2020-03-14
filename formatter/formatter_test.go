@@ -20,6 +20,7 @@ const(
 
 	testOutputScaffoldUsecaseDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase"
 	testOutputScaffoldUsecaseInteractorDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
+	testOutputScaffoldUsecaseInteractorDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
 	testOutputScaffoldUsecaseRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/repository"
 	testOutputScaffoldUsecaseRepositoryDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/repository"
 	testOutputScaffoldUsecasePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/presenter"
@@ -73,6 +74,10 @@ const(
 	testOutputScaffoldInterfacePresenterStructId = "defaultFooScaffoldPresenter"
 	testOutputScaffoldInterfacePresenterInterfaceId = "DefaultFooScaffoldPresenter"
 	testOutputScaffoldInterfacePresenterConstructorFunctionId = "NewDefaultFooScaffoldPresenter"
+
+	testOutputScaffoldInterfaceControllerPackageName = "controller"
+	testOutputScaffoldInterfaceControllerStructId = "httpFooScaffoldController"
+	testOutputScaffoldInterfaceControllerConstructorFunctionId = "NewHttpFooScaffoldController"
 
 )
 
@@ -213,6 +218,23 @@ func TestOutputScaffoldUsecaseInteractorDirectory(t *testing.T){
 
 	if dir != testOutputScaffoldUsecaseInteractorDirectory {
 		t.Errorf(`OutputScaffoldUsecaseInteractorDirectory() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseInteractorDirectory, dir)
+	}
+}
+
+// Test Output Scaffold Usecase Interactor Directory Import Path
+func TestOutputScaffoldUsecaseInteractorDirectoryImportPath(t *testing.T){
+
+	// Build
+
+	dir, err := testFormatter.OutputScaffoldUsecaseInteractorDirectoryImportPath()
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldUsecOutputScaffoldUsecaseInteractorDirectoryImportPathaseRepositoryDirectoryImportPath() failed with error %v`, err)
+	}
+
+	if dir != testOutputScaffoldUsecaseInteractorDirectoryImportPath {
+		t.Errorf(`OutputScaffoldUsecaseInteractorDirectoryImportPath() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseInteractorDirectoryImportPath, dir)
 	}
 }
 
@@ -884,3 +906,52 @@ func TestOutputScaffoldInterfacePresenterConstructorFunctionId(t *testing.T){
 	}
 }
 
+
+// Test Output Scaffold Interface Controller Package Name
+func TestOutputScaffoldInterfaceControllerPackageName(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldInterfaceControllerPackageName()
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfaceControllerPackageName() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldInterfaceControllerPackageName {
+		t.Errorf(`OutputScaffoldInterfaceControllerPackageName() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceControllerPackageName, id)
+	}
+}
+
+// Test Output Scaffold Interface Controller Struct ID
+func TestOutputScaffoldInterfaceControllerStructId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldInterfaceControllerStructId("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfaceROutputScaffoldInterfaceControllerStructIdepositoryStructId() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldInterfaceControllerStructId {
+		t.Errorf(`OutputScaffoldInterfaceControllerStructId() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceControllerStructId, id)
+	}
+}
+
+
+// Test Output Scaffold Interface Controller Constructor Function ID
+func TestOutputScaffoldInterfaceControllerConstructorFunctionId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldInterfaceControllerConstructorFunctionId("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfaceControllerConstructorFunctionId() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldInterfaceControllerConstructorFunctionId {
+		t.Errorf(`OutputScaffoldInterfaceControllerConstructorFunctionId() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceControllerConstructorFunctionId, id)
+	}
+}
