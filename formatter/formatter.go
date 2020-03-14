@@ -69,6 +69,11 @@ type Formatter interface{
 	OutputScaffoldInterfaceRepositoryStructId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryConstructorFunctionId(driver string, entity model.Entity) (string, error)
 
+	OutputScaffoldInterfacePresenterPackageName() (string, error)
+	OutputScaffoldInterfacePresenterStructId(driver string, entity model.Entity) (string, error)
+	OutputScaffoldInterfacePresenterInterfaceId(driver string, entity model.Entity) (string, error)
+	OutputScaffoldInterfacePresenterConstructorFunctionId(driver string, entity model.Entity) (string, error)
+
 }
 
 func New(config *config.Config) Formatter {
@@ -282,4 +287,20 @@ func (formatter *formatter) OutputScaffoldInterfaceRepositoryStructId(driver str
 
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryConstructorFunctionId(driver string, entity model.Entity) (string, error) {
 	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldInterfacePresenterPackageName() (string, error) {
+	return strcase.ToSnake(formatter.config.Layers.Interface.Presenter.Name), nil
+}
+
+func (formatter *formatter) OutputScaffoldInterfacePresenterStructId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Presenter.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldInterfacePresenterInterfaceId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Presenter.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldInterfacePresenterConstructorFunctionId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
 }

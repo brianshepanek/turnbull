@@ -69,6 +69,11 @@ const(
 	testOutputScaffoldInterfaceRepositoryStructId = "scribbleFooScaffoldRepository"
 	testOutputScaffoldInterfaceRepositoryConstructorFunctionId = "NewScribbleFooScaffoldRepository"
 
+	testOutputScaffoldInterfacePresenterPackageName = "presenter"
+	testOutputScaffoldInterfacePresenterStructId = "defaultFooScaffoldPresenter"
+	testOutputScaffoldInterfacePresenterInterfaceId = "DefaultFooScaffoldPresenter"
+	testOutputScaffoldInterfacePresenterConstructorFunctionId = "NewDefaultFooScaffoldPresenter"
+
 )
 
 var (
@@ -811,6 +816,71 @@ func TestOutputScaffoldInterfaceRepositoryConstructorFunctionId(t *testing.T){
 
 	if id != testOutputScaffoldInterfaceRepositoryConstructorFunctionId {
 		t.Errorf(`OutputScaffoldInterfaceRepositoryConstructorFunctionId() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceRepositoryConstructorFunctionId, id)
+	}
+}
+
+// Test Output Scaffold Interface Presenter Package Name
+func TestOutputScaffoldInterfacePresenterPackageName(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldInterfacePresenterPackageName()
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfacePresenterPackageName() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldInterfacePresenterPackageName {
+		t.Errorf(`OutputScaffoldInterfacePresenterPackageName() failed; want "%s", got "%s"`, testOutputScaffoldInterfacePresenterPackageName, id)
+	}
+}
+
+// Test Output Scaffold Interface Presenter Struct ID
+func TestOutputScaffoldInterfacePresenterStructId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldInterfacePresenterStructId("default", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfacePresenterStructId() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldInterfacePresenterStructId {
+		t.Errorf(`OutputScaffoldInterfacePresenterStructId() failed; want "%s", got "%s"`, testOutputScaffoldInterfacePresenterStructId, id)
+	}
+}
+
+// Test Output Scaffold Interface Presenter Interface ID
+func TestOutputScaffoldInterfacePresenterInterfaceId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldInterfacePresenterInterfaceId("default", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfacePresenterInterfaceId() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldInterfacePresenterInterfaceId {
+		t.Errorf(`OutputScaffoldInterfacePresenterInterfaceId() failed; want "%s", got "%s"`, testOutputScaffoldInterfacePresenterInterfaceId, id)
+	}
+}
+
+
+// Test Output Scaffold Interface Presenter Constructor Function ID
+func TestOutputScaffoldInterfacePresenterConstructorFunctionId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldInterfacePresenterConstructorFunctionId("default", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfacePresenterConstructorFunctionId() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldInterfacePresenterConstructorFunctionId {
+		t.Errorf(`OutputScaffoldInterfacePresenterConstructorFunctionId() failed; want "%s", got "%s"`, testOutputScaffoldInterfacePresenterConstructorFunctionId, id)
 	}
 }
 

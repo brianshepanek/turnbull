@@ -326,6 +326,11 @@ func New(configPath string, outputPath string) (*Config, error) {
 					},
 					ReturnValues : []model.Field {
 						model.Field {
+							Name : "resp",
+							Op : "*",
+							Type : "self",
+						},
+						model.Field {
 							Name : "err",
 							Type : "error",
 						},
@@ -408,15 +413,15 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 						model.Field {
 							Name : "req",
-							Type : "interface{}",
-						},
-						model.Field {
-							Name : "count",
-							Op : "*",
 							Type : "int",
 						},
 					},
 					ReturnValues : []model.Field {
+						model.Field {
+							Name : "resp",
+							Op : "*",
+							Type : "int",
+						},
 						model.Field {
 							Name : "err",
 							Type : "error",

@@ -1,0 +1,3 @@
+func NewDefaultFooScaffoldPresenter() DefaultFooScaffoldPresenter {
+	return &defaultFooScaffoldPresenter{}
+}

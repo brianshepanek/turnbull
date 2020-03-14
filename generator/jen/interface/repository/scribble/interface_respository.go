@@ -223,6 +223,17 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryMetho
 	// Type
 	resp.Func()
 
+	// Struct ID
+	structId , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryStructId("scribble", entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Params(
+		jen.Id("r").
+		Op("*").
+		Qual("", structId),
+	)
+
 	// ID
 	id , err := repositoryGenerator.formatter.OutputScaffoldUsecaseRepositoryInterfaceMethodId(method)
 	if err != nil {
