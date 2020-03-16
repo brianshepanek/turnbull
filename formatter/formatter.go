@@ -26,10 +26,13 @@ type Formatter interface{
 	OutputScaffoldUsecaseDirectory() (string, error)
 	OutputScaffoldUsecaseInteractorDirectory() (string, error)
 	OutputScaffoldUsecaseInteractorDirectoryImportPath() (string, error)
+	OutputScaffoldUsecaseInteractorFile(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseRepositoryDirectory() (string, error)
 	OutputScaffoldUsecaseRepositoryDirectoryImportPath() (string, error)
+	OutputScaffoldUsecaseRepositoryFile(entity model.Entity) (string, error)
 	OutputScaffoldUsecasePresenterDirectory() (string, error)
 	OutputScaffoldUsecasePresenterDirectoryImportPath() (string, error)
+	OutputScaffoldUsecasePresenterFile(entity model.Entity) (string, error)
 
 	OutputScaffoldInterfaceDirectory() (string, error)
 	OutputScaffoldInterfaceControllerDirectory() (string, error)
@@ -144,6 +147,16 @@ func (formatter *formatter) OutputScaffoldUsecaseInteractorDirectoryImportPath()
 	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
 }
 
+func (formatter *formatter) OutputScaffoldUsecaseInteractorFile(entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldUsecaseInteractorDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
+
 func (formatter *formatter) OutputScaffoldUsecaseRepositoryDirectory() (string, error) {
 	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Name, formatter.config.Layers.Usecase.Repository.Name}, formatter.config.PathSeparator), nil
 }
@@ -156,6 +169,16 @@ func (formatter *formatter) OutputScaffoldUsecaseRepositoryDirectoryImportPath()
 	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
 }
 
+func (formatter *formatter) OutputScaffoldUsecaseRepositoryFile(entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldUsecaseRepositoryDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Repository.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
+
 func (formatter *formatter) OutputScaffoldUsecasePresenterDirectory() (string, error) {
 	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Name, formatter.config.Layers.Usecase.Presenter.Name}, formatter.config.PathSeparator), nil
 }
@@ -166,6 +189,16 @@ func (formatter *formatter) OutputScaffoldUsecasePresenterDirectoryImportPath() 
 		return "", nil
 	}
 	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputScaffoldUsecasePresenterFile(entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldUsecasePresenterDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Presenter.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
 
 // Interface

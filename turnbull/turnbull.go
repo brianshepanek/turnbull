@@ -35,8 +35,8 @@ func (turnbull *turnbull) buildStructure() (error){
 	return nil
 }
 
-// Build Domain Entity
-func (turnbull *turnbull) buildDomainEntity(entity model.Entity) (error){
+// Build Scaffold Domain Entity
+func (turnbull *turnbull) buildScaffoldDomainEntity(entity model.Entity) (error){
 
 	// Build
 	buf := &bytes.Buffer{}
@@ -67,3 +67,98 @@ func (turnbull *turnbull) buildDomainEntity(entity model.Entity) (error){
 	return nil
 }
 
+// Build Scaffold Usecase Repository
+func (turnbull *turnbull) buildScaffoldUsecaseRepository(entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.ScaffoldUsecaseRepository(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputScaffoldUsecaseRepositoryFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Build Scaffold Usecase Presenter
+func (turnbull *turnbull) buildScaffoldUsecasePresenter(entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.ScaffoldUsecasePresenter(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputScaffoldUsecasePresenterFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Build Scaffold Usecase Interactor
+func (turnbull *turnbull) buildScaffoldUsecaseInteractor(entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.ScaffoldUsecaseInteractor(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputScaffoldUsecaseInteractorFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

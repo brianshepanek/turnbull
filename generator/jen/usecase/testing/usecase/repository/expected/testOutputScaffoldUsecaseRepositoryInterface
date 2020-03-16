@@ -1,5 +1,5 @@
 type FooScaffoldRepository interface {
 	Add(ctx context.Context, req entity.FooScaffoldInterface) error
-	Read(ctx context.Context, req interface{}, req entity.FooScaffoldInterface) error
-	Browse(ctx context.Context, req interface{}, req entity.FoosScaffoldInterface) error
+	Read(ctx context.Context, query interface{}, req entity.FooScaffoldInterface) error
+	Browse(ctx context.Context, query interface{}, req entity.FoosScaffoldInterface) error
 }

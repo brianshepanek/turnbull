@@ -45,16 +45,28 @@ var (
 		},
 		Methods : []model.Method {
 			model.Method{
-				Name : "add",
-				Type : "add",
+				Name : "count",
+				Type : "count",
+			},
+			model.Method{
+				Name : "browse",
+				Type : "browse",
 			},
 			model.Method{
 				Name : "read",
 				Type : "read",
 			},
 			model.Method{
-				Name : "browse",
-				Type : "browse",
+				Name : "edit",
+				Type : "edit",
+			},
+			model.Method{
+				Name : "add",
+				Type : "add",
+			},
+			model.Method{
+				Name : "delete",
+				Type : "delete",
 			},
 		},
 	}
@@ -74,8 +86,8 @@ func init(){
 	testTurnbull = New(formatter, structure, generator)
 }
 
-// Test Build Structture
-func TestBuildStructture(t *testing.T){
+// Test Build Structure
+func TestBuildStructure(t *testing.T){
 
 	// Build
 	err := testTurnbull.buildStructure()
@@ -86,14 +98,50 @@ func TestBuildStructture(t *testing.T){
 	}
 }
 
-// Test Build Domain Entity
-func TestBuildDomainEntity(t *testing.T){
+// Test Build Scaffold Domain Entity
+func TestBuildScaffoldDomainEntity(t *testing.T){
 
 	// Build
-	err := testTurnbull.buildDomainEntity(testEntity)
+	err := testTurnbull.buildScaffoldDomainEntity(testEntity)
 
 	// Return
 	if err != nil {
 		t.Errorf(`buildStructure() failed with error %v`, err)
+	}
+}
+
+// Test Build Scaffold Usecase Repository
+func TestBuildScaffoldUsecaseRepository(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildScaffoldUsecaseRepository(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildScaffoldUsecaseRepository() failed with error %v`, err)
+	}
+}
+
+// Test Build Scaffold Usecase Presenter
+func TestBuildScaffoldUsecasePresenter(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildScaffoldUsecasePresenter(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildScaffoldUsecasePresenter() failed with error %v`, err)
+	}
+}
+
+// Test Build Scaffold Usecase Interactor
+func TestBuildScaffoldUsecaseInteractor(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildScaffoldUsecaseInteractor(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildScaffoldUsecaseInteractor() failed with error %v`, err)
 	}
 }

@@ -22,10 +22,13 @@ const(
 	testOutputScaffoldUsecaseDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase"
 	testOutputScaffoldUsecaseInteractorDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
 	testOutputScaffoldUsecaseInteractorDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
+	testOutputScaffoldUsecaseInteractorFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor/foo_interactor.go"
 	testOutputScaffoldUsecaseRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/repository"
 	testOutputScaffoldUsecaseRepositoryDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/repository"
+	testOutputScaffoldUsecaseRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/repository/foo_repository.go"
 	testOutputScaffoldUsecasePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/presenter"
 	testOutputScaffoldUsecasePresenterDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/presenter"
+	testOutputScaffoldUsecasePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/presenter/foo_presenter.go"
 
 	testOutputScaffoldInterfaceDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface"
 	testOutputScaffoldInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/controller"
@@ -256,6 +259,23 @@ func TestOutputScaffoldUsecaseInteractorDirectoryImportPath(t *testing.T){
 	}
 }
 
+// Test Output Scaffold Usecase Interactor File
+func TestOutputScaffoldUsecaseInteractorFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputScaffoldUsecaseInteractorFile(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldUsecaseInteractorFile() failed with error %v`, err)
+	}
+
+	if file != testOutputScaffoldUsecaseInteractorFile {
+		t.Errorf(`OutputScaffoldUsecaseInteractorFile() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseInteractorFile, file)
+	}
+}
+
 // Test Output Scaffold Usecase Repository Directory
 func TestOutputScaffoldUsecaseRepositoryDirectory(t *testing.T){
 
@@ -290,6 +310,23 @@ func TestOutputScaffoldUsecaseRepositoryDirectoryImportPath(t *testing.T){
 	}
 }
 
+// Test Output Scaffold Usecase Repository File
+func TestOutputScaffoldUsecaseRepositoryFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputScaffoldUsecaseRepositoryFile(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldUsecaseRepositoryFile() failed with error %v`, err)
+	}
+
+	if file != testOutputScaffoldUsecaseRepositoryFile {
+		t.Errorf(`OutputScaffoldUsecaseRepositoryFile() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseRepositoryFile, file)
+	}
+}
+
 // Test Output Scaffold Usecase Presenter Directory
 func TestOutputScaffoldUsecasePresenterDirectory(t *testing.T){
 
@@ -321,6 +358,23 @@ func TestOutputScaffoldUsecasePresenterDirectoryImportPath(t *testing.T){
 
 	if dir != testOutputScaffoldUsecasePresenterDirectoryImportPath {
 		t.Errorf(`OutputScaffoldUsecasePresenterDirectoryImportPath() failed; want "%s", got "%s"`, testOutputScaffoldUsecasePresenterDirectoryImportPath, dir)
+	}
+}
+
+// Test Output Scaffold Usecase Presenter File
+func TestOutputScaffoldUsecasePresenterFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputScaffoldUsecasePresenterFile(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldUsecasePresenterFile() failed with error %v`, err)
+	}
+
+	if file != testOutputScaffoldUsecasePresenterFile {
+		t.Errorf(`OutputScaffoldUsecasePresenterFile() failed; want "%s", got "%s"`, testOutputScaffoldUsecasePresenterFile, file)
 	}
 }
 

@@ -13,8 +13,8 @@ type fooScaffoldInteractor struct {
 }
 type FooScaffoldInteractor interface {
 	Add(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
-	Read(ctx context.Context, req interface{}, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
-	Browse(ctx context.Context, req interface{}, req entity.FoosScaffoldInterface) (*entity.FoosScaffoldInterface, error)
+	Read(ctx context.Context, query interface{}, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
+	Browse(ctx context.Context, query interface{}, req entity.FoosScaffoldInterface) (*entity.FoosScaffoldInterface, error)
 }
 
 func NewFooScaffoldInteractor(r repository.FooScaffoldRepository, p presenter.FooScaffoldPresenter) FooScaffoldInteractor {
@@ -27,15 +27,15 @@ func (i *fooScaffoldInteractor) Add(ctx context.Context, req entity.FooScaffoldI
 	}
 	return i.presenter.Add(ctx, req)
 }
-func (i *fooScaffoldInteractor) Read(ctx context.Context, req interface{}, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error) {
-	err := i.repository.Read(ctx, req, req)
+func (i *fooScaffoldInteractor) Read(ctx context.Context, query interface{}, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error) {
+	err := i.repository.Read(ctx, query, req)
 	if err != nil {
 		return nil, err
 	}
 	return i.presenter.Read(ctx, req)
 }
-func (i *fooScaffoldInteractor) Browse(ctx context.Context, req interface{}, req entity.FoosScaffoldInterface) (*entity.FoosScaffoldInterface, error) {
-	err := i.repository.Browse(ctx, req, req)
+func (i *fooScaffoldInteractor) Browse(ctx context.Context, query interface{}, req entity.FoosScaffoldInterface) (*entity.FoosScaffoldInterface, error) {
+	err := i.repository.Browse(ctx, query, req)
 	if err != nil {
 		return nil, err
 	}

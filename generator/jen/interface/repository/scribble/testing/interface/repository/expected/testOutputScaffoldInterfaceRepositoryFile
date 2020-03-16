@@ -18,9 +18,9 @@ func NewScribbleFooScaffoldRepository(driver *golangscribble.Driver, collection 
 		driver:     driver,
 	}
 }
-func (r *scribbleFooScaffoldRepository) Count(ctx context.Context, req interface{}, count *int) error {
+func (r *scribbleFooScaffoldRepository) Count(ctx context.Context, query interface{}, req *int) error {
 }
-func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, req interface{}, req entity.FoosScaffoldInterface) error {
+func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, query interface{}, req entity.FoosScaffoldInterface) error {
 	records, err := r.driver.ReadAll(r.collection)
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, req interfac
 	}
 	return nil
 }
-func (r *scribbleFooScaffoldRepository) Read(ctx context.Context, req interface{}, req entity.FooScaffoldInterface) error {
+func (r *scribbleFooScaffoldRepository) Read(ctx context.Context, query interface{}, req entity.FooScaffoldInterface) error {
 	return r.driver.Read(r.collection, req.Primary(), req)
 }
 func (r *scribbleFooScaffoldRepository) Edit(ctx context.Context, req entity.FooScaffoldInterface) error {

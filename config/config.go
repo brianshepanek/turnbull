@@ -243,7 +243,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 							Type : "Context",
 						},
 						model.Field {
-							Name : "req",
+							Name : "query",
 							Type : "interface{}",
 						},
 						model.Field {
@@ -294,7 +294,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 							Type : "Context",
 						},
 						model.Field {
-							Name : "req",
+							Name : "query",
 							Type : "interface{}",
 						},
 						model.Field {
@@ -413,6 +413,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 						model.Field {
 							Name : "req",
+							Op : "*",
 							Type : "int",
 						},
 					},
@@ -436,11 +437,11 @@ func New(configPath string, outputPath string) (*Config, error) {
 							Type : "Context",
 						},
 						model.Field {
-							Name : "req",
+							Name : "query",
 							Type : "interface{}",
 						},
 						model.Field {
-							Name : "count",
+							Name : "req",
 							Op : "*",
 							Type : "int",
 						},
