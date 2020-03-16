@@ -1,10 +1,16 @@
 package generator
 
 import(
+	"bytes"
+	"testing"
 	"github.com/brianshepanek/turnbull/config"
 	"github.com/brianshepanek/turnbull/formatter"
 	"github.com/brianshepanek/turnbull/generator"
 	"github.com/brianshepanek/turnbull/domain/model"
+	"github.com/brianshepanek/turnbull/generator/jen/helper"
+	scribbleRepositoryGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/repository/scribble"
+	defaultPresenterGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/presenter/default"
+	httpControllerGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/controller/http"
 )
 
 const(
@@ -15,7 +21,7 @@ const(
 var(
 
 
-	testGenerator generator.UsecaseGenerator
+	testGenerator generator.Generator
 
 	// Test Entity
 	testEntity  = model.Entity{
@@ -60,5 +66,23 @@ var(
 func init(){
 	conf, _ := config.New(testConfigPath, testOutputPath)
 	formatter := formatter.New(conf)
-	testGenerator = NewGenerator(conf, formatter)
+	testHelperGenerator := helper.New(formatter)
+	interfaceRepositoryGenerator := scribbleRepositoryGenerator.New(conf, formatter, testHelperGenerator)
+	interfacePresenterGenerator := defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
+	interfaceControllerGenerator := httpControllerGenerator.New(conf, formatter, testHelperGenerator)
+	testGenerator = New(conf, formatter, interfaceRepositoryGenerator, interfacePresenterGenerator, interfaceControllerGenerator)
+}
+
+// Test Scaffold Interface Repository File
+func TestScaffoldEntity(t *testing.T){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := testGenerator.ScaffoldEntity(testEntity, buf)
+
+	// Return
+	if err != nil {
+		t.Errorf(`scaffoldInterfaceRepositoryFile() failed with error %v`, err)
+	}
+	
 }

@@ -8,6 +8,7 @@ import(
 	"github.com/brianshepanek/turnbull/generator/jen/helper"
 	"github.com/brianshepanek/turnbull/generator/jen/domain"
 	"github.com/brianshepanek/turnbull/generator/jen/usecase"
+	generatorInterface "github.com/brianshepanek/turnbull/generator/jen/interface"
 )
 
 type Generator struct{
@@ -17,9 +18,12 @@ type Generator struct{
 	usecaseInteractorGenerator usecase.InteractorGenerator
 	usecasePresenterGenerator usecase.PresenterGenerator
 	usecaseRepositoryGenerator usecase.RepositoryGenerator
+	interfaceControllerGenerator generatorInterface.ControllerGenerator
+	interfacePresenterGenerator generatorInterface.PresenterGenerator
+	interfaceRepositoryGenerator generatorInterface.RepositoryGenerator
 }
 
-func NewGenerator(config *config.Config, formatter formatter.Formatter) * Generator{
+func New(config *config.Config, formatter formatter.Formatter, interfaceControllerGenerator generatorInterface.ControllerGenerator, interfacePresenterGenerator generatorInterface.PresenterGenerator, interfaceRepositoryGenerator generatorInterface.RepositoryGenerator) * Generator{
 
 
 	helperGenerator := helper.New(formatter)
@@ -35,6 +39,9 @@ func NewGenerator(config *config.Config, formatter formatter.Formatter) * Genera
 		usecaseInteractorGenerator : usecaseInteractorGenerator,
 		usecasePresenterGenerator : usecasePresenterGenerator,
 		usecaseRepositoryGenerator : usecaseRepositoryGenerator,
+		interfaceControllerGenerator : interfaceControllerGenerator,
+		interfacePresenterGenerator : interfacePresenterGenerator,
+		interfaceRepositoryGenerator : interfaceRepositoryGenerator,
 	}
 }
 
@@ -95,3 +102,44 @@ func (generator *Generator) ScaffoldUsecaseInteractor(entity model.Entity, write
 }
 
 
+func (generator *Generator) ScaffoldInterfaceRepository(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.interfaceRepositoryGenerator.ScaffoldFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}
+
+func (generator *Generator) ScaffoldInterfacePresenter(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.interfacePresenterGenerator.ScaffoldFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}
+
+func (generator *Generator) ScaffoldInterfaceController(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.interfaceControllerGenerator.ScaffoldFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}

@@ -14,18 +14,18 @@ type controllerGenerator struct{
 	helperGenerator helper.Generator
 }
 
-type ControllerGenerator interface{
+// type ControllerGenerator interface{
 
-	ScaffoldFile(entity model.Entity) (*jen.File, error)
+// 	ScaffoldFile(entity model.Entity) (*jen.File, error)
 	
-	scaffoldInterfaceControllerStructFields(entity model.Entity) ([]jen.Code, error)
-	scaffoldInterfaceControllerStruct(entity model.Entity) (jen.Statement, error)
-	scaffoldInterfaceControllerConstructorFunction(entity model.Entity) (jen.Statement, error)
-	scaffoldInterfaceControllerMethod(method model.Method, entity model.Entity) (jen.Statement, error)
+// 	scaffoldInterfaceControllerStructFields(entity model.Entity) ([]jen.Code, error)
+// 	scaffoldInterfaceControllerStruct(entity model.Entity) (jen.Statement, error)
+// 	scaffoldInterfaceControllerConstructorFunction(entity model.Entity) (jen.Statement, error)
+// 	scaffoldInterfaceControllerMethod(method model.Method, entity model.Entity) (jen.Statement, error)
 
-}
+// }
 
-func NewControllerGenerator(config *config.Config, formatter formatter.Formatter, helperGenerator helper.Generator) ControllerGenerator {
+func New(config *config.Config, formatter formatter.Formatter, helperGenerator helper.Generator) *controllerGenerator {
 	return &controllerGenerator{
 		config : config,
 		formatter : formatter,

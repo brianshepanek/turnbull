@@ -18,7 +18,7 @@ const(
 )
 
 var (
-	testControllerGenerator ControllerGenerator
+	testControllerGenerator *controllerGenerator
 
 	testOutputScaffoldInterfaceControllerFileName = "testOutputScaffoldInterfaceControllerFile"
 	testOutputScaffoldInterfaceControllerStructName = "testOutputScaffoldInterfaceControllerStruct"
@@ -83,7 +83,7 @@ func init(){
 	conf, _ := config.New(testConfigPath, testOutputPath)
 	formatter := formatter.New(conf)
 	testHelperGenerator := helper.New(formatter)
-	testControllerGenerator = NewControllerGenerator(conf, formatter, testHelperGenerator)
+	testControllerGenerator = New(conf, formatter, testHelperGenerator)
 
 	testOutputScaffoldInterfaceControllerFileFile, _ := ioutil.ReadFile("./testing/interface/controller/expected/" + testOutputScaffoldInterfaceControllerFileName)
 	testOutputScaffoldInterfaceControllerStructFile, _ := ioutil.ReadFile("./testing/interface/controller/expected/" + testOutputScaffoldInterfaceControllerStructName)

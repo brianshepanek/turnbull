@@ -10,6 +10,7 @@ import(
 	"github.com/brianshepanek/turnbull/domain/model"
 	"github.com/brianshepanek/turnbull/generator/jen/helper"
 	
+	
 )
 
 const(
@@ -18,7 +19,7 @@ const(
 )
 
 var (
-	testRepositoryGenerator RepositoryGenerator
+	testRepositoryGenerator *repositoryGenerator
 
 	testOutputScaffoldInterfaceRepositoryFileName = "testOutputScaffoldInterfaceRepositoryFile"
 	testOutputScaffoldInterfaceRepositoryStructName = "testOutputScaffoldInterfaceRepositoryStruct"
@@ -83,7 +84,7 @@ func init(){
 	conf, _ := config.New(testConfigPath, testOutputPath)
 	formatter := formatter.New(conf)
 	testHelperGenerator := helper.New(formatter)
-	testRepositoryGenerator = NewRepositoryGenerator(conf, formatter, testHelperGenerator)
+	testRepositoryGenerator = New(conf, formatter, testHelperGenerator)
 
 	testOutputScaffoldInterfaceRepositoryFileFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryFileName)
 	testOutputScaffoldInterfaceRepositoryStructFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryStructName)

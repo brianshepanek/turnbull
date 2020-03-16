@@ -17,7 +17,7 @@ const(
 )
 
 var (
-	testPresenterGenerator PresenterGenerator
+	testPresenterGenerator *presenterGenerator
 
 	testOutputScaffoldInterfacePresenterFileName = "testOutputScaffoldInterfacePresenterFile"
 	testOutputScaffoldInterfacePresenterStructName = "testOutputScaffoldInterfacePresenterStruct"
@@ -86,7 +86,7 @@ func init(){
 	conf, _ := config.New(testConfigPath, testOutputPath)
 	formatter := formatter.New(conf)
 	testHelperGenerator := helper.New(formatter)
-	testPresenterGenerator = NewPresenterGenerator(conf, formatter, testHelperGenerator)
+	testPresenterGenerator = New(conf, formatter, testHelperGenerator)
 
 	testOutputScaffoldInterfacePresenterFileFile, _ := ioutil.ReadFile("./testing/interface/presenter/expected/" + testOutputScaffoldInterfacePresenterFileName)
 	testOutputScaffoldInterfacePresenterStructFile, _ := ioutil.ReadFile("./testing/interface/presenter/expected/" + testOutputScaffoldInterfacePresenterStructName)

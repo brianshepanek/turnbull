@@ -14,19 +14,19 @@ type presenterGenerator struct{
 	helperGenerator helper.Generator
 }
 
-type PresenterGenerator interface{
+// type PresenterGenerator interface{
 
-	ScaffoldFile(entity model.Entity) (*jen.File, error)
+// 	ScaffoldFile(entity model.Entity) (*jen.File, error)
 
-	scaffoldInterfacePresenterStruct(entity model.Entity) (jen.Statement, error)
-	scaffoldInterfacePresenterInterface(entity model.Entity) (jen.Statement, error)
-	scaffoldInterfacePresenterInterfaceMethod(method model.Method, entity model.Entity) (jen.Statement, error)
-	scaffoldInterfacePresenterConstructorFunction(entity model.Entity) (jen.Statement, error)
-	scaffoldInterfacePresenterMethod(method model.Method, entity model.Entity) (jen.Statement, error)
+// 	scaffoldInterfacePresenterStruct(entity model.Entity) (jen.Statement, error)
+// 	scaffoldInterfacePresenterInterface(entity model.Entity) (jen.Statement, error)
+// 	scaffoldInterfacePresenterInterfaceMethod(method model.Method, entity model.Entity) (jen.Statement, error)
+// 	scaffoldInterfacePresenterConstructorFunction(entity model.Entity) (jen.Statement, error)
+// 	scaffoldInterfacePresenterMethod(method model.Method, entity model.Entity) (jen.Statement, error)
 
-}
+// }
 
-func NewPresenterGenerator(config *config.Config, formatter formatter.Formatter, helperGenerator helper.Generator) PresenterGenerator {
+func New(config *config.Config, formatter formatter.Formatter, helperGenerator helper.Generator) *presenterGenerator {
 	return &presenterGenerator{
 		config : config,
 		formatter : formatter,
