@@ -17,6 +17,7 @@ const(
 	testOutputScaffoldDomainDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/domain"
 	testOutputScaffoldDomainEntityDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
 	testOutputScaffoldDomainEntityDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
+	testOutputScaffoldDomainEntityFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity/foo.go"
 
 	testOutputScaffoldUsecaseDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase"
 	testOutputScaffoldUsecaseInteractorDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
@@ -184,6 +185,23 @@ func TestOutputScaffoldDomainEntityDirectoryImportPath(t *testing.T){
 
 	if dir != testOutputScaffoldDomainEntityDirectoryImportPath {
 		t.Errorf(`OutputScaffoldDomainEntityDirectoryImportPath() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityDirectoryImportPath, dir)
+	}
+}
+
+// Test Output Scaffold Domain Entity File
+func TestOutputScaffoldDomainEntityFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputScaffoldDomainEntityFile(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldDomainEntityFile() failed with error %v`, err)
+	}
+
+	if file != testOutputScaffoldDomainEntityFile {
+		t.Errorf(`OutputScaffoldDomainEntityFile() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityFile, file)
 	}
 }
 

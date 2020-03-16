@@ -12,7 +12,7 @@ const(
 )
 
 var (
-	testStructure Structure
+	testStructure *structure
 )
 
 func init(){
@@ -22,6 +22,17 @@ func init(){
 	
 }
 
+// Test Build
+func TestBuild(t *testing.T){
+
+	// Build
+	err := testStructure.Build()
+
+	// Return
+	if err != nil {
+		t.Errorf(`Build() failed with error %v`, err)
+	}
+}
 
 // Test Build Output Directory
 func TestBuildOutputDirectory(t *testing.T){

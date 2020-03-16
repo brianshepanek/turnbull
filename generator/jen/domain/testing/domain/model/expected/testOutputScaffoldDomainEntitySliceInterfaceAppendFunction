@@ -1,4 +1,4 @@
-func (m *FoosScaffoldStruct) Append(req FoosScaffoldInterface) int {
+func (m *FoosScaffoldStruct) Append(req FooScaffoldInterface) {
 	if m != nil {
 		*m = append(*m, req)
 	}

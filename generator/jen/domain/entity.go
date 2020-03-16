@@ -29,7 +29,7 @@ type EntityGenerator interface{
 	// Scaffold Entity Interface Methods
 	scaffoldEntityInterfaceGetter(field model.Field, entity model.Entity) (jen.Code, error)
 	scaffoldEntityInterfaceSetter(field model.Field, entity model.Entity) (jen.Code, error)
-	scaffoldEntityInterfaceSetAllSetter() (jen.Code, error)
+	scaffoldEntityInterfaceSetAllSetter(entity model.Entity) (jen.Code, error)
 	scaffoldEntityInterfaceMarshalJSON() (jen.Code, error)
 	scaffoldEntityInterfaceUnmarshalJSON() (jen.Code, error)
 
@@ -299,7 +299,7 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterface(entity model.Ent
 	}
 
 	// Set All
-	code, err := entityGenerator.scaffoldEntityInterfaceSetAllSetter()
+	code, err := entityGenerator.scaffoldEntityInterfaceSetAllSetter(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -439,7 +439,7 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetter(field mode
 }
 
 
-func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetAllSetter() (jen.Code, error){
+func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetAllSetter(entity model.Entity) (jen.Code, error){
 	
 	// ID
 	var statement jen.Statement
@@ -448,12 +448,20 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetAllSetter() (j
 		return nil, err
 	}
 
+	// Interface ID
+	interfaceId , err := entityGenerator.formatter.OutputScaffoldDomainEntityInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
 
 	// Set
 	statement.Id(id)
 
 	// Params
-	statement.Params()
+	statement.Params(
+		jen.Id("req").
+		Qual("", interfaceId),
+	)
 	
 	return &statement, nil
 }
@@ -775,7 +783,7 @@ func (entityGenerator *entityGenerator) scaffoldEntitySliceInterfaceAppendFuncti
 	}
 
 	// Interface ID
-	interfaceId , err := entityGenerator.formatter.OutputScaffoldDomainEntitySliceInterfaceId(entity)
+	interfaceId , err := entityGenerator.formatter.OutputScaffoldDomainEntityInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -803,11 +811,6 @@ func (entityGenerator *entityGenerator) scaffoldEntitySliceInterfaceAppendFuncti
 	statement.Params(
 		jen.Id("req").
 		Qual("", interfaceId),
-	)
-
-	// List
-	statement.List(
-		jen.Int(),
 	)
 
 	// Block
@@ -842,7 +845,7 @@ func (entityGenerator *entityGenerator) scaffoldEntitySliceInterfaceElementsFunc
 	}
 
 	// Interface ID
-	interfaceId , err := entityGenerator.formatter.OutputScaffoldDomainEntitySliceInterfaceId(entity)
+	interfaceId , err := entityGenerator.formatter.OutputScaffoldDomainEntityInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ type FooScaffoldInterface interface {
 	Int() int
 	SetString(string string)
 	SetInt(int int)
-	SetAll()
+	SetAll(req FooScaffoldInterface)
 	MarshalJSON() ([]byte, error)
 	UnmarshalJSON(data []byte) error
 }
@@ -38,12 +38,12 @@ func (m *FoosScaffoldStruct) Len() int {
 	}
 	return 0
 }
-func (m *FoosScaffoldStruct) Append(req FoosScaffoldInterface) int {
+func (m *FoosScaffoldStruct) Append(req FooScaffoldInterface) {
 	if m != nil {
 		*m = append(*m, req)
 	}
 }
-func (m *FoosScaffoldStruct) Elements() []FoosScaffoldInterface {
+func (m *FoosScaffoldStruct) Elements() []FooScaffoldInterface {
 	return *m
 }
 func (m *FooScaffoldStruct) String() string {

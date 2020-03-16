@@ -10,32 +10,91 @@ type structure struct{
 }
 
 type Structure interface{
+	Build() (error)
+// 	buildOutputDirectory() (error)
+// 	buildOutputScaffoldDirectory() (error)
 
-	buildOutputDirectory() (error)
-	buildOutputScaffoldDirectory() (error)
+// 	buildOutputScaffoldDomainDirectory() (error)
+// 	buildOutputScaffoldDomainEntityDirectory() (error)
 
-	buildOutputScaffoldDomainDirectory() (error)
-	buildOutputScaffoldDomainEntityDirectory() (error)
+// 	buildOutputScaffoldUsecaseDirectory() (error)
+// 	buildOutputScaffoldUsecaseInteractorDirectory() (error)
+// 	buildOutputScaffoldUsecaseRepositoryDirectory() (error)
+// 	buildOutputScaffoldUsecasePresenterDirectory() (error)
 
-	buildOutputScaffoldUsecaseDirectory() (error)
-	buildOutputScaffoldUsecaseInteractorDirectory() (error)
-	buildOutputScaffoldUsecaseRepositoryDirectory() (error)
-	buildOutputScaffoldUsecasePresenterDirectory() (error)
+// 	buildOutputScaffoldInterfaceDirectory() (error)
+// 	buildOutputScaffoldInterfaceControllerDirectory() (error)
+// 	buildOutputScaffoldInterfaceRepositoryDirectory() (error)
+// 	buildOutputScaffoldInterfacePresenterDirectory() (error)
 
-	buildOutputScaffoldInterfaceDirectory() (error)
-	buildOutputScaffoldInterfaceControllerDirectory() (error)
-	buildOutputScaffoldInterfaceRepositoryDirectory() (error)
-	buildOutputScaffoldInterfacePresenterDirectory() (error)
-
-	makeDir(path string) (error)
+// 	makeDir(path string) (error)
 }
 
-func New(formatter formatter.Formatter) Structure {
+func New(formatter formatter.Formatter) *structure {
 	return &structure{
 		formatter : formatter,
 	}
 }
 
+// Build
+func (structure *structure) Build() (error){
+
+	var err error
+	err = structure.buildOutputDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldDomainDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldDomainEntityDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldUsecaseDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldUsecaseInteractorDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldUsecaseRepositoryDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldUsecasePresenterDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldInterfaceDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldInterfaceControllerDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldInterfaceRepositoryDirectory()
+	if err != nil {
+		return err
+	}
+	err = structure.buildOutputScaffoldInterfacePresenterDirectory()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // Output
 

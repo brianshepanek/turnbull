@@ -3,7 +3,7 @@ type FooScaffoldInterface interface {
 	Int() int
 	SetString(string string)
 	SetInt(int int)
-	SetAll()
+	SetAll(req FooScaffoldInterface)
 	MarshalJSON() ([]byte, error)
 	UnmarshalJSON(data []byte) error
 }

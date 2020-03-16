@@ -21,6 +21,7 @@ type Formatter interface{
 	OutputScaffoldDomainDirectory() (string, error)
 	OutputScaffoldDomainEntityDirectory() (string, error)
 	OutputScaffoldDomainEntityDirectoryImportPath() (string, error)
+	OutputScaffoldDomainEntityFile(entity model.Entity) (string, error)
 
 	OutputScaffoldUsecaseDirectory() (string, error)
 	OutputScaffoldUsecaseInteractorDirectory() (string, error)
@@ -113,6 +114,16 @@ func (formatter *formatter) OutputScaffoldDomainEntityDirectoryImportPath() (str
 		return "", nil
 	}
 	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputScaffoldDomainEntityFile(entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldDomainEntityDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(entity.Name), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
 
 // Usecase
