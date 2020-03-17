@@ -6,6 +6,7 @@ import (
 )
 
 type FooScaffoldStruct struct {
+	id      string
 	string  string
 	int     int
 	tags    []string
@@ -15,10 +16,12 @@ type FooScaffoldStruct struct {
 type FoosScaffoldStruct []FooScaffoldInterface
 
 type FooScaffoldInterface interface {
+	Id() string
 	String() string
 	Int() int
 	Tags() []string
 	Created() time.Time
+	SetId(id string)
 	SetString(string string)
 	SetInt(int int)
 	SetTags(tags []string)
@@ -55,6 +58,10 @@ func (m *FoosScaffoldStruct) Append(req FooScaffoldInterface) {
 func (m *FoosScaffoldStruct) Elements() []FooScaffoldInterface {
 	return *m
 }
+func (m *FooScaffoldStruct) Id() string {
+	return m.id
+}
+
 func (m *FooScaffoldStruct) String() string {
 	return m.string
 }
@@ -69,6 +76,10 @@ func (m *FooScaffoldStruct) Tags() []string {
 
 func (m *FooScaffoldStruct) Created() time.Time {
 	return m.created
+}
+
+func (m *FooScaffoldStruct) SetId(id string) {
+	m.id = id
 }
 
 func (m *FooScaffoldStruct) SetString(string string) {
@@ -88,6 +99,7 @@ func (m *FooScaffoldStruct) SetCreated(created time.Time) {
 }
 
 func (m *FooScaffoldStruct) SetAll(req FooScaffoldInterface) {
+	m.SetId(req.Id())
 	m.SetString(req.String())
 	m.SetInt(req.Int())
 	m.SetTags(req.Tags())
@@ -96,6 +108,7 @@ func (m *FooScaffoldStruct) SetAll(req FooScaffoldInterface) {
 
 func (m *FooScaffoldStruct) MarshalJSON() ([]byte, error) {
 	type jsonStructPrivate struct {
+		Id      string    `json:"id"`
 		String  string    `json:"string"`
 		Int     int       `json:"int"`
 		Tags    []string  `json:"tags"`
@@ -103,6 +116,7 @@ func (m *FooScaffoldStruct) MarshalJSON() ([]byte, error) {
 	}
 	jsonStruct := jsonStructPrivate{
 		Created: m.Created(),
+		Id:      m.Id(),
 		Int:     m.Int(),
 		String:  m.String(),
 		Tags:    m.Tags(),
@@ -112,6 +126,7 @@ func (m *FooScaffoldStruct) MarshalJSON() ([]byte, error) {
 
 func (m *FooScaffoldStruct) UnmarshalJSON(data []byte) error {
 	type jsonStructPrivate struct {
+		Id      string    `json:"id"`
 		String  string    `json:"string"`
 		Int     int       `json:"int"`
 		Tags    []string  `json:"tags"`
@@ -122,6 +137,7 @@ func (m *FooScaffoldStruct) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
+	m.SetId(jsonStruct.Id)
 	m.SetString(jsonStruct.String)
 	m.SetInt(jsonStruct.Int)
 	m.SetTags(jsonStruct.Tags)

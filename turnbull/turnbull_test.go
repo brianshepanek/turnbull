@@ -25,6 +25,10 @@ var (
 		JSON : true,
 		Fields : []model.Field{
 			model.Field{
+				Name : "id",
+				Type : "string",
+			},
+			model.Field{
 				Name : "string",
 				Type : "string",
 			},
@@ -44,10 +48,6 @@ var (
 			},
 		},
 		Methods : []model.Method {
-			model.Method{
-				Name : "count",
-				Type : "count",
-			},
 			model.Method{
 				Name : "browse",
 				Type : "browse",
@@ -81,7 +81,7 @@ func init(){
 	interfaceRepositoryGenerator := scribbleRepositoryGenerator.New(conf, formatter, testHelperGenerator)
 	interfacePresenterGenerator := defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
 	interfaceControllerGenerator := httpControllerGenerator.New(conf, formatter, testHelperGenerator)
-	generator := generator.New(conf, formatter, interfaceRepositoryGenerator, interfacePresenterGenerator, interfaceControllerGenerator)
+	generator := generator.New(conf, formatter, interfaceControllerGenerator, interfacePresenterGenerator, interfaceRepositoryGenerator)
 
 	testTurnbull = New(formatter, structure, generator)
 }
@@ -143,5 +143,41 @@ func TestBuildScaffoldUsecaseInteractor(t *testing.T){
 	// Return
 	if err != nil {
 		t.Errorf(`buildScaffoldUsecaseInteractor() failed with error %v`, err)
+	}
+}
+
+// Test Build Scaffold Interface Repository
+func TestBuildScaffoldInterfaceRepository(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildScaffoldInterfaceRepository("scribble", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildScaffoldInterfaceRepository() failed with error %v`, err)
+	}
+}
+
+// Test Build Scaffold Interface Presenter
+func TestBuildScaffoldInterfacePresenter(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildScaffoldInterfacePresenter("default", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildScaffoldInterfacePresenter() failed with error %v`, err)
+	}
+}
+
+// Test Build Scaffold Interface Controller
+func TestBuildScaffoldInterfaceController(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildScaffoldInterfaceController("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildScaffoldInterfaceController() failed with error %v`, err)
 	}
 }

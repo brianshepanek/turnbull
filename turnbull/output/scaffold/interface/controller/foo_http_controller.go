@@ -2,7 +2,7 @@ package controller
 
 import (
 	"encoding/json"
-	interactor "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
+	interactor "github.com/brianshepanek/turnbull/turnbull/output/scaffold/usecase/interactor"
 	"net/http"
 )
 
@@ -12,11 +12,6 @@ type httpFooScaffoldController struct {
 
 func NewHttpFooScaffoldController(interactor interactor.FooScaffoldInteractor) *httpFooScaffoldController {
 	return &httpFooScaffoldController{interactor}
-}
-func (c *httpFooScaffoldController) Count(w http.ResponseWriter, r http.Request) {
-	var resp interface{}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
 }
 func (c *httpFooScaffoldController) Browse(w http.ResponseWriter, r http.Request) {
 	var resp interface{}

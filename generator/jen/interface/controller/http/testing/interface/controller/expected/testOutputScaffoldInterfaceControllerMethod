@@ -1,4 +1,5 @@
 func (c *httpFooScaffoldController) Add(w http.ResponseWriter, r http.Request) {
+	var resp interface{}
 	w.WriteHeader(http.StatusOK)
-	json.json.NewEncoder(w).Encode(interface{})
+	json.NewEncoder(w).Encode(resp)
 }

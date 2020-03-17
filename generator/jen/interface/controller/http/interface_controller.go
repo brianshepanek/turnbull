@@ -287,19 +287,21 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerMetho
 
 	// Block
 	resp.Block(
+		jen.Var().
+		Id("resp").
+		Interface(),
 		jen.Id("w").
 		Dot("WriteHeader").
 		Call(
 			jen.Qual("net/http", "StatusOK"),
 		),
-		jen.Qual("encoding/json", "json").
-		Dot("NewEncoder").
+		jen.Qual("encoding/json", "NewEncoder").
 		Call(
 			jen.Id("w"),
 		).
 		Dot("Encode").
 		Call(
-			jen.Interface(),
+			jen.Id("resp"),
 		),
 	)
 

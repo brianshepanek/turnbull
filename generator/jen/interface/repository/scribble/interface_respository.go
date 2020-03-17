@@ -1,4 +1,4 @@
-package generator
+package scribble
 
 import(
 	"github.com/dave/jennifer/jen"
@@ -279,7 +279,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 	var block []jen.Code
 
 	// Interface ID
-	id , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityInterfaceId(entity)
+	id , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityInterfaceConstructorFunctionId(entity)
 	if err != nil {
 		return block, err
 	}
@@ -323,7 +323,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 			Id("records").
 			Block(
 				jen.
-				Id("rec").
+				Id("resp").
 				Op(":=").
 				Qual(importPath, id).
 				Call(),
@@ -336,7 +336,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 					Call(
 						jen.Id("record"),
 					),
-					jen.Id("rec"),
+					jen.Id("resp"),
 				),
 				jen.If(
 					jen.Err().
@@ -348,10 +348,10 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 						),
 					),
 				),
-				jen.Id("resp").
+				jen.Id("req").
 				Dot("Append").
 				Call(
-					jen.Id("rec"),
+					jen.Id("resp"),
 				),
 			),
 		),
@@ -372,7 +372,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 			Call(
 				jen.Id("r").Dot("collection"),
 				jen.Id("req").
-				Dot("Primary").
+				Dot("Id").
 				Call(),
 				jen.Id("req"),
 			),
@@ -383,6 +383,20 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 
 func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
 	var block []jen.Code
+	block = append(block, 
+		jen.Return(
+			jen.Id("r").
+			Dot("driver").
+			Dot("Read").
+			Call(
+				jen.Id("r").Dot("collection"),
+				jen.Id("req").
+				Dot("Id").
+				Call(),
+				jen.Id("req"),
+			),
+		),
+	)	
 	return block, nil
 }
 
@@ -397,7 +411,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 			Call(
 				jen.Id("r").Dot("collection"),
 				jen.Id("req").
-				Dot("Primary").
+				Dot("Id").
 				Call(),
 				jen.Id("req"),
 			),
@@ -417,7 +431,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryDelet
 			Call(
 				jen.Id("r").Dot("collection"),
 				jen.Id("req").
-				Dot("Primary").
+				Dot("Id").
 				Call(),
 			),
 		),
@@ -427,5 +441,43 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryDelet
 
 func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryCountMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
 	var block []jen.Code
+
+	block = append(block, 
+		jen.List(
+			jen.Id("records"),
+			jen.Err(),
+		).
+		Op(":=").
+		Id("r").
+		Dot("driver").
+		Dot("ReadAll").
+		Call(
+			jen.Id("r").
+			Dot("collection"),
+		),
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(
+				jen.Return(
+					jen.Err(),
+				),
+			),
+		),
+		jen.Id("count").
+		Op(":=").
+		Len(
+			jen.Id("records"),
+		),
+		jen.Id("req").
+		Op("=").
+		Op("&").
+
+		Id("count"),
+		jen.Return(
+			jen.Nil(),
+		),
+	)	
 	return block, nil
 }

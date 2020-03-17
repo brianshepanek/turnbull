@@ -32,8 +32,11 @@ const(
 
 	testOutputScaffoldInterfaceDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface"
 	testOutputScaffoldInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/controller"
+	testOutputScaffoldInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/controller/foo_http_controller.go"
 	testOutputScaffoldInterfaceRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/repository"
+	testOutputScaffoldInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/repository/foo_scribble_repository.go"
 	testOutputScaffoldInterfacePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/presenter"
+	testOutputScaffoldInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/presenter/foo_default_presenter.go"
 
 	testOutputScaffoldDomainEntityPackageName = "entity"
 
@@ -412,6 +415,23 @@ func TestOutputScaffoldInterfaceControllerDirectory(t *testing.T){
 	}
 }
 
+// Test Output Scaffold Interface Controller File
+func TestOutputScaffoldInterfaceRepositoryController(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputScaffoldInterfaceControllerFile("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfaceControllerFile() failed with error %v`, err)
+	}
+
+	if file != testOutputScaffoldInterfaceControllerFile {
+		t.Errorf(`OutputScaffoldInterfaceControllerFile() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceControllerFile, file)
+	}
+}
+
 // Test Output Scaffold Interface Repository Directory
 func TestOutputScaffoldInterfaceRepositoryDirectory(t *testing.T){
 
@@ -429,6 +449,23 @@ func TestOutputScaffoldInterfaceRepositoryDirectory(t *testing.T){
 	}
 }
 
+// Test Output Scaffold Interface Repository File
+func TestOutputScaffoldInterfaceRepositoryFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputScaffoldInterfaceRepositoryFile("scribble", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfaceRepositoryFile() failed with error %v`, err)
+	}
+
+	if file != testOutputScaffoldInterfaceRepositoryFile {
+		t.Errorf(`OutputScaffoldInterfaceRepositoryFile() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceRepositoryFile, file)
+	}
+}
+
 // Test Output Scaffold Interface Presenter Directory
 func TestOutputScaffoldInterfacePresenterDirectory(t *testing.T){
 
@@ -443,6 +480,23 @@ func TestOutputScaffoldInterfacePresenterDirectory(t *testing.T){
 
 	if dir != testOutputScaffoldInterfacePresenterDirectory {
 		t.Errorf(`OutputScaffoldInterfacePresenterDirectory() failed; want "%s", got "%s"`, testOutputScaffoldInterfacePresenterDirectory, dir)
+	}
+}
+
+// Test Output Scaffold Interface Presenter File
+func TestOutputScaffoldInterfaceRepositoryPresenter(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputScaffoldInterfacePresenterFile("default", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfacePresenterFile() failed with error %v`, err)
+	}
+
+	if file != testOutputScaffoldInterfacePresenterFile {
+		t.Errorf(`OutputScaffoldInterfacePresenterFile() failed; want "%s", got "%s"`, testOutputScaffoldInterfacePresenterFile, file)
 	}
 }
 

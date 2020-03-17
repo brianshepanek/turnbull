@@ -162,3 +162,99 @@ func (turnbull *turnbull) buildScaffoldUsecaseInteractor(entity model.Entity) (e
 
 	return nil
 }
+
+// Build Scaffold Interface Repository
+func (turnbull *turnbull) buildScaffoldInterfaceRepository(driver string, entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.ScaffoldInterfaceRepository(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputScaffoldInterfaceRepositoryFile(driver, entity)
+	if err != nil {
+		return err
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Build Scaffold Interface Presenter
+func (turnbull *turnbull) buildScaffoldInterfacePresenter(driver string, entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.ScaffoldInterfacePresenter(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputScaffoldInterfacePresenterFile(driver, entity)
+	if err != nil {
+		return err
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Build Scaffold Interface Controller
+func (turnbull *turnbull) buildScaffoldInterfaceController(driver string, entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.ScaffoldInterfaceController(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputScaffoldInterfaceControllerFile(driver, entity)
+	if err != nil {
+		return err
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

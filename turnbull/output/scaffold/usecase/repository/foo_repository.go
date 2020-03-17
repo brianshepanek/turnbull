@@ -6,7 +6,6 @@ import (
 )
 
 type FooScaffoldRepository interface {
-	Count(ctx context.Context, query interface{}, req *int) error
 	Browse(ctx context.Context, query interface{}, req entity.FoosScaffoldInterface) error
 	Read(ctx context.Context, query interface{}, req entity.FooScaffoldInterface) error
 	Edit(ctx context.Context, req entity.FooScaffoldInterface) error

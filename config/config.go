@@ -178,7 +178,6 @@ func New(configPath string, outputPath string) (*Config, error) {
 					ReturnValues : []model.Field {
 						model.Field {
 							Name : "req",
-							Op : "*",
 							Type : "self",
 						},
 						model.Field {
@@ -224,7 +223,6 @@ func New(configPath string, outputPath string) (*Config, error) {
 					},
 					ReturnValues : []model.Field {
 						model.Field {
-							Op : "*",
 							Slice : true,
 							Name : "resp",
 							Type : "self",
@@ -277,7 +275,6 @@ func New(configPath string, outputPath string) (*Config, error) {
 					ReturnValues : []model.Field {
 						model.Field {
 							Name : "resp",
-							Op : "*",
 							Type : "self",
 						},
 						model.Field {
@@ -327,7 +324,6 @@ func New(configPath string, outputPath string) (*Config, error) {
 					ReturnValues : []model.Field {
 						model.Field {
 							Name : "resp",
-							Op : "*",
 							Type : "self",
 						},
 						model.Field {
@@ -373,7 +369,6 @@ func New(configPath string, outputPath string) (*Config, error) {
 					ReturnValues : []model.Field {
 						model.Field {
 							Name : "req",
-							Op : "*",
 							Type : "self",
 						},
 						model.Field {
@@ -413,14 +408,12 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 						model.Field {
 							Name : "req",
-							Op : "*",
 							Type : "int",
 						},
 					},
 					ReturnValues : []model.Field {
 						model.Field {
 							Name : "resp",
-							Op : "*",
 							Type : "int",
 						},
 						model.Field {
@@ -442,7 +435,6 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 						model.Field {
 							Name : "req",
-							Op : "*",
 							Type : "int",
 						},
 					},

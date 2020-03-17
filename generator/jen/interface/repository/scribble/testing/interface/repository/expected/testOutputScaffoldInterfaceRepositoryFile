@@ -18,7 +18,14 @@ func NewScribbleFooScaffoldRepository(driver *golangscribble.Driver, collection 
 		driver:     driver,
 	}
 }
-func (r *scribbleFooScaffoldRepository) Count(ctx context.Context, query interface{}, req *int) error {
+func (r *scribbleFooScaffoldRepository) Count(ctx context.Context, query interface{}, req int) error {
+	records, err := r.driver.ReadAll(r.collection)
+	if err != nil {
+		return err
+	}
+	count := len(records)
+	req = &count
+	return nil
 }
 func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, query interface{}, req entity.FoosScaffoldInterface) error {
 	records, err := r.driver.ReadAll(r.collection)
@@ -26,23 +33,24 @@ func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, query interf
 		return err
 	}
 	for _, record := range records {
-		rec := entity.FooScaffoldInterface()
-		err := json.Unmarshal([]byte(record), rec)
+		resp := entity.NewFooScaffoldStruct()
+		err := json.Unmarshal([]byte(record), resp)
 		if err != nil {
 			return err
 		}
-		resp.Append(rec)
+		req.Append(resp)
 	}
 	return nil
 }
 func (r *scribbleFooScaffoldRepository) Read(ctx context.Context, query interface{}, req entity.FooScaffoldInterface) error {
-	return r.driver.Read(r.collection, req.Primary(), req)
+	return r.driver.Read(r.collection, req.Id(), req)
 }
 func (r *scribbleFooScaffoldRepository) Edit(ctx context.Context, req entity.FooScaffoldInterface) error {
+	return r.driver.Read(r.collection, req.Id(), req)
 }
 func (r *scribbleFooScaffoldRepository) Add(ctx context.Context, req entity.FooScaffoldInterface) error {
-	return r.driver.Write(r.collection, req.Primary(), req)
+	return r.driver.Write(r.collection, req.Id(), req)
 }
 func (r *scribbleFooScaffoldRepository) Delete(ctx context.Context, req entity.FooScaffoldInterface) error {
-	return r.driver.Delete(r.collection, req.Primary())
+	return r.driver.Delete(r.collection, req.Id())
 }

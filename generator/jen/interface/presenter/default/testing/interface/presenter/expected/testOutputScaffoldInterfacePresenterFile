@@ -6,33 +6,25 @@ import (
 )
 
 type defaultFooScaffoldPresenter struct{}
-type DefaultFooScaffoldPresenter interface {
-	Count(ctx context.Context, req *int) (*int, error)
-	Browse(ctx context.Context, req entity.FoosScaffoldInterface) (*entity.FoosScaffoldInterface, error)
-	Read(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
-	Edit(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
-	Add(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
-	Delete(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
-}
 
-func NewDefaultFooScaffoldPresenter() DefaultFooScaffoldPresenter {
+func NewDefaultFooScaffoldPresenter() *defaultFooScaffoldPresenter {
 	return &defaultFooScaffoldPresenter{}
 }
-func (r *defaultFooScaffoldPresenter) Count(ctx context.Context, req *int) (*int, error) {
-	return &req, nil
+func (r *defaultFooScaffoldPresenter) Count(ctx context.Context, req int) (int, error) {
+	return req, nil
 }
-func (r *defaultFooScaffoldPresenter) Browse(ctx context.Context, req entity.FoosScaffoldInterface) (*entity.FoosScaffoldInterface, error) {
-	return &req, nil
+func (r *defaultFooScaffoldPresenter) Browse(ctx context.Context, req entity.FoosScaffoldInterface) (entity.FoosScaffoldInterface, error) {
+	return req, nil
 }
-func (r *defaultFooScaffoldPresenter) Read(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error) {
-	return &req, nil
+func (r *defaultFooScaffoldPresenter) Read(ctx context.Context, req entity.FooScaffoldInterface) (entity.FooScaffoldInterface, error) {
+	return req, nil
 }
-func (r *defaultFooScaffoldPresenter) Edit(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error) {
-	return &req, nil
+func (r *defaultFooScaffoldPresenter) Edit(ctx context.Context, req entity.FooScaffoldInterface) (entity.FooScaffoldInterface, error) {
+	return req, nil
 }
-func (r *defaultFooScaffoldPresenter) Add(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error) {
-	return &req, nil
+func (r *defaultFooScaffoldPresenter) Add(ctx context.Context, req entity.FooScaffoldInterface) (entity.FooScaffoldInterface, error) {
+	return req, nil
 }
-func (r *defaultFooScaffoldPresenter) Delete(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error) {
-	return &req, nil
+func (r *defaultFooScaffoldPresenter) Delete(ctx context.Context, req entity.FooScaffoldInterface) (entity.FooScaffoldInterface, error) {
+	return req, nil
 }

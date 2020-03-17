@@ -50,12 +50,12 @@ func (presenterGenerator *presenterGenerator) ScaffoldFile(entity model.Entity) 
 	}
 	f.Add(&interfacePresenterStruct)
 
-	// Interface
-	interfacePresenterInterface, err := presenterGenerator.scaffoldInterfacePresenterInterface(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&interfacePresenterInterface)
+	// // Interface
+	// interfacePresenterInterface, err := presenterGenerator.scaffoldInterfacePresenterInterface(entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// f.Add(&interfacePresenterInterface)
 
 	// Constructor Function
 	interfacePresenterConstructorFunction, err := presenterGenerator.scaffoldInterfacePresenterConstructorFunction(entity)
@@ -161,16 +161,15 @@ func (presenterGenerator *presenterGenerator) scaffoldInterfacePresenterConstruc
 		return nil, err
 	}
 
-	// Interface ID
-	interfaceId , err := presenterGenerator.formatter.OutputScaffoldInterfacePresenterInterfaceId("default", entity)
-	if err != nil {
-		return nil, err
-	}
-
 	// Params
-	resp.Params().
-	Qual("", interfaceId).
-	Block(
+	resp.Params()
+
+	// Qual
+	resp.Op("*")
+	resp.Qual("", structId)
+
+	// Block
+	resp.Block(
 		jen.Return(
 			jen.Op("&").
 			Id(structId).
@@ -253,8 +252,7 @@ func (presenterGenerator *presenterGenerator) scaffoldInterfacePresenterMethod(m
 	resp.Block(
 		jen.Return(
 			jen.List(
-				jen.Op("&").
-				Id("req"),
+				jen.Id("req"),
 				jen.Nil(),
 			),
 		),

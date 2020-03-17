@@ -2,16 +2,13 @@ package presenter
 
 import (
 	"context"
-	entity "github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
+	entity "github.com/brianshepanek/turnbull/turnbull/output/scaffold/domain/entity"
 )
 
 type defaultFooScaffoldPresenter struct{}
 
 func NewDefaultFooScaffoldPresenter() *defaultFooScaffoldPresenter {
 	return &defaultFooScaffoldPresenter{}
-}
-func (r *defaultFooScaffoldPresenter) Count(ctx context.Context, req int) (int, error) {
-	return req, nil
 }
 func (r *defaultFooScaffoldPresenter) Browse(ctx context.Context, req entity.FoosScaffoldInterface) (entity.FoosScaffoldInterface, error) {
 	return req, nil

@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"encoding/json"
-	entity "github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
+	entity "github.com/brianshepanek/turnbull/turnbull/output/scaffold/domain/entity"
 	golangscribble "github.com/nanobox-io/golang-scribble"
 )
 
@@ -17,15 +17,6 @@ func NewScribbleFooScaffoldRepository(driver *golangscribble.Driver, collection 
 		collection: collection,
 		driver:     driver,
 	}
-}
-func (r *scribbleFooScaffoldRepository) Count(ctx context.Context, query interface{}, req int) error {
-	records, err := r.driver.ReadAll(r.collection)
-	if err != nil {
-		return err
-	}
-	count := len(records)
-	req = &count
-	return nil
 }
 func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, query interface{}, req entity.FoosScaffoldInterface) error {
 	records, err := r.driver.ReadAll(r.collection)
