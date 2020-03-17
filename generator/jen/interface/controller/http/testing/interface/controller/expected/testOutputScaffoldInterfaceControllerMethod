@@ -1,5 +1,12 @@
 func (c *httpFooScaffoldController) Add(w http.ResponseWriter, r http.Request) {
-	var resp interface{}
+	ctx := context.Background()
+	req := entity.NewFooScaffoldStruct()
+	err := json.NewDecoder(r.Body).Decode(req)
+	if err != nil {
+	}
+	resp, err := c.interactor.Add(ctx, req)
+	if err != nil {
+	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }

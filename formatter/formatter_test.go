@@ -84,6 +84,7 @@ const(
 
 	testOutputScaffoldInterfaceControllerPackageName = "controller"
 	testOutputScaffoldInterfaceControllerStructId = "httpFooScaffoldController"
+	testOutputScaffoldInterfaceControllerInterfaceId = "HttpFooScaffoldController"
 	testOutputScaffoldInterfaceControllerConstructorFunctionId = "NewHttpFooScaffoldController"
 
 )
@@ -1065,6 +1066,22 @@ func TestOutputScaffoldInterfaceControllerStructId(t *testing.T){
 	}
 }
 
+
+// Test Output Scaffold Interface Controller Interface ID
+func TestOutputScaffoldInterfaceControllerInterfaceId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldInterfaceControllerInterfaceId("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldInterfaceControllerInterfaceId() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldInterfaceControllerInterfaceId {
+		t.Errorf(`OutputScaffoldInterfaceControllerInterfaceId() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceControllerInterfaceId, id)
+	}
+}
 
 // Test Output Scaffold Interface Controller Constructor Function ID
 func TestOutputScaffoldInterfaceControllerConstructorFunctionId(t *testing.T){

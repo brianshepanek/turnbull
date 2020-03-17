@@ -49,6 +49,13 @@ func (controllerGenerator *controllerGenerator) ScaffoldFile(entity model.Entity
 	}
 	f.Add(&interfaceControllerStruct)
 
+	// Interface
+	interfaceControllerInterface, err := controllerGenerator.scaffoldInterfaceControllerInterface(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceControllerInterface)
+
 	// Constructor Function
 	interfaceControllerConstructorFunction, err := controllerGenerator.scaffoldInterfaceControllerConstructorFunction(entity)
 	if err != nil {
@@ -131,6 +138,42 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerStruc
 
 }
 
+func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerInterface(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var methods []jen.Code
+
+	// Loop
+	for _, method := range entity.Methods {
+		
+		// Method
+		statement, err := controllerGenerator.scaffoldInterfaceControllerInterfaceMethod(method, entity)
+		if err != nil {
+			return nil, err
+		}
+
+		// Append
+		methods = append(methods, &statement)
+	}
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerInterfaceId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Interface
+	resp.Interface(methods...)
+
+	return resp, nil
+
+}
+
 func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerConstructorFunction(entity model.Entity) (jen.Statement, error){
 
 	// Vars
@@ -184,6 +227,33 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerConst
 	
 	return resp, nil
 
+}
+
+
+
+func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerInterfaceMethod(method model.Method, entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// ID
+	id , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorInterfaceMethodId(method)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Params
+	resp.Params(
+		jen.List(
+			jen.Id("w").
+			Qual("net/http", "ResponseWriter"),
+			jen.Id("r").
+			Qual("net/http", "Request"),
+		),
+	)	
+
+	return resp, nil
 }
 
 func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerMethod(method model.Method, entity model.Entity) (jen.Statement, error){
@@ -286,10 +356,113 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerMetho
 	)
 
 	// Block
-	resp.Block(
-		jen.Var().
-		Id("resp").
-		Interface(),
+	var block []jen.Code
+	switch method.Type {
+	case "browse":
+		block, err = controllerGenerator.scaffoldInterfaceControllerBrowseMethodBlock(method, entity)
+	case "read":
+		block, err = controllerGenerator.scaffoldInterfaceControllerReadMethodBlock(method, entity)
+	case "edit":
+		block, err = controllerGenerator.scaffoldInterfaceControllerEditMethodBlock(method, entity)	
+	case "add":
+		block, err = controllerGenerator.scaffoldInterfaceControllerAddMethodBlock(method, entity)
+	case "delete":
+		block, err = controllerGenerator.scaffoldInterfaceControllerDeleteMethodBlock(method, entity)
+	case "count":
+		block, err = controllerGenerator.scaffoldInterfaceControllerCountMethodBlock(method, entity)
+
+	default:
+		
+	}
+
+	resp.Block(block...)
+	
+	// // Block
+	// resp.Block(
+	// 	jen.Var().
+	// 	Id("resp").
+	// 	Interface(),
+	// 	jen.Id("w").
+	// 	Dot("WriteHeader").
+	// 	Call(
+	// 		jen.Qual("net/http", "StatusOK"),
+	// 	),
+	// 	jen.Qual("encoding/json", "NewEncoder").
+	// 	Call(
+	// 		jen.Id("w"),
+	// 	).
+	// 	Dot("Encode").
+	// 	Call(
+	// 		jen.Id("resp"),
+	// 	),
+	// )
+
+	return resp, nil
+}
+
+func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrowseMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	var block []jen.Code
+
+	// Interface ID
+	id , err := controllerGenerator.formatter.OutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId(entity)
+	if err != nil {
+		return block, err
+	}
+
+	// Import Path
+	importPath , err := controllerGenerator.formatter.OutputScaffoldDomainEntityDirectoryImportPath()
+	if err != nil {
+		return block, err
+	}
+
+
+	interactorPackageName , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// Repository Method ID
+	repositoryMethodId , err := controllerGenerator.formatter.OutputScaffoldUsecaseRepositoryInterfaceMethodId(method)
+	if err != nil {
+		return nil, err
+	}
+
+	// Context
+	block = append(block,
+
+		jen.Id("ctx").
+		Op(":=").
+		Qual("context", "Background").
+		Call(),
+
+		jen.Id("req").
+		Op(":=").
+		Qual(importPath, id).
+		Call(),
+
+		jen.List(
+			jen.Id("resp"),
+			jen.Err(),
+		).
+		Op(":=").
+		Id("c").
+		Dot(interactorPackageName).
+		Dot(repositoryMethodId).
+		Call(
+			jen.List(
+				jen.Id("ctx"),
+				jen.Nil(),
+				jen.Id("req"),
+			),
+		),
+
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(),
+		),
+
 		jen.Id("w").
 		Dot("WriteHeader").
 		Call(
@@ -305,5 +478,200 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerMetho
 		),
 	)
 
-	return resp, nil
+	return block, nil
+}
+
+func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	
+	var block []jen.Code
+	// Interface ID
+	id , err := controllerGenerator.formatter.OutputScaffoldDomainEntityInterfaceConstructorFunctionId(entity)
+	if err != nil {
+		return block, err
+	}
+
+	// Import Path
+	importPath , err := controllerGenerator.formatter.OutputScaffoldDomainEntityDirectoryImportPath()
+	if err != nil {
+		return block, err
+	}
+
+
+	interactorPackageName , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// Repository Method ID
+	repositoryMethodId , err := controllerGenerator.formatter.OutputScaffoldUsecaseRepositoryInterfaceMethodId(method)
+	if err != nil {
+		return nil, err
+	}
+
+	// Context
+	block = append(block,
+
+		jen.Id("ctx").
+		Op(":=").
+		Qual("context", "Background").
+		Call(),
+
+		jen.Id("req").
+		Op(":=").
+		Qual(importPath, id).
+		Call(),
+
+		jen.List(
+			jen.Id("resp"),
+			jen.Err(),
+		).
+		Op(":=").
+		Id("c").
+		Dot(interactorPackageName).
+		Dot(repositoryMethodId).
+		Call(
+			jen.List(
+				jen.Id("ctx"),
+				jen.Nil(),
+				jen.Id("req"),
+			),
+		),
+
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(),
+		),
+
+		jen.Id("w").
+		Dot("WriteHeader").
+		Call(
+			jen.Qual("net/http", "StatusOK"),
+		),
+		jen.Qual("encoding/json", "NewEncoder").
+		Call(
+			jen.Id("w"),
+		).
+		Dot("Encode").
+		Call(
+			jen.Id("resp"),
+		),
+	)
+	return block, nil
+}
+
+func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEditMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	var block []jen.Code
+	
+	return block, nil
+}
+
+func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	var block []jen.Code
+	// Interface ID
+	id , err := controllerGenerator.formatter.OutputScaffoldDomainEntityInterfaceConstructorFunctionId(entity)
+	if err != nil {
+		return block, err
+	}
+
+	// Import Path
+	importPath , err := controllerGenerator.formatter.OutputScaffoldDomainEntityDirectoryImportPath()
+	if err != nil {
+		return block, err
+	}
+
+
+	interactorPackageName , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// Repository Method ID
+	repositoryMethodId , err := controllerGenerator.formatter.OutputScaffoldUsecaseRepositoryInterfaceMethodId(method)
+	if err != nil {
+		return nil, err
+	}
+
+	// Context
+	block = append(block,
+
+		jen.Id("ctx").
+		Op(":=").
+		Qual("context", "Background").
+		Call(),
+
+		jen.Id("req").
+		Op(":=").
+		Qual(importPath, id).
+		Call(),
+
+		jen.Err().
+		Op(":=").
+		Qual("encoding/json", "NewDecoder").
+		Call(
+			jen.Id("r").
+			Dot("Body"),
+		).
+		Dot("Decode").
+		Call(
+			jen.Id("req"),
+		),
+
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(),
+		),
+
+		jen.List(
+			jen.Id("resp"),
+			jen.Err(),
+		).
+		Op(":=").
+		Id("c").
+		Dot(interactorPackageName).
+		Dot(repositoryMethodId).
+		Call(
+			jen.List(
+				jen.Id("ctx"),
+				jen.Id("req"),
+			),
+		),
+
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(),
+		),
+
+		jen.Id("w").
+		Dot("WriteHeader").
+		Call(
+			jen.Qual("net/http", "StatusOK"),
+		),
+		jen.Qual("encoding/json", "NewEncoder").
+		Call(
+			jen.Id("w"),
+		).
+		Dot("Encode").
+		Call(
+			jen.Id("resp"),
+		),
+	)
+	return block, nil
+}
+
+func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerDeleteMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	var block []jen.Code
+	
+	return block, nil
+}
+
+func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerCountMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	var block []jen.Code
+	
+	return block, nil
 }

@@ -84,6 +84,7 @@ type Formatter interface{
 
 	OutputScaffoldInterfaceControllerPackageName() (string, error)
 	OutputScaffoldInterfaceControllerStructId(driver string, entity model.Entity) (string, error)
+	OutputScaffoldInterfaceControllerInterfaceId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceControllerConstructorFunctionId(driver string, entity model.Entity) (string, error)
 
 }
@@ -401,6 +402,10 @@ func (formatter *formatter) OutputScaffoldInterfaceControllerPackageName() (stri
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerStructId(driver string, entity model.Entity) (string, error) {
 	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldInterfaceControllerInterfaceId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerConstructorFunctionId(driver string, entity model.Entity) (string, error) {
