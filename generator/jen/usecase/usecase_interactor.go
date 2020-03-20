@@ -16,12 +16,13 @@ type interactorGenerator struct{
 
 type InteractorGenerator interface{
 
+	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
 
 	scaffoldUsecaseInteractorStruct(entity model.Entity) (jen.Statement, error)
 	scaffoldUsecaseInteractorInterface(entity model.Entity) (jen.Statement, error)
 	scaffoldUsecaseInteractorInterfaceMethod(method model.Method, entity model.Entity) (jen.Statement, error)
-	scaffoldUsecaseInteractorConstructorFunction(entity model.Entity) (jen.Statement, error)
+	usecaseInteractorConstructorFunction(entity model.Entity) (jen.Statement, error)
 	scaffoldUsecaseInteractorMethod(method model.Method, entity model.Entity) (jen.Statement, error)
 
 }
@@ -33,6 +34,41 @@ func NewInteractorGenerator(config *config.Config, formatter formatter.Formatter
 		helperGenerator :helperGenerator,
 	}
 }
+
+func (interactorGenerator *interactorGenerator) File(entity model.Entity) (*jen.File, error){
+	
+	
+	// File
+	packageName , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+
+	// Struct
+	usecaseInteractorStruct, err := interactorGenerator.usecaseInteractorStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&usecaseInteractorStruct)
+
+	// Interface
+	usecaseInteractorInterface, err := interactorGenerator.usecaseInteractorInterface(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&usecaseInteractorInterface)
+
+	// Constructor Function
+	usecaseInteractorConstructorFunction, err := interactorGenerator.usecaseInteractorConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&usecaseInteractorConstructorFunction)
+
+	return f, nil
+}	
+
 func (interactorGenerator *interactorGenerator) ScaffoldFile(entity model.Entity) (*jen.File, error){
 	
 	
@@ -57,13 +93,6 @@ func (interactorGenerator *interactorGenerator) ScaffoldFile(entity model.Entity
 	}
 	f.Add(&usecaseInteractorInterface)
 
-	// Constructor Function
-	usecaseInteractorConstructorFunction, err := interactorGenerator.scaffoldUsecaseInteractorConstructorFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&usecaseInteractorConstructorFunction)
-
 	// Functions
 	for _, method := range entity.Methods {
 
@@ -78,6 +107,72 @@ func (interactorGenerator *interactorGenerator) ScaffoldFile(entity model.Entity
 
 	return f, nil
 }	
+
+func (interactorGenerator *interactorGenerator) usecaseInteractorStruct(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := interactorGenerator.formatter.OutputUsecaseInteractorStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+
+	// Struct
+	resp.Struct(fields...)
+
+	return resp, nil
+
+}
+
+func (interactorGenerator *interactorGenerator) usecaseInteractorInterface(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := interactorGenerator.formatter.OutputUsecaseInteractorInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+
+	// Interface
+	resp.Interface(fields...)
+
+	return resp, nil
+
+}
 
 func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorStruct(entity model.Entity) (jen.Statement, error){
 
@@ -96,7 +191,7 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorStruct(
 	resp.Id(id)
 
 	// Repository
-	repositoryId , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryInterfaceId(entity)
+	repositoryId , err := interactorGenerator.formatter.OutputUsecaseRepositoryInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +207,7 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorStruct(
 	}
 
 	// Presenter
-	presenterId , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterInterfaceId(entity)
+	presenterId , err := interactorGenerator.formatter.OutputUsecasePresenterInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +277,7 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorInterfa
 
 }
 
-func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorConstructorFunction(entity model.Entity) (jen.Statement, error){
+func (interactorGenerator *interactorGenerator) usecaseInteractorConstructorFunction(entity model.Entity) (jen.Statement, error){
 
 	// Vars
 	var resp jen.Statement
@@ -191,14 +286,14 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorConstru
 	resp.Func()
 
 	// ID
-	id , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId(entity)
+	id , err := interactorGenerator.formatter.OutputUsecaseInteractorInterfaceConstructorFunctionId(entity)
 	if err != nil {
 		return nil, err
 	}
 	resp.Id(id)
 
 	// Repository
-	repositoryId , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryInterfaceId(entity)
+	repositoryId , err := interactorGenerator.formatter.OutputUsecaseRepositoryInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +304,7 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorConstru
 	}
 
 	// Presenter
-	presenterId , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterInterfaceId(entity)
+	presenterId , err := interactorGenerator.formatter.OutputUsecasePresenterInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -220,13 +315,19 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorConstru
 	}
 
 	// Struct ID
-	structId , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorStructId(entity)
+	structId , err := interactorGenerator.formatter.OutputUsecaseInteractorStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Scaffold Struct ID
+	scaffoldStructId , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorStructId(entity)
 	if err != nil {
 		return nil, err
 	}
 
 	// Interfacr ID
-	interfaceId , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorInterfaceId(entity)
+	interfaceId , err := interactorGenerator.formatter.OutputUsecaseInteractorInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -244,8 +345,11 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorConstru
 			jen.Op("&").
 			Id(structId).
 			Values(
-				jen.Id("r"),
-				jen.Id("p"),
+				jen.Id(scaffoldStructId).
+				Values(
+					jen.Id("r"),
+					jen.Id("p"),
+				),
 			),
 		),
 	)

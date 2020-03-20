@@ -1,0 +1,3 @@
+func NewFooInteractor(r repository.FooRepository, p presenter.FooPresenter) FooInteractor {
+	return &fooInteractor{fooInteractorStruct{r, p}}
+}

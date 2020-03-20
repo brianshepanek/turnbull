@@ -14,18 +14,20 @@ import(
 var (
 	testInteractorGenerator InteractorGenerator
 
+	testOutputUsecaseInteractorFileName = "testOutputUsecaseInteractorFile"
 	testOutputScaffoldUsecaseInteractorFileName = "testOutputScaffoldUsecaseInteractorFile"
 	testOutputScaffoldUsecaseInteractorStructName = "testOutputScaffoldUsecaseInteractorStruct"
 	testOutputScaffoldUsecaseInteractorInterfaceName = "testOutputScaffoldUsecaseInteractorInterface"
 	testOutputScaffoldUsecaseInteractorInterfaceMethodName = "testOutputScaffoldUsecaseInteractorInterfaceMethod"
-	testOutputScaffoldUsecaseInteractorConstructorFunctionName = "testOutputScaffoldUsecaseInteractorConstructorFunction"
+	testOutputUsecaseInteractorConstructorFunctionName = "testOutputUsecaseInteractorConstructorFunction"
 	testOutputScaffoldUsecaseInteractorInterfaceFunctionName = "testOutputScaffoldUsecaseInteractorInterfaceFunction"
 
+	testOutputUsecaseInteractorFile string
 	testOutputScaffoldUsecaseInteractorFile string
 	testOutputScaffoldUsecaseInteractorStruct string
 	testOutputScaffoldUsecaseInteractorInterface string
 	testOutputScaffoldUsecaseInteractorInterfaceMethod string
-	testOutputScaffoldUsecaseInteractorConstructorFunction string
+	testOutputUsecaseInteractorConstructorFunction string
 	testOutputScaffoldUsecaseInteractorInterfaceFunction string
 
 )
@@ -36,20 +38,50 @@ func init(){
 	testHelperGenerator := helper.New(formatter)
 	testInteractorGenerator = NewInteractorGenerator(conf, formatter, testHelperGenerator)
 
+	testOutputUsecaseInteractorFileFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputUsecaseInteractorFileName)
 	testOutputScaffoldUsecaseInteractorFileFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldUsecaseInteractorFileName)
 	testOutputScaffoldUsecaseInteractorStructFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldUsecaseInteractorStructName)
 	testOutputScaffoldUsecaseInteractorInterfaceFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldUsecaseInteractorInterfaceName)
 	testOutputScaffoldUsecaseInteractorInterfaceMethodFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldUsecaseInteractorInterfaceMethodName)
-	testOutputScaffoldUsecaseInteractorConstructorFunctionFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldUsecaseInteractorConstructorFunctionName)
+	testOutputUsecaseInteractorConstructorFunctionFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputUsecaseInteractorConstructorFunctionName)
 	testOutputScaffoldUsecaseInteractorInterfaceFunctionFile, _ := ioutil.ReadFile("./testing/usecase/interactor/expected/" + testOutputScaffoldUsecaseInteractorInterfaceFunctionName)
 
+	testOutputUsecaseInteractorFile = string(testOutputUsecaseInteractorFileFile)
 	testOutputScaffoldUsecaseInteractorFile = string(testOutputScaffoldUsecaseInteractorFileFile)
 	testOutputScaffoldUsecaseInteractorStruct = string(testOutputScaffoldUsecaseInteractorStructFile)
 	testOutputScaffoldUsecaseInteractorInterface = string(testOutputScaffoldUsecaseInteractorInterfaceFile)
 	testOutputScaffoldUsecaseInteractorInterfaceMethod = string(testOutputScaffoldUsecaseInteractorInterfaceMethodFile)
-	testOutputScaffoldUsecaseInteractorConstructorFunction = string(testOutputScaffoldUsecaseInteractorConstructorFunctionFile)
+	testOutputUsecaseInteractorConstructorFunction = string(testOutputUsecaseInteractorConstructorFunctionFile)
 	testOutputScaffoldUsecaseInteractorInterfaceFunction = string(testOutputScaffoldUsecaseInteractorInterfaceFunctionFile)
 
+}
+
+// Test Usecase Interactor File
+func TestUsecaseInteractorFile(t *testing.T){
+
+	// Build
+	statement, err := testInteractorGenerator.File(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+
+	f, err := os.Create("./testing/usecase/interactor/created/" + testOutputUsecaseInteractorFileName)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	buf := &bytes.Buffer{}
+	err = statement.Render(buf)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	_, err = f.Write(buf.Bytes())
+
+	if buf.String() != testOutputUsecaseInteractorFile {
+		t.Errorf(`File() failed; want "%s", got "%s"`, testOutputUsecaseInteractorFile, buf.String())
+	}
+	
 }
 
 // Test Scaffold Usecase Interactor File
@@ -136,30 +168,30 @@ func TestScaffoldUsecaseInteractorInterface(t *testing.T){
 	
 }
 
-// Test Scaffold Usecase Interactor Constructor Function
-func TestScaffoldUsecaseInteractorConstructorFunction(t *testing.T){
+// Test  Usecase Interactor Constructor Function
+func TestUsecaseInteractorConstructorFunction(t *testing.T){
 
 	// Build
-	statement, err := testInteractorGenerator.scaffoldUsecaseInteractorConstructorFunction(testEntity)
+	statement, err := testInteractorGenerator.usecaseInteractorConstructorFunction(testEntity)
 
 	// Return
 	if err != nil {
-		t.Errorf(`scaffoldUsecaseInteractorConstructorFunction() failed with error %v`, err)
+		t.Errorf(`usecaseInteractorConstructorFunction() failed with error %v`, err)
 	}
 
-	f, err := os.Create("./testing/usecase/interactor/created/" + testOutputScaffoldUsecaseInteractorConstructorFunctionName)
+	f, err := os.Create("./testing/usecase/interactor/created/" + testOutputUsecaseInteractorConstructorFunctionName)
 	if err != nil {
-		t.Errorf(`scaffoldUsecaseInteractorConstructorFunction() failed with error %v`, err)
+		t.Errorf(`usecaseInteractorConstructorFunction() failed with error %v`, err)
 	}
 	buf := &bytes.Buffer{}
 	err = statement.Render(buf)
 	if err != nil {
-		t.Errorf(`scaffoldUsecaseInteractorConstructorFunction() failed with error %v`, err)
+		t.Errorf(`usecaseInteractorConstructorFunction() failed with error %v`, err)
 	}
 	_, err = f.Write(buf.Bytes())
 
-	if buf.String() != testOutputScaffoldUsecaseInteractorConstructorFunction {
-		t.Errorf(`scaffoldUsecaseInteractorConstructorFunction() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseInteractorConstructorFunction, buf.String())
+	if buf.String() != testOutputUsecaseInteractorConstructorFunction {
+		t.Errorf(`usecaseInteractorConstructorFunction() failed; want "%s", got "%s"`, testOutputUsecaseInteractorConstructorFunction, buf.String())
 	}
 	
 }

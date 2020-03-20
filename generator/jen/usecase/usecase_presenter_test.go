@@ -13,10 +13,12 @@ import(
 var (
 	testPresenterGenerator PresenterGenerator
 
+	testOutputUsecasePresenterFileName = "testOutputUsecasePresenterFile"
 	testOutputScaffoldUsecasePresenterFileName = "testOutputScaffoldUsecasePresenterFile"
 	testOutputScaffoldUsecasePresenterInterfaceName = "testOutputScaffoldUsecasePresenterInterface"
 	testOutputScaffoldUsecasePresenterInterfaceMethodName = "testOutputScaffoldUsecasePresenterInterfaceMethod"
 
+	testOutputUsecasePresenterFile string
 	testOutputScaffoldUsecasePresenterFile string
 	testOutputScaffoldUsecasePresenterInterface string
 	testOutputScaffoldUsecasePresenterInterfaceMethod string
@@ -29,14 +31,44 @@ func init(){
 	testHelperGenerator := helper.New(formatter)
 	testPresenterGenerator = NewPresenterGenerator(conf, formatter, testHelperGenerator)
 
+	testOutputUsecasePresenterFileFile, _ := ioutil.ReadFile("./testing/usecase/presenter/expected/" + testOutputUsecasePresenterFileName)
 	testOutputScaffoldUsecasePresenterFileFile, _ := ioutil.ReadFile("./testing/usecase/presenter/expected/" + testOutputScaffoldUsecasePresenterFileName)
 	testOutputScaffoldUsecasePresenterInterfaceFile, _ := ioutil.ReadFile("./testing/usecase/presenter/expected/" + testOutputScaffoldUsecasePresenterInterfaceName)
 	testOutputScaffoldUsecasePresenterInterfaceMethodFile, _ := ioutil.ReadFile("./testing/usecase/presenter/expected/" + testOutputScaffoldUsecasePresenterInterfaceMethodName)
 
+	testOutputUsecasePresenterFile = string(testOutputUsecasePresenterFileFile)
 	testOutputScaffoldUsecasePresenterFile = string(testOutputScaffoldUsecasePresenterFileFile)
 	testOutputScaffoldUsecasePresenterInterface = string(testOutputScaffoldUsecasePresenterInterfaceFile)
 	testOutputScaffoldUsecasePresenterInterfaceMethod = string(testOutputScaffoldUsecasePresenterInterfaceMethodFile)
 
+}
+
+// Test Usecase Presenter File
+func TestUsecasePresenterFile(t *testing.T){
+
+	// Build
+	statement, err := testPresenterGenerator.File(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+
+	f, err := os.Create("./testing/usecase/presenter/created/" + testOutputUsecasePresenterFileName)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	buf := &bytes.Buffer{}
+	err = statement.Render(buf)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	_, err = f.Write(buf.Bytes())
+
+	if buf.String() != testOutputUsecasePresenterFile {
+		t.Errorf(`File() failed; want "%s", got "%s"`, testOutputUsecasePresenterFile, buf.String())
+	}
+	
 }
 
 // Test Scaffold Usecase Presenter File

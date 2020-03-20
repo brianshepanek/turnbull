@@ -16,8 +16,10 @@ type presenterGenerator struct{
 
 type PresenterGenerator interface{
 
+	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
 
+	usecasePresenterInterface(entity model.Entity) (jen.Statement, error)
 	scaffoldUsecasePresenterInterface(entity model.Entity) (jen.Statement, error)
 	scaffoldUsecasePresenterInterfaceMethod(method model.Method, entity model.Entity) (jen.Statement, error)
 
@@ -30,6 +32,26 @@ func NewPresenterGenerator(config *config.Config, formatter formatter.Formatter,
 		helperGenerator :helperGenerator,
 	}
 }
+
+func (presenterGenerator *presenterGenerator) File(entity model.Entity) (*jen.File, error){
+	
+	// File
+	packageName , err := presenterGenerator.formatter.OutputScaffoldUsecasePresenterPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+
+	// Interface
+	usecasePresenterInterface, err := presenterGenerator.usecasePresenterInterface(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&usecasePresenterInterface)
+
+	return f, nil
+}
+
 func (presenterGenerator *presenterGenerator) ScaffoldFile(entity model.Entity) (*jen.File, error){
 	
 	
@@ -49,6 +71,39 @@ func (presenterGenerator *presenterGenerator) ScaffoldFile(entity model.Entity) 
 
 	return f, nil
 }	
+
+func (presenterGenerator *presenterGenerator) usecasePresenterInterface(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := presenterGenerator.formatter.OutputUsecasePresenterInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := presenterGenerator.formatter.OutputScaffoldUsecasePresenterInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+
+	// Interface
+	resp.Interface(fields...)
+
+	return resp, nil
+
+}
 
 func (presenterGenerator *presenterGenerator) scaffoldUsecasePresenterInterface(entity model.Entity) (jen.Statement, error){
 

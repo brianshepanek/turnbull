@@ -9,7 +9,7 @@ import (
 )
 
 type httpFooScaffoldController struct {
-	interactor interactor.FooScaffoldInteractor
+	interactor interactor.FooInteractor
 }
 type HttpFooScaffoldController interface {
 	Browse(w http.ResponseWriter, r http.Request)
@@ -19,7 +19,7 @@ type HttpFooScaffoldController interface {
 	Delete(w http.ResponseWriter, r http.Request)
 }
 
-func NewHttpFooScaffoldController(interactor interactor.FooScaffoldInteractor) *httpFooScaffoldController {
+func NewHttpFooScaffoldController(interactor interactor.FooInteractor) *httpFooScaffoldController {
 	return &httpFooScaffoldController{interactor}
 }
 func (c *httpFooScaffoldController) Browse(w http.ResponseWriter, r http.Request) {

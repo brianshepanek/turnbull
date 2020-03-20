@@ -1,4 +1,4 @@
-type fooScaffoldInteractor struct {
-	repository repository.FooScaffoldRepository
-	presenter  presenter.FooScaffoldPresenter
+type fooInteractorStruct struct {
+	repository repository.FooRepository
+	presenter  presenter.FooPresenter
 }

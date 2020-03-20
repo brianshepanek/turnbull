@@ -23,12 +23,15 @@ const(
 	testOutputScaffoldUsecaseDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase"
 	testOutputScaffoldUsecaseInteractorDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/interactor"
 	testOutputScaffoldUsecaseInteractorDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/usecase/interactor"
+	testOutputUsecaseInteractorFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/interactor/foo_interactor.go"
 	testOutputScaffoldUsecaseInteractorFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/interactor/foo_interactor_scaffold.go"
 	testOutputScaffoldUsecaseRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/repository"
 	testOutputScaffoldUsecaseRepositoryDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/usecase/repository"
+	testOutputUsecaseRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/repository/foo_repository.go"
 	testOutputScaffoldUsecaseRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/repository/foo_repository_scaffold.go"
 	testOutputScaffoldUsecasePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/presenter"
 	testOutputScaffoldUsecasePresenterDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/usecase/presenter"
+	testOutputUsecasePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/presenter/foo_presenter.go"
 	testOutputScaffoldUsecasePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/presenter/foo_presenter_scaffold.go"
 
 	testOutputScaffoldInterfaceDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface"
@@ -69,18 +72,22 @@ const(
 	testOutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId = "NewFoosScaffoldStruct"
 
 	testOutputScaffoldUsecaseRepositoryPackageName = "repository"
-	testOutputScaffoldUsecaseRepositoryInterfaceId = "FooScaffoldRepository"
+	testOutputScaffoldUsecaseRepositoryInterfaceId = "fooRepository"
+	testOutputUsecaseRepositoryInterfaceId = "FooRepository"
 	testOutputScaffoldUsecaseRepositoryInterfaceMethodId = "Add"
 
 	testOutputScaffoldUsecasePresenterPackageName = "presenter"
-	testOutputScaffoldUsecasePresenterInterfaceId = "FooScaffoldPresenter"
+	testOutputScaffoldUsecasePresenterInterfaceId = "fooPresenter"
+	testOutputUsecasePresenterInterfaceId = "FooPresenter"
 	testOutputScaffoldUsecasePresenterInterfaceMethodId = "Add"
 
 	testOutputScaffoldUsecaseInteractorPackageName = "interactor"
-	testOutputScaffoldUsecaseInteractorStructId = "fooScaffoldInteractor"
-	testOutputScaffoldUsecaseInteractorInterfaceId = "FooScaffoldInteractor"
+	testOutputUsecaseInteractorStructId = "fooInteractor"
+	testOutputScaffoldUsecaseInteractorStructId = "fooInteractorStruct"
+	testOutputUsecaseInteractorInterfaceId = "FooInteractor"
+	testOutputScaffoldUsecaseInteractorInterfaceId = "fooInteractorInterface"
 	testOutputScaffoldUsecaseInteractorInterfaceMethodId = "Add"
-	testOutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId = "NewFooScaffoldInteractor"
+	testOutputUsecaseInteractorInterfaceConstructorFunctionId = "NewFooInteractor"
 
 	testOutputScaffoldInterfaceRepositoryPackageName = "repository"
 	testOutputScaffoldInterfaceRepositoryStructId = "scribbleFooScaffoldRepository"
@@ -289,6 +296,23 @@ func TestOutputScaffoldUsecaseInteractorDirectoryImportPath(t *testing.T){
 	}
 }
 
+// Test Output Usecase Interactor File
+func TestOutputUsecaseInteractorFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputUsecaseInteractorFile(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputUsecaseInteractorFile() failed with error %v`, err)
+	}
+
+	if file != testOutputUsecaseInteractorFile {
+		t.Errorf(`OutputUsecaseInteractorFile() failed; want "%s", got "%s"`, testOutputUsecaseInteractorFile, file)
+	}
+}
+
 // Test Output Scaffold Usecase Interactor File
 func TestOutputScaffoldUsecaseInteractorFile(t *testing.T){
 
@@ -340,6 +364,23 @@ func TestOutputScaffoldUsecaseRepositoryDirectoryImportPath(t *testing.T){
 	}
 }
 
+// Test Output Usecase Repository File
+func TestOutputUsecaseRepositoryFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputUsecaseRepositoryFile(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputUsecaseRepositoryFile() failed with error %v`, err)
+	}
+
+	if file != testOutputUsecaseRepositoryFile {
+		t.Errorf(`OutputUsecaseRepositoryFile() failed; want "%s", got "%s"`, testOutputUsecaseRepositoryFile, file)
+	}
+}
+
 // Test Output Scaffold Usecase Repository File
 func TestOutputScaffoldUsecaseRepositoryFile(t *testing.T){
 
@@ -388,6 +429,23 @@ func TestOutputScaffoldUsecasePresenterDirectoryImportPath(t *testing.T){
 
 	if dir != testOutputScaffoldUsecasePresenterDirectoryImportPath {
 		t.Errorf(`OutputScaffoldUsecasePresenterDirectoryImportPath() failed; want "%s", got "%s"`, testOutputScaffoldUsecasePresenterDirectoryImportPath, dir)
+	}
+}
+
+// Test Output Usecase Presenter File
+func TestOutputUsecasePresenterFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputUsecasePresenterFile(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputUsecasePresenterFile() failed with error %v`, err)
+	}
+
+	if file != testOutputUsecasePresenterFile {
+		t.Errorf(`OutputUsecasePresenterFile() failed; want "%s", got "%s"`, testOutputUsecasePresenterFile, file)
 	}
 }
 
@@ -865,6 +923,22 @@ func TestOutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId(t *testin
 	}
 }
 
+// Test Output Usecase Repository Interface ID
+func TestOutputUsecaseRepositoryInterfaceId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputUsecaseRepositoryInterfaceId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputUsecaseRepositoryInterfaceId() failed with error %v`, err)
+	}
+
+	if id != testOutputUsecaseRepositoryInterfaceId {
+		t.Errorf(`OutputUsecaseRepositoryInterfaceId() failed; want "%s", got "%s"`, testOutputUsecaseRepositoryInterfaceId, id)
+	}
+}
+
 // Test Output Scaffold Usecase Repository Interface ID
 func TestOutputScaffoldUsecaseRepositoryInterfaceId(t *testing.T){
 
@@ -910,6 +984,22 @@ func TestOutputScaffoldUsecaseRepositoryPackageName(t *testing.T){
 
 	if id != testOutputScaffoldUsecaseRepositoryPackageName {
 		t.Errorf(`OutputScaffoldUsecaseRepositoryPackageName() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseRepositoryPackageName, id)
+	}
+}
+
+// Test Output Usecase Presenter Interface ID
+func TestOutputUsecasePresenterInterfaceId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputUsecasePresenterInterfaceId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputUsecasePresenterInterfaceId() failed with error %v`, err)
+	}
+
+	if id != testOutputUsecasePresenterInterfaceId {
+		t.Errorf(`OutputUsecasePresenterInterfaceId() failed; want "%s", got "%s"`, testOutputUsecasePresenterInterfaceId, id)
 	}
 }
 
@@ -961,6 +1051,22 @@ func TestOutputScaffoldUsecasePresenterPackageName(t *testing.T){
 	}
 }
 
+// Test Output Usecase Interactor Struct ID
+func TestOutputUsecaseInteractorStructId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputUsecaseInteractorStructId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputUsecaseInteractorStructId() failed with error %v`, err)
+	}
+
+	if id != testOutputUsecaseInteractorStructId {
+		t.Errorf(`OutputUsecaseInteractorStructId() failed; want "%s", got "%s"`, testOutputUsecaseInteractorStructId, id)
+	}
+}
+
 // Test Output Scaffold Usecase Interactor Struct ID
 func TestOutputScaffoldUsecaseInteractorStructId(t *testing.T){
 
@@ -974,6 +1080,22 @@ func TestOutputScaffoldUsecaseInteractorStructId(t *testing.T){
 
 	if id != testOutputScaffoldUsecaseInteractorStructId {
 		t.Errorf(`OutputScaffoldUsecaseInteractorStructId() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseInteractorStructId, id)
+	}
+}
+
+// Test Output Usecase Interactor Interface ID
+func TestOutputUsecaseInteractorInterfaceId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputUsecaseInteractorInterfaceId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputUsecaseInteractorInterfaceId() failed with error %v`, err)
+	}
+
+	if id != testOutputUsecaseInteractorInterfaceId {
+		t.Errorf(`OutputUsecaseInteractorInterfaceId() failed; want "%s", got "%s"`, testOutputUsecaseInteractorInterfaceId, id)
 	}
 }
 
@@ -1026,19 +1148,19 @@ func TestOutputScaffoldUsecaseInteractorPackageName(t *testing.T){
 }
 
 
-// Test Output Scaffold Usecase Interactor Constructor Function ID
-func TestOutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId(t *testing.T){
+// Test Output Usecase Interactor Constructor Function ID
+func TestOutputUsecaseInteractorInterfaceConstructorFunctionId(t *testing.T){
 
 	// Build
-	id, err := testFormatter.OutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId(testEntity)
+	id, err := testFormatter.OutputUsecaseInteractorInterfaceConstructorFunctionId(testEntity)
 
 	// Return
 	if err != nil {
-		t.Errorf(`OutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId() failed with error %v`, err)
+		t.Errorf(`OutputUsecaseInteractorInterfaceConstructorFunctionId() failed with error %v`, err)
 	}
 
-	if id != testOutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId {
-		t.Errorf(`OutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId() failed; want "%s", got "%s"`, testOutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId, id)
+	if id != testOutputUsecaseInteractorInterfaceConstructorFunctionId {
+		t.Errorf(`OutputUsecaseInteractorInterfaceConstructorFunctionId() failed; want "%s", got "%s"`, testOutputUsecaseInteractorInterfaceConstructorFunctionId, id)
 	}
 }
 

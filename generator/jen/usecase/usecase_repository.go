@@ -16,8 +16,10 @@ type repositoryGenerator struct{
 
 type RepositoryGenerator interface{
 
+	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
 
+	usecaseRepositoryInterface(entity model.Entity) (jen.Statement, error)
 	scaffoldUsecaseRepositoryInterface(entity model.Entity) (jen.Statement, error)
 	scaffoldUsecaseRepositoryInterfaceMethod(method model.Method, entity model.Entity) (jen.Statement, error)
 
@@ -30,6 +32,26 @@ func NewRepositoryGenerator(config *config.Config, formatter formatter.Formatter
 		helperGenerator :helperGenerator,
 	}
 }
+
+func (repositoryGenerator *repositoryGenerator) File(entity model.Entity) (*jen.File, error){
+	
+	// File
+	packageName , err := repositoryGenerator.formatter.OutputScaffoldUsecaseRepositoryPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+
+	// Interface
+	usecaseRepositoryInterface, err := repositoryGenerator.usecaseRepositoryInterface(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&usecaseRepositoryInterface)
+
+	return f, nil
+}
+
 func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity) (*jen.File, error){
 	
 	
@@ -49,6 +71,39 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 
 	return f, nil
 }	
+
+func (repositoryGenerator *repositoryGenerator) usecaseRepositoryInterface(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := repositoryGenerator.formatter.OutputUsecaseRepositoryInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := repositoryGenerator.formatter.OutputScaffoldUsecaseRepositoryInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+
+	// Interface
+	resp.Interface(fields...)
+
+	return resp, nil
+
+}
 
 func (repositoryGenerator *repositoryGenerator) scaffoldUsecaseRepositoryInterface(entity model.Entity) (jen.Statement, error){
 

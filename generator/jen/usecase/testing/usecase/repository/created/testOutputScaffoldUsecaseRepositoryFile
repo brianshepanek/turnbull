@@ -5,7 +5,7 @@ import (
 	entity "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
 )
 
-type FooScaffoldRepository interface {
+type fooRepository interface {
 	Add(ctx context.Context, req entity.Foo) error
 	Read(ctx context.Context, query interface{}, req entity.Foo) error
 	Browse(ctx context.Context, query interface{}, req entity.Foos) error

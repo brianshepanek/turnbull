@@ -73,6 +73,20 @@ func (generator *Generator) ScaffoldEntity(entity model.Entity, writer io.Writer
 	return nil
 }
 
+func (generator *Generator) UsecaseRepository(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.usecaseRepositoryGenerator.File(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}
+
 func (generator *Generator) ScaffoldUsecaseRepository(entity model.Entity, writer io.Writer) (error){
 
 	// File
@@ -87,10 +101,38 @@ func (generator *Generator) ScaffoldUsecaseRepository(entity model.Entity, write
 	return nil
 }
 
+func (generator *Generator) UsecasePresenter(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.usecasePresenterGenerator.File(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}
+
 func (generator *Generator) ScaffoldUsecasePresenter(entity model.Entity, writer io.Writer) (error){
 
 	// File
 	file, err := generator.usecasePresenterGenerator.ScaffoldFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}
+
+func (generator *Generator) UsecaseInteractor(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.usecaseInteractorGenerator.File(entity)
 	if err != nil {
 		return err
 	}

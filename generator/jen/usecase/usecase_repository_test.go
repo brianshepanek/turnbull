@@ -13,10 +13,12 @@ import(
 var (
 	testRepositoryGenerator RepositoryGenerator
 
+	testOutputUsecaseRepositoryFileName = "testOutputUsecaseRepositoryFile"
 	testOutputScaffoldUsecaseRepositoryFileName = "testOutputScaffoldUsecaseRepositoryFile"
 	testOutputScaffoldUsecaseRepositoryInterfaceName = "testOutputScaffoldUsecaseRepositoryInterface"
 	testOutputScaffoldUsecaseRepositoryInterfaceMethodName = "testOutputScaffoldUsecaseRepositoryInterfaceMethod"
 
+	testOutputUsecaseRepositoryFile string
 	testOutputScaffoldUsecaseRepositoryFile string
 	testOutputScaffoldUsecaseRepositoryInterface string
 	testOutputScaffoldUsecaseRepositoryInterfaceMethod string
@@ -29,14 +31,44 @@ func init(){
 	testHelperGenerator := helper.New(formatter)
 	testRepositoryGenerator = NewRepositoryGenerator(conf, formatter, testHelperGenerator)
 
+	testOutputUsecaseRepositoryFileFile, _ := ioutil.ReadFile("./testing/usecase/repository/expected/" + testOutputUsecaseRepositoryFileName)
 	testOutputScaffoldUsecaseRepositoryFileFile, _ := ioutil.ReadFile("./testing/usecase/repository/expected/" + testOutputScaffoldUsecaseRepositoryFileName)
 	testOutputScaffoldUsecaseRepositoryInterfaceFile, _ := ioutil.ReadFile("./testing/usecase/repository/expected/" + testOutputScaffoldUsecaseRepositoryInterfaceName)
 	testOutputScaffoldUsecaseRepositoryInterfaceMethodFile, _ := ioutil.ReadFile("./testing/usecase/repository/expected/" + testOutputScaffoldUsecaseRepositoryInterfaceMethodName)
 
+	testOutputUsecaseRepositoryFile = string(testOutputUsecaseRepositoryFileFile)
 	testOutputScaffoldUsecaseRepositoryFile = string(testOutputScaffoldUsecaseRepositoryFileFile)
 	testOutputScaffoldUsecaseRepositoryInterface = string(testOutputScaffoldUsecaseRepositoryInterfaceFile)
 	testOutputScaffoldUsecaseRepositoryInterfaceMethod = string(testOutputScaffoldUsecaseRepositoryInterfaceMethodFile)
 
+}
+
+// Test Usecase Repository File
+func TestUsecaseRepositoryFile(t *testing.T){
+
+	// Build
+	statement, err := testRepositoryGenerator.File(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+
+	f, err := os.Create("./testing/usecase/repository/created/" + testOutputUsecaseRepositoryFileName)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	buf := &bytes.Buffer{}
+	err = statement.Render(buf)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	_, err = f.Write(buf.Bytes())
+
+	if buf.String() != testOutputUsecaseRepositoryFile {
+		t.Errorf(`File() failed; want "%s", got "%s"`, testOutputUsecaseRepositoryFile, buf.String())
+	}
+	
 }
 
 // Test Scaffold Usecase Repository File

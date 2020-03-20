@@ -27,12 +27,15 @@ type Formatter interface{
 	OutputScaffoldUsecaseDirectory() (string, error)
 	OutputScaffoldUsecaseInteractorDirectory() (string, error)
 	OutputScaffoldUsecaseInteractorDirectoryImportPath() (string, error)
+	OutputUsecaseInteractorFile(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseInteractorFile(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseRepositoryDirectory() (string, error)
 	OutputScaffoldUsecaseRepositoryDirectoryImportPath() (string, error)
+	OutputUsecaseRepositoryFile(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseRepositoryFile(entity model.Entity) (string, error)
 	OutputScaffoldUsecasePresenterDirectory() (string, error)
 	OutputScaffoldUsecasePresenterDirectoryImportPath() (string, error)
+	OutputUsecasePresenterFile(entity model.Entity) (string, error)
 	OutputScaffoldUsecasePresenterFile(entity model.Entity) (string, error)
 
 	OutputScaffoldInterfaceDirectory() (string, error)
@@ -67,18 +70,22 @@ type Formatter interface{
 	OutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId(entity model.Entity) (string, error)
 
 	OutputScaffoldUsecaseRepositoryPackageName() (string, error)
+	OutputUsecaseRepositoryInterfaceId(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseRepositoryInterfaceId(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseRepositoryInterfaceMethodId(method model.Method) (string, error)
 
 	OutputScaffoldUsecasePresenterPackageName() (string, error)
+	OutputUsecasePresenterInterfaceId(entity model.Entity) (string, error)
 	OutputScaffoldUsecasePresenterInterfaceId(entity model.Entity) (string, error)
 	OutputScaffoldUsecasePresenterInterfaceMethodId(method model.Method) (string, error)
 
 	OutputScaffoldUsecaseInteractorPackageName() (string, error)
+	OutputUsecaseInteractorStructId(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseInteractorStructId(entity model.Entity) (string, error)
+	OutputUsecaseInteractorInterfaceId(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseInteractorInterfaceId(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseInteractorInterfaceMethodId(method model.Method) (string, error)
-	OutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId(entity model.Entity) (string, error)
+	OutputUsecaseInteractorInterfaceConstructorFunctionId(entity model.Entity) (string, error)
 
 	OutputScaffoldInterfaceRepositoryPackageName() (string, error)
 	OutputScaffoldInterfaceRepositoryStructId(driver string, entity model.Entity) (string, error)
@@ -168,6 +175,16 @@ func (formatter *formatter) OutputScaffoldUsecaseInteractorDirectoryImportPath()
 	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
 }
 
+func (formatter *formatter) OutputUsecaseInteractorFile(entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldUsecaseInteractorDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
+
 func (formatter *formatter) OutputScaffoldUsecaseInteractorFile(entity model.Entity) (string, error) {
 	path, err  := formatter.OutputScaffoldUsecaseInteractorDirectory()
 	if err != nil {
@@ -190,6 +207,17 @@ func (formatter *formatter) OutputScaffoldUsecaseRepositoryDirectoryImportPath()
 	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
 }
 
+
+func (formatter *formatter) OutputUsecaseRepositoryFile(entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldUsecaseRepositoryDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Repository.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
+
 func (formatter *formatter) OutputScaffoldUsecaseRepositoryFile(entity model.Entity) (string, error) {
 	path, err  := formatter.OutputScaffoldUsecaseRepositoryDirectory()
 	if err != nil {
@@ -210,6 +238,16 @@ func (formatter *formatter) OutputScaffoldUsecasePresenterDirectoryImportPath() 
 		return "", nil
 	}
 	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputUsecasePresenterFile(entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldUsecasePresenterDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Presenter.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecasePresenterFile(entity model.Entity) (string, error) {
@@ -369,8 +407,12 @@ func (formatter *formatter) OutputScaffoldUsecaseRepositoryPackageName() (string
 	return strcase.ToSnake(formatter.config.Layers.Usecase.Repository.Name), nil
 }
 
+func (formatter *formatter) OutputUsecaseRepositoryInterfaceId(entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Repository.Name}, formatter.config.StringSeparator)), nil
+}
+
 func (formatter *formatter) OutputScaffoldUsecaseRepositoryInterfaceId(entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Repository.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Repository.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecaseRepositoryInterfaceMethodId(method model.Method) (string, error) {
@@ -381,8 +423,12 @@ func (formatter *formatter) OutputScaffoldUsecasePresenterPackageName() (string,
 	return strcase.ToSnake(formatter.config.Layers.Usecase.Presenter.Name), nil
 }
 
+func (formatter *formatter) OutputUsecasePresenterInterfaceId(entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Presenter.Name}, formatter.config.StringSeparator)), nil
+}
+
 func (formatter *formatter) OutputScaffoldUsecasePresenterInterfaceId(entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Presenter.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Presenter.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecasePresenterInterfaceMethodId(method model.Method) (string, error) {
@@ -393,20 +439,28 @@ func (formatter *formatter) OutputScaffoldUsecaseInteractorPackageName() (string
 	return strcase.ToSnake(formatter.config.Layers.Usecase.Interactor.Name), nil
 }
 
+func (formatter *formatter) OutputUsecaseInteractorStructId(entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name}, formatter.config.StringSeparator)), nil
+}
+
 func (formatter *formatter) OutputScaffoldUsecaseInteractorStructId(entity model.Entity) (string, error) {
-	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Interactor.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name, "struct"}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputUsecaseInteractorInterfaceId(entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecaseInteractorInterfaceId(entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Interactor.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name, "interface"}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecaseInteractorInterfaceMethodId(method model.Method) (string, error) {
 	return strcase.ToCamel(method.Name), nil
 }
 
-func (formatter *formatter) OutputScaffoldUsecaseInteractorInterfaceConstructorFunctionId(entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{"new", entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Interactor.Name}, formatter.config.StringSeparator)), nil
+func (formatter *formatter) OutputUsecaseInteractorInterfaceConstructorFunctionId(entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{"new", entity.Name, formatter.config.Layers.Usecase.Interactor.Name}, formatter.config.StringSeparator)), nil
 }
 
 // Interface

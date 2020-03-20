@@ -122,6 +122,18 @@ func TestBuildScaffoldDomainEntity(t *testing.T){
 	}
 }
 
+// Test Build Usecase Repository
+func TestBuildUsecaseRepository(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildUsecaseRepository(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildUsecaseRepository() failed with error %v`, err)
+	}
+}
+
 // Test Build Scaffold Usecase Repository
 func TestBuildScaffoldUsecaseRepository(t *testing.T){
 
@@ -134,6 +146,18 @@ func TestBuildScaffoldUsecaseRepository(t *testing.T){
 	}
 }
 
+// Test Build Usecase Presenter
+func TestBuildUsecasePresenter(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildUsecasePresenter(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildUsecasePresenter() failed with error %v`, err)
+	}
+}
+
 // Test Build Scaffold Usecase Presenter
 func TestBuildScaffoldUsecasePresenter(t *testing.T){
 
@@ -143,6 +167,18 @@ func TestBuildScaffoldUsecasePresenter(t *testing.T){
 	// Return
 	if err != nil {
 		t.Errorf(`buildScaffoldUsecasePresenter() failed with error %v`, err)
+	}
+}
+
+// Test Build Usecase Interactor
+func TestBuildUsecaseInteractor(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildUsecaseInteractor(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildUsecaseInteractor() failed with error %v`, err)
 	}
 }
 

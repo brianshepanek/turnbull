@@ -84,7 +84,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerStruc
 	var fields []jen.Code
 
 	// Interactor
-	interactorId , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorInterfaceId(entity)
+	interactorId , err := controllerGenerator.formatter.OutputUsecaseInteractorInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}
