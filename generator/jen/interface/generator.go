@@ -7,6 +7,7 @@ import(
 )
 
 type RepositoryGenerator interface{
+	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
 }
 

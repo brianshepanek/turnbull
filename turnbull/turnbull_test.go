@@ -194,6 +194,18 @@ func TestBuildScaffoldUsecaseInteractor(t *testing.T){
 	}
 }
 
+// Test Build Interface Repository
+func TestBuildInterfaceRepository(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildInterfaceRepository("scribble", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildInterfaceRepository() failed with error %v`, err)
+	}
+}
+
 // Test Build Scaffold Interface Repository
 func TestBuildScaffoldInterfaceRepository(t *testing.T){
 

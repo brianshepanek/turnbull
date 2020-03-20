@@ -38,6 +38,7 @@ const(
 	testOutputScaffoldInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller"
 	testOutputScaffoldInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo_http_controller_scaffold.go"
 	testOutputScaffoldInterfaceRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository"
+	testOutputInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo_scribble_repository.go"
 	testOutputScaffoldInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo_scribble_repository_scaffold.go"
 	testOutputScaffoldInterfacePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter"
 	testOutputScaffoldInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo_default_presenter_scaffold.go"
@@ -90,8 +91,9 @@ const(
 	testOutputUsecaseInteractorInterfaceConstructorFunctionId = "NewFooInteractor"
 
 	testOutputScaffoldInterfaceRepositoryPackageName = "repository"
-	testOutputScaffoldInterfaceRepositoryStructId = "scribbleFooScaffoldRepository"
-	testOutputScaffoldInterfaceRepositoryConstructorFunctionId = "NewScribbleFooScaffoldRepository"
+	testOutputInterfaceRepositoryStructId = "scribbleFooRepository"
+	testOutputScaffoldInterfaceRepositoryStructId = "scribbleFooRepositoryStruct"
+	testOutputScaffoldInterfaceRepositoryConstructorFunctionId = "NewScribbleFooRepository"
 
 	testOutputScaffoldInterfacePresenterPackageName = "presenter"
 	testOutputScaffoldInterfacePresenterStructId = "defaultFooScaffoldPresenter"
@@ -531,6 +533,23 @@ func TestOutputScaffoldInterfaceRepositoryDirectory(t *testing.T){
 
 	if dir != testOutputScaffoldInterfaceRepositoryDirectory {
 		t.Errorf(`OutputScaffoldInterfaceRepositoryDirectory() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceRepositoryDirectory, dir)
+	}
+}
+
+// Test Output Interface Repository File
+func TestOutputInterfaceRepositoryFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputInterfaceRepositoryFile("scribble", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfaceRepositoryFile() failed with error %v`, err)
+	}
+
+	if file != testOutputInterfaceRepositoryFile {
+		t.Errorf(`OutputInterfaceRepositoryFile() failed; want "%s", got "%s"`, testOutputInterfaceRepositoryFile, file)
 	}
 }
 
@@ -1177,6 +1196,22 @@ func TestOutputScaffoldInterfaceRepositoryPackageName(t *testing.T){
 
 	if id != testOutputScaffoldInterfaceRepositoryPackageName {
 		t.Errorf(`OutputScaffoldInterfaceRepositoryPackageName() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceRepositoryPackageName, id)
+	}
+}
+
+// Test Output Interface Repository Struct ID
+func TestOutputInterfaceRepositoryStructId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputInterfaceRepositoryStructId("scribble", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfaceRepositoryStructId() failed with error %v`, err)
+	}
+
+	if id != testOutputInterfaceRepositoryStructId {
+		t.Errorf(`OutputInterfaceRepositoryStructId() failed; want "%s", got "%s"`, testOutputInterfaceRepositoryStructId, id)
 	}
 }
 

@@ -7,18 +7,12 @@ import (
 	golangscribble "github.com/nanobox-io/golang-scribble"
 )
 
-type scribbleFooScaffoldRepository struct {
+type scribbleFooRepositoryStruct struct {
 	driver     *golangscribble.Driver
 	collection string
 }
 
-func NewScribbleFooScaffoldRepository(driver *golangscribble.Driver, collection string) *scribbleFooScaffoldRepository {
-	return &scribbleFooScaffoldRepository{
-		collection: collection,
-		driver:     driver,
-	}
-}
-func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, query interface{}, req entity.Foos) error {
+func (r *scribbleFooRepositoryStruct) Browse(ctx context.Context, query interface{}, req entity.Foos) error {
 	records, err := r.driver.ReadAll(r.collection)
 	if err != nil {
 		return err
@@ -33,15 +27,15 @@ func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, query interf
 	}
 	return nil
 }
-func (r *scribbleFooScaffoldRepository) Read(ctx context.Context, query interface{}, req entity.Foo) error {
+func (r *scribbleFooRepositoryStruct) Read(ctx context.Context, query interface{}, req entity.Foo) error {
 	return r.driver.Read(r.collection, req.Id(), req)
 }
-func (r *scribbleFooScaffoldRepository) Edit(ctx context.Context, req entity.Foo) error {
+func (r *scribbleFooRepositoryStruct) Edit(ctx context.Context, req entity.Foo) error {
 	return r.driver.Read(r.collection, req.Id(), req)
 }
-func (r *scribbleFooScaffoldRepository) Add(ctx context.Context, req entity.Foo) error {
+func (r *scribbleFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
 	return r.driver.Write(r.collection, req.Id(), req)
 }
-func (r *scribbleFooScaffoldRepository) Delete(ctx context.Context, req entity.Foo) error {
+func (r *scribbleFooRepositoryStruct) Delete(ctx context.Context, req entity.Foo) error {
 	return r.driver.Delete(r.collection, req.Id())
 }

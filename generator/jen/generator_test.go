@@ -70,7 +70,7 @@ func init(){
 	interfaceRepositoryGenerator := scribbleRepositoryGenerator.New(conf, formatter, testHelperGenerator)
 	interfacePresenterGenerator := defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
 	interfaceControllerGenerator := httpControllerGenerator.New(conf, formatter, testHelperGenerator)
-	testGenerator = New(conf, formatter, interfaceRepositoryGenerator, interfacePresenterGenerator, interfaceControllerGenerator)
+	testGenerator = New(conf, formatter, interfaceControllerGenerator, interfacePresenterGenerator, interfaceRepositoryGenerator)
 }
 
 // Test Scaffold Interface Repository File

@@ -42,6 +42,7 @@ type Formatter interface{
 	OutputScaffoldInterfaceControllerDirectory() (string, error)
 	OutputScaffoldInterfaceControllerFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryDirectory() (string, error)
+	OutputInterfaceRepositoryFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfacePresenterDirectory() (string, error)
 	OutputScaffoldInterfacePresenterFile(driver string, entity model.Entity) (string, error)
@@ -88,6 +89,7 @@ type Formatter interface{
 	OutputUsecaseInteractorInterfaceConstructorFunctionId(entity model.Entity) (string, error)
 
 	OutputScaffoldInterfaceRepositoryPackageName() (string, error)
+	OutputInterfaceRepositoryStructId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryStructId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryConstructorFunctionId(driver string, entity model.Entity) (string, error)
 
@@ -284,6 +286,15 @@ func (formatter *formatter) OutputScaffoldInterfaceRepositoryDirectory() (string
 	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.PathSeparator), nil
 }
 
+func (formatter *formatter) OutputInterfaceRepositoryFile(driver string, entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldInterfaceRepositoryDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver,  formatter.config.Layers.Interface.Repository.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryFile(driver string, entity model.Entity) (string, error) {
 	path, err  := formatter.OutputScaffoldInterfaceRepositoryDirectory()
 	if err != nil {
@@ -469,12 +480,16 @@ func (formatter *formatter) OutputScaffoldInterfaceRepositoryPackageName() (stri
 	return strcase.ToSnake(formatter.config.Layers.Interface.Repository.Name), nil
 }
 
+func (formatter *formatter) OutputInterfaceRepositoryStructId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.StringSeparator)), nil
+}
+
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryStructId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Layers.Interface.Repository.Name, "struct"}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryConstructorFunctionId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterPackageName() (string, error) {

@@ -21,11 +21,13 @@ const(
 var (
 	testRepositoryGenerator *repositoryGenerator
 
+	testOutputInterfaceRepositoryFileName = "testOutputInterfaceRepositoryFile"
 	testOutputScaffoldInterfaceRepositoryFileName = "testOutputScaffoldInterfaceRepositoryFile"
 	testOutputScaffoldInterfaceRepositoryStructName = "testOutputScaffoldInterfaceRepositoryStruct"
 	testOutputScaffoldInterfaceRepositoryConstructorFunctionName = "testOutputScaffoldInterfaceRepositoryConstructorFunction"
 	testOutputScaffoldInterfaceRepositoryMethodName = "testOutputScaffoldInterfaceRepositoryMethod"
 	
+	testOutputInterfaceRepositoryFile string
 	testOutputScaffoldInterfaceRepositoryFile string
 	testOutputScaffoldInterfaceRepositoryStruct string
 	testOutputScaffoldInterfaceRepositoryConstructorFunction string
@@ -86,16 +88,46 @@ func init(){
 	testHelperGenerator := helper.New(formatter)
 	testRepositoryGenerator = New(conf, formatter, testHelperGenerator)
 
+	testOutputInterfaceRepositoryFileFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputInterfaceRepositoryFileName)
 	testOutputScaffoldInterfaceRepositoryFileFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryFileName)
 	testOutputScaffoldInterfaceRepositoryStructFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryStructName)
 	testOutputScaffoldInterfaceRepositoryConstructorFunctionFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryConstructorFunctionName)
 	testOutputScaffoldInterfaceRepositoryMethodFile, _ := ioutil.ReadFile("./testing/interface/repository/expected/" + testOutputScaffoldInterfaceRepositoryMethodName)
 	
+	testOutputInterfaceRepositoryFile = string(testOutputInterfaceRepositoryFileFile)
 	testOutputScaffoldInterfaceRepositoryFile = string(testOutputScaffoldInterfaceRepositoryFileFile)
 	testOutputScaffoldInterfaceRepositoryStruct = string(testOutputScaffoldInterfaceRepositoryStructFile)
 	testOutputScaffoldInterfaceRepositoryConstructorFunction = string(testOutputScaffoldInterfaceRepositoryConstructorFunctionFile)
 	testOutputScaffoldInterfaceRepositoryMethod = string(testOutputScaffoldInterfaceRepositoryMethodFile)
 
+}
+
+// Test Interface Repository File
+func TestInterfaceRepositoryFile(t *testing.T){
+
+	// Build
+	statement, err := testRepositoryGenerator.File(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+
+	f, err := os.Create("./testing/interface/repository/created/" + testOutputInterfaceRepositoryFileName)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	buf := &bytes.Buffer{}
+	err = statement.Render(buf)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	_, err = f.Write(buf.Bytes())
+
+	if buf.String() != testOutputInterfaceRepositoryFile {
+		t.Errorf(`File() failed; want "%s", got "%s"`, testOutputInterfaceRepositoryFile, buf.String())
+	}
+	
 }
 
 // Test Scaffold Interface Repository File
@@ -154,30 +186,30 @@ func TestScaffoldInterfaceRepositoryStruct(t *testing.T){
 	
 }
 
-// Test Scaffold Interface Repository Constructor Function
-func TestScaffoldInterfaceRepositoryConstructorFunction(t *testing.T){
+// Test Interface Repository Constructor Function
+func TestInterfaceRepositoryConstructorFunction(t *testing.T){
 
 	// Build
-	statement, err := testRepositoryGenerator.scaffoldInterfaceRepositoryConstructorFunction(testEntity)
+	statement, err := testRepositoryGenerator.interfaceRepositoryConstructorFunction(testEntity)
 
 	// Return
 	if err != nil {
-		t.Errorf(`scaffoldInterfaceRepositoryConstructorFunction() failed with error %v`, err)
+		t.Errorf(`interfaceRepositoryConstructorFunction() failed with error %v`, err)
 	}
 
 	f, err := os.Create("./testing/interface/repository/created/" + testOutputScaffoldInterfaceRepositoryConstructorFunctionName)
 	if err != nil {
-		t.Errorf(`scaffoldInterfaceRepositoryConstructorFunction() failed with error %v`, err)
+		t.Errorf(`interfaceRepositoryConstructorFunction() failed with error %v`, err)
 	}
 	buf := &bytes.Buffer{}
 	err = statement.Render(buf)
 	if err != nil {
-		t.Errorf(`scaffoldInterfaceRepositoryConstructorFunction() failed with error %v`, err)
+		t.Errorf(`interfaceRepositoryConstructorFunction() failed with error %v`, err)
 	}
 	_, err = f.Write(buf.Bytes())
 
 	if buf.String() != testOutputScaffoldInterfaceRepositoryConstructorFunction {
-		t.Errorf(`scaffoldInterfaceRepositoryConstructorFunction() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceRepositoryConstructorFunction, buf.String())
+		t.Errorf(`interfaceRepositoryConstructorFunction() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceRepositoryConstructorFunction, buf.String())
 	}
 	
 }

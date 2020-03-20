@@ -42,6 +42,32 @@ func New(config *config.Config, formatter formatter.Formatter, helperGenerator h
 	}
 }
 
+func (repositoryGenerator *repositoryGenerator) File(entity model.Entity) (*jen.File, error){
+
+	// File
+	packageName , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+
+	// Struct
+	interfaceRepositoryStruct, err := repositoryGenerator.interfaceRepositoryStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceRepositoryStruct)
+
+	// Constructor Function
+	interfaceRepositoryConstructorFunction, err := repositoryGenerator.interfaceRepositoryConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceRepositoryConstructorFunction)
+
+	return f, nil
+}
+
 func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity) (*jen.File, error){
 
 	// File
@@ -58,12 +84,12 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 	}
 	f.Add(&interfaceRepositoryStruct)
 
-	// Constructor Function
-	interfaceRepositoryConstructorFunction, err := repositoryGenerator.scaffoldInterfaceRepositoryConstructorFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&interfaceRepositoryConstructorFunction)
+	// // Constructor Function
+	// interfaceRepositoryConstructorFunction, err := repositoryGenerator.scaffoldInterfaceRepositoryConstructorFunction(entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// f.Add(&interfaceRepositoryConstructorFunction)
 
 	// Methods
 	for _, entityMethod := range entity.Methods {
@@ -79,6 +105,39 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 
 	return f, nil
 }	
+
+func (repositoryGenerator *repositoryGenerator) interfaceRepositoryStruct(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := repositoryGenerator.formatter.OutputInterfaceRepositoryStructId("scribble", entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryStructId("scribble", entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+
+	// Struct
+	resp.Struct(fields...)
+
+	return resp, nil
+
+}
 
 func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryStructFields() ([]jen.Code, error){
 
@@ -130,7 +189,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryStruc
 
 }
 
-func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryConstructorFunction(entity model.Entity) (jen.Statement, error){
+func (repositoryGenerator *repositoryGenerator) interfaceRepositoryConstructorFunction(entity model.Entity) (jen.Statement, error){
 
 	// Vars
 	var resp jen.Statement
@@ -151,7 +210,13 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryConst
 	}
 
 	// Struct ID
-	structId , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryStructId("scribble", entity)
+	structId , err := repositoryGenerator.formatter.OutputInterfaceRepositoryStructId("scribble", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Scaffold Struct ID
+	scaffoldStructId , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryStructId("scribble", entity)
 	if err != nil {
 		return nil, err
 	}
@@ -171,10 +236,13 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryConst
 			jen.Op("&").
 			Id(structId).
 			Values(
-				jen.Dict{
-					jen.Id("driver"):	jen.Id("driver"),
-					jen.Id("collection"):	jen.Id("collection"),
-				},
+				jen.Id(scaffoldStructId).
+				Values(
+					jen.Dict{
+						jen.Id("driver"):	jen.Id("driver"),
+						jen.Id("collection"):	jen.Id("collection"),
+					},
+				),
 			),
 		),
 	)

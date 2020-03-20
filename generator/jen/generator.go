@@ -157,6 +157,19 @@ func (generator *Generator) ScaffoldUsecaseInteractor(entity model.Entity, write
 	return nil
 }
 
+func (generator *Generator) InterfaceRepository(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.interfaceRepositoryGenerator.File(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}
 
 func (generator *Generator) ScaffoldInterfaceRepository(entity model.Entity, writer io.Writer) (error){
 
