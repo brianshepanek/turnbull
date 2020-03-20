@@ -15,7 +15,16 @@ type entityGenerator struct{
 type EntityGenerator interface{
 
 	// File
+	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
+
+	// Entity
+	entityStruct(entity model.Entity) (jen.Statement, error)
+	entitySliceStruct(entity model.Entity) (jen.Statement, error)
+	entityInterface(entity model.Entity) (jen.Statement, error)
+	entitySliceInterface(entity model.Entity) (jen.Statement, error)
+	entityInterfaceConstructorFunction(entity model.Entity) (jen.Statement, error)
+	entitySliceInterfaceConstructorFunction(entity model.Entity) (jen.Statement, error)
 
 	// Scaffold Entity Struct
 	scaffoldEntityStruct(entity model.Entity) (jen.Statement, error)
@@ -63,6 +72,66 @@ func NewEntityGenerator(formatter formatter.Formatter, helperGenerator helper.Ge
 	}
 }
 
+func (entityGenerator *entityGenerator) File(entity model.Entity) (*jen.File, error){
+	
+	
+	// File
+	packageName , err := entityGenerator.formatter.OutputScaffoldDomainEntityPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+
+	// Struct
+	entityStruct, err := entityGenerator.entityStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&entityStruct)
+	f.Line()
+
+	// Slice Struct
+	entitySliceStruct, err := entityGenerator.entitySliceStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&entitySliceStruct)
+	f.Line()
+
+	// Interface
+	entityInterface, err := entityGenerator.entityInterface(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&entityInterface)
+
+	// Slice Interface
+	entitySliceInterface, err := entityGenerator.entitySliceInterface(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&entitySliceInterface)
+
+	// Interface Constructor Function
+	interfaceConstructorFunction, err := entityGenerator.entityInterfaceConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceConstructorFunction)
+	f.Line()
+
+	// Slice Interface Constructor Function
+	sliceInterfaceConstructorFunction, err :=  entityGenerator.entitySliceInterfaceConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&sliceInterfaceConstructorFunction)
+	f.Line()
+	
+	
+	return f, nil
+}
+
 func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.File, error){
 	
 	
@@ -102,22 +171,6 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 		return nil, err
 	}
 	f.Add(&entitySliceInterface)
-
-	// Interface Constructor Function
-	interfaceConstructorFunction, err := entityGenerator.scaffoldEntityInterfaceConstructorFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&interfaceConstructorFunction)
-	f.Line()
-
-	// Slice Interface Constructor Function
-	sliceInterfaceConstructorFunction, err :=  entityGenerator.scaffoldEntitySliceInterfaceConstructorFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&sliceInterfaceConstructorFunction)
-	f.Line()
 
 	// Len
 	lenFunction, err := entityGenerator.scaffoldEntitySliceInterfaceLenFunction(entity)
@@ -197,6 +250,134 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 	
 	
 	return f, nil
+}
+
+func (entityGenerator *entityGenerator) entityStruct(entity model.Entity) (jen.Statement, error){
+	
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Struct
+	resp.Type()
+
+	// Type
+	id , err := entityGenerator.formatter.OutputDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+	// Struct
+	resp.Struct(fields...)
+
+	
+	return resp, nil
+}
+
+func (entityGenerator *entityGenerator) entitySliceStruct(entity model.Entity) (jen.Statement, error){
+	
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Struct
+	resp.Type()
+
+	// Type
+	id , err := entityGenerator.formatter.OutputDomainEntitySliceStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := entityGenerator.formatter.OutputScaffoldDomainEntitySliceStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+	// Struct
+	resp.Struct(fields...)
+
+	
+	return resp, nil
+}
+
+func (entityGenerator *entityGenerator) entityInterface(entity model.Entity) (jen.Statement, error){
+	
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Struct
+	resp.Type()
+
+	// Type
+	id , err := entityGenerator.formatter.OutputDomainEntityInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := entityGenerator.formatter.OutputScaffoldDomainEntityInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+	// Interface
+	resp.Interface(fields...)
+
+	
+	return resp, nil
+}
+
+func (entityGenerator *entityGenerator) entitySliceInterface(entity model.Entity) (jen.Statement, error){
+	
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Struct
+	resp.Type()
+
+	// Type
+	id , err := entityGenerator.formatter.OutputDomainEntitySliceInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := entityGenerator.formatter.OutputScaffoldDomainEntitySliceInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+	// Interface
+	resp.Interface(fields...)
+
+	
+	return resp, nil
 }
 
 func (entityGenerator *entityGenerator) scaffoldEntityStruct(entity model.Entity) (jen.Statement, error){
@@ -658,6 +839,102 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceConstructorFuncti
 		jen.Return(
 			jen.Op("&").
 			Id(structId).
+			Values(),
+		),
+	)
+	
+	
+	return statement, nil
+}
+
+func (entityGenerator *entityGenerator) entityInterfaceConstructorFunction(entity model.Entity) (jen.Statement, error){
+	
+	// ID
+	var statement jen.Statement
+	id , err := entityGenerator.formatter.OutputDomainEntityInterfaceConstructorFunctionId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Interface ID
+	interfaceId , err := entityGenerator.formatter.OutputDomainEntityInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Struct ID
+	structId , err := entityGenerator.formatter.OutputDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Func
+	statement.Func()
+
+	// ID
+	statement.Id(id)
+
+	// Params
+	statement.Params()
+
+	// List
+	statement.List(
+		jen.Id(interfaceId),
+	)
+
+	// Block
+	statement.Block(
+		jen.Return(
+			jen.Op("&").
+			Id(structId).
+			Values(),
+		),
+	)
+	
+	
+	return statement, nil
+}
+
+func (entityGenerator *entityGenerator) entitySliceInterfaceConstructorFunction(entity model.Entity) (jen.Statement, error){
+	
+	// ID
+	var statement jen.Statement
+	id , err := entityGenerator.formatter.OutputDomainEntitySliceInterfaceConstructorFunctionId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Interface ID
+	interfaceId , err := entityGenerator.formatter.OutputDomainEntitySliceInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Slice Struct ID
+	sliceStructId , err := entityGenerator.formatter.OutputDomainEntitySliceStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Func
+	statement.Func()
+
+	// ID
+	statement.Id(id)
+
+	// Params
+	statement.Params()
+
+	// List
+	statement.List(
+		jen.Id(interfaceId),
+	)
+
+	// Block
+	statement.Block(
+		jen.Return(
+			jen.Op("&").
+			Id(sliceStructId).
 			Values(),
 		),
 	)

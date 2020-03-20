@@ -404,7 +404,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 	var block []jen.Code
 
 	// Interface ID
-	id , err := controllerGenerator.formatter.OutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId(entity)
+	id , err := controllerGenerator.formatter.OutputDomainEntitySliceInterfaceConstructorFunctionId(entity)
 	if err != nil {
 		return block, err
 	}
@@ -485,7 +485,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 	
 	var block []jen.Code
 	// Interface ID
-	id , err := controllerGenerator.formatter.OutputScaffoldDomainEntityInterfaceConstructorFunctionId(entity)
+	id , err := controllerGenerator.formatter.OutputDomainEntityInterfaceConstructorFunctionId(entity)
 	if err != nil {
 		return block, err
 	}
@@ -570,7 +570,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEditM
 func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
 	var block []jen.Code
 	// Interface ID
-	id , err := controllerGenerator.formatter.OutputScaffoldDomainEntityInterfaceConstructorFunctionId(entity)
+	id , err := controllerGenerator.formatter.OutputDomainEntityInterfaceConstructorFunctionId(entity)
 	if err != nil {
 		return block, err
 	}

@@ -279,7 +279,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 	var block []jen.Code
 
 	// Interface ID
-	id , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityInterfaceConstructorFunctionId(entity)
+	id , err := repositoryGenerator.formatter.OutputDomainEntityInterfaceConstructorFunctionId(entity)
 	if err != nil {
 		return block, err
 	}

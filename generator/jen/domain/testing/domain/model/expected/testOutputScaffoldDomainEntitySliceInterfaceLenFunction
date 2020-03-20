@@ -1,4 +1,4 @@
-func (m *FoosScaffoldStruct) Len() int {
+func (m *foosStruct) Len() int {
 	if m != nil {
 		return len(*m)
 	}

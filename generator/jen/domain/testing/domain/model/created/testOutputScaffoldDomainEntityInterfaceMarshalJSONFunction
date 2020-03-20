@@ -1,4 +1,4 @@
-func (m *FooScaffoldStruct) MarshalJSON() ([]byte, error) {
+func (m *fooStruct) MarshalJSON() ([]byte, error) {
 	type jsonStructPrivate struct {
 		String string `json:"string"`
 		Int    int    `json:"int"`

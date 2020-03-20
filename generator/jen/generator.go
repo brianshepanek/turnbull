@@ -45,6 +45,20 @@ func New(config *config.Config, formatter formatter.Formatter, interfaceControll
 	}
 }
 
+func (generator *Generator) Entity(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.entityGenerator.File(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}
+
 func (generator *Generator) ScaffoldEntity(entity model.Entity, writer io.Writer) (error){
 
 	// File

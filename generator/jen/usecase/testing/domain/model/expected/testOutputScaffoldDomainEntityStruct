@@ -1,4 +1,0 @@
-type FooScaffoldStruct struct {
-	string string
-	int    int
-}

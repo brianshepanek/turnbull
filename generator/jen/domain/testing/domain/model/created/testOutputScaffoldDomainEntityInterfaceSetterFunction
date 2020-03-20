@@ -1,3 +1,3 @@
-func (m *FooScaffoldStruct) SetBar(bar string) {
+func (m *fooStruct) SetBar(bar string) {
 	m.bar = bar
 }

@@ -1,5 +1,0 @@
-type FooScaffoldInteractor interface {
-	Add(ctx context.Context, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
-	Read(ctx context.Context, req interface{}, req entity.FooScaffoldInterface) (*entity.FooScaffoldInterface, error)
-	Browse(ctx context.Context, req interface{}, req entity.FoosScaffoldInterface) (*entity.FoosScaffoldInterface, error)
-}

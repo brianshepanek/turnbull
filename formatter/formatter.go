@@ -21,6 +21,7 @@ type Formatter interface{
 	OutputScaffoldDomainDirectory() (string, error)
 	OutputScaffoldDomainEntityDirectory() (string, error)
 	OutputScaffoldDomainEntityDirectoryImportPath() (string, error)
+	OutputDomainEntityFile(entity model.Entity) (string, error)
 	OutputScaffoldDomainEntityFile(entity model.Entity) (string, error)
 
 	OutputScaffoldUsecaseDirectory() (string, error)
@@ -43,6 +44,10 @@ type Formatter interface{
 	OutputScaffoldInterfacePresenterFile(driver string, entity model.Entity) (string, error)
 
 	OutputScaffoldDomainEntityPackageName() (string, error)
+	OutputDomainEntityStructId(entity model.Entity) (string, error)
+	OutputDomainEntitySliceStructId(entity model.Entity) (string, error)
+	OutputDomainEntityInterfaceId(entity model.Entity) (string, error)
+	OutputDomainEntitySliceInterfaceId(entity model.Entity) (string, error)
 	OutputScaffoldDomainEntityStructId(entity model.Entity) (string, error)
 	OutputScaffoldDomainEntitySliceStructId(entity model.Entity) (string, error)
 	OutputScaffoldDomainEntityInterfaceId(entity model.Entity) (string, error)
@@ -56,6 +61,8 @@ type Formatter interface{
 	OutputScaffoldDomainEntityElementsId() (string,  error)
 	OutputScaffoldDomainEntityJSONTagId(field model.Field) (string,  error)
 	
+	OutputDomainEntityInterfaceConstructorFunctionId(entity model.Entity) (string, error)
+	OutputDomainEntitySliceInterfaceConstructorFunctionId(entity model.Entity) (string, error)
 	OutputScaffoldDomainEntityInterfaceConstructorFunctionId(entity model.Entity) (string, error)
 	OutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId(entity model.Entity) (string, error)
 
@@ -104,15 +111,15 @@ func (formatter *formatter) OutputDirectory() (string, error) {
 // Domain
 
 func (formatter *formatter) OutputScaffoldDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Domain.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Domain.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntityDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Domain.Name, formatter.config.Layers.Domain.Entity.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Domain.Name, formatter.config.Layers.Domain.Entity.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntityDirectoryImportPath() (string, error) {
@@ -123,12 +130,22 @@ func (formatter *formatter) OutputScaffoldDomainEntityDirectoryImportPath() (str
 	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
 }
 
+func (formatter *formatter) OutputDomainEntityFile(entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldDomainEntityDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
+
 func (formatter *formatter) OutputScaffoldDomainEntityFile(entity model.Entity) (string, error) {
 	path, err  := formatter.OutputScaffoldDomainEntityDirectory()
 	if err != nil {
 		return "", nil
 	}
-	file := strings.Join([]string{strcase.ToSnake(entity.Name), "go"}, formatter.config.StringSeparator)
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
@@ -136,11 +153,11 @@ func (formatter *formatter) OutputScaffoldDomainEntityFile(entity model.Entity) 
 // Usecase
 
 func (formatter *formatter) OutputScaffoldUsecaseDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Usecase.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecaseInteractorDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Name, formatter.config.Layers.Usecase.Interactor.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Usecase.Name, formatter.config.Layers.Usecase.Interactor.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecaseInteractorDirectoryImportPath() (string, error) {
@@ -156,13 +173,13 @@ func (formatter *formatter) OutputScaffoldUsecaseInteractorFile(entity model.Ent
 	if err != nil {
 		return "", nil
 	}
-	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name, formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecaseRepositoryDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Name, formatter.config.Layers.Usecase.Repository.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Usecase.Name, formatter.config.Layers.Usecase.Repository.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecaseRepositoryDirectoryImportPath() (string, error) {
@@ -178,13 +195,13 @@ func (formatter *formatter) OutputScaffoldUsecaseRepositoryFile(entity model.Ent
 	if err != nil {
 		return "", nil
 	}
-	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Repository.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Repository.Name, formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecasePresenterDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Usecase.Name, formatter.config.Layers.Usecase.Presenter.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Usecase.Name, formatter.config.Layers.Usecase.Presenter.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecasePresenterDirectoryImportPath() (string, error) {
@@ -200,7 +217,7 @@ func (formatter *formatter) OutputScaffoldUsecasePresenterFile(entity model.Enti
 	if err != nil {
 		return "", nil
 	}
-	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Presenter.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Presenter.Name, formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
@@ -208,11 +225,11 @@ func (formatter *formatter) OutputScaffoldUsecasePresenterFile(entity model.Enti
 // Interface
 
 func (formatter *formatter) OutputScaffoldInterfaceDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerFile(driver string, entity model.Entity) (string, error) {
@@ -220,13 +237,13 @@ func (formatter *formatter) OutputScaffoldInterfaceControllerFile(driver string,
 	if err != nil {
 		return "", nil
 	}
-	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver,  formatter.config.Layers.Interface.Controller.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver,  formatter.config.Layers.Interface.Controller.Name, formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryFile(driver string, entity model.Entity) (string, error) {
@@ -234,13 +251,13 @@ func (formatter *formatter) OutputScaffoldInterfaceRepositoryFile(driver string,
 	if err != nil {
 		return "", nil
 	}
-	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver,  formatter.config.Layers.Interface.Repository.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver,  formatter.config.Layers.Interface.Repository.Name, formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterDirectory() (string, error) {
-	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.PathSeparator), nil
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterFile(driver string, entity model.Entity) (string, error) {
@@ -248,7 +265,7 @@ func (formatter *formatter) OutputScaffoldInterfacePresenterFile(driver string, 
 	if err != nil {
 		return "", nil
 	}
-	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver,  formatter.config.Layers.Interface.Presenter.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver,  formatter.config.Layers.Interface.Presenter.Name, formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
@@ -259,23 +276,40 @@ func (formatter *formatter) OutputScaffoldDomainEntityPackageName() (string, err
 	return strcase.ToSnake(formatter.config.Layers.Domain.Entity.Name), nil
 }
 
+func (formatter *formatter) OutputDomainEntityStructId(entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputDomainEntitySliceStructId(entity model.Entity) (string, error) {
+	pluralize := pluralize.NewClient()
+	return strcase.ToLowerCamel(strings.Join([]string{pluralize.Plural(entity.Name)}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputDomainEntityInterfaceId(entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{entity.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputDomainEntitySliceInterfaceId(entity model.Entity) (string, error) {
+	pluralize := pluralize.NewClient()
+	return strcase.ToCamel(strings.Join([]string{pluralize.Plural(entity.Name)}, formatter.config.StringSeparator)), nil
+}
 
 func (formatter *formatter) OutputScaffoldDomainEntityStructId(entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{entity.Name, formatter.config.Scaffold.Name, "struct"}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, "struct"}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntitySliceStructId(entity model.Entity) (string, error) {
 	pluralize := pluralize.NewClient()
-	return strcase.ToCamel(strings.Join([]string{pluralize.Plural(entity.Name), formatter.config.Scaffold.Name, "struct"}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{pluralize.Plural(entity.Name), "struct"}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntityInterfaceId(entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{entity.Name, formatter.config.Scaffold.Name, "interface"}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, "interface"}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntitySliceInterfaceId(entity model.Entity) (string, error) {
 	pluralize := pluralize.NewClient()
-	return strcase.ToCamel(strings.Join([]string{pluralize.Plural(entity.Name), formatter.config.Scaffold.Name, "interface"}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{pluralize.Plural(entity.Name), "interface"}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntityGetterId(field model.Field) (string, error) {
@@ -306,8 +340,17 @@ func (formatter *formatter) OutputScaffoldDomainEntityFieldId(field model.Field)
 	return strcase.ToLowerCamel(field.Name), nil
 }
 
+func (formatter *formatter) OutputDomainEntityInterfaceConstructorFunctionId(entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{"new", entity.Name}, formatter.config.StringSeparator)), nil
+}
+
 func (formatter *formatter) OutputScaffoldDomainEntityInterfaceConstructorFunctionId(entity model.Entity) (string, error) {
 	return strcase.ToCamel(strings.Join([]string{"new", entity.Name, formatter.config.Scaffold.Name, "struct"}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputDomainEntitySliceInterfaceConstructorFunctionId(entity model.Entity) (string, error) {
+	pluralize := pluralize.NewClient()
+	return strcase.ToCamel(strings.Join([]string{"new", pluralize.Plural(entity.Name)}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId(entity model.Entity) (string, error) {

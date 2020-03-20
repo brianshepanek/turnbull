@@ -62,6 +62,7 @@ var (
 	testEntityGenerator EntityGenerator
 
 	// Test File Names
+	testOutputDomainEntityFileName = "testOutputDomainEntityFile"
 	testOutputScaffoldDomainEntityFileName = "testOutputScaffoldDomainEntityFile"
 
 	testOutputScaffoldDomainEntityStructName = "testOutputScaffoldDomainEntityStruct"
@@ -84,6 +85,7 @@ var (
 	testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunctionName = "testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunction"
 
 	// Test File Strings
+	testOutputDomainEntityFile string
 	testOutputScaffoldDomainEntityFile string
 
 	testOutputScaffoldDomainEntityStruct string
@@ -115,6 +117,7 @@ func init(){
 	testEntityGenerator = NewEntityGenerator(formatter, testHelperGenerator)
 
 	// Test
+	testOutputDomainEntityFileFile, _ := ioutil.ReadFile("./testing/domain/model/expected/" + testOutputDomainEntityFileName)
 	testOutputScaffoldDomainEntityFileFile, _ := ioutil.ReadFile("./testing/domain/model/expected/" + testOutputScaffoldDomainEntityFileName)
 
 	testOutputScaffoldDomainEntityStructFile, _ := ioutil.ReadFile("./testing/domain/model/expected/" + testOutputScaffoldDomainEntityStructName)
@@ -136,6 +139,7 @@ func init(){
 	testOutputScaffoldDomainEntityInterfaceMarshalJSONFunctionFile, _ := ioutil.ReadFile("./testing/domain/model/expected/" + testOutputScaffoldDomainEntityInterfaceMarshalJSONFunctionName)
 	testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunctionFile, _ := ioutil.ReadFile("./testing/domain/model/expected/" + testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunctionName)
 
+	testOutputDomainEntityFile = string(testOutputDomainEntityFileFile)
 	testOutputScaffoldDomainEntityFile = string(testOutputScaffoldDomainEntityFileFile)
 	
 	testOutputScaffoldDomainEntityStruct = string(testOutputScaffoldDomainEntityStructFile)
@@ -157,6 +161,34 @@ func init(){
 	testOutputScaffoldDomainEntityInterfaceMarshalJSONFunction = string(testOutputScaffoldDomainEntityInterfaceMarshalJSONFunctionFile)
 	testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunction = string(testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunctionFile)
 
+}
+
+// Test Entity File
+func TestEntityFile(t *testing.T){
+
+	// Build
+	statement, err := testEntityGenerator.File(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+
+	f, err := os.Create("./testing/domain/model/created/" + testOutputDomainEntityFileName)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	buf := &bytes.Buffer{}
+	err = statement.Render(buf)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	_, err = f.Write(buf.Bytes())
+
+	if buf.String() != testOutputDomainEntityFile {
+		t.Errorf(`File() failed; want "%s", got "%s"`, testOutputDomainEntityFile, buf.String())
+	}
+	
 }
 
 // Test Scaffold Entity File

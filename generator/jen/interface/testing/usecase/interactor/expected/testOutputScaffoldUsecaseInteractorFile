@@ -2,9 +2,9 @@ package interactor
 
 import (
 	"context"
-	entity "github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
-	presenter "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/presenter"
-	repository "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/repository"
+	entity "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
+	presenter "github.com/brianshepanek/turnbull/_testing/output/usecase/presenter"
+	repository "github.com/brianshepanek/turnbull/_testing/output/usecase/repository"
 )
 
 type fooScaffoldInteractor struct {

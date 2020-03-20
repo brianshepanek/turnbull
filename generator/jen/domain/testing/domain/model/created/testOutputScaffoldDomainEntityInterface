@@ -1,9 +1,9 @@
-type FooScaffoldInterface interface {
+type fooInterface interface {
 	String() string
 	Int() int
 	SetString(string string)
 	SetInt(int int)
-	SetAll(req FooScaffoldInterface)
+	SetAll(req fooInterface)
 	MarshalJSON() ([]byte, error)
 	UnmarshalJSON(data []byte) error
 }

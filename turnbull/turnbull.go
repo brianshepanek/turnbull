@@ -35,6 +35,38 @@ func (turnbull *turnbull) buildStructure() (error){
 	return nil
 }
 
+// Build Domain Entity
+func (turnbull *turnbull) buildDomainEntity(entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.Entity(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputDomainEntityFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Build Scaffold Domain Entity
 func (turnbull *turnbull) buildScaffoldDomainEntity(entity model.Entity) (error){
 

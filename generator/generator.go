@@ -13,6 +13,7 @@ type Generator interface {
 }
 
 type DomainGenerator interface {
+	Entity(entity model.Entity, writer io.Writer) (error)
 	ScaffoldEntity(entity model.Entity, writer io.Writer) (error)
 }
 

@@ -1,1 +1,1 @@
-type FoosScaffoldStruct []FooScaffoldInterface
+type foosStruct []fooInterface

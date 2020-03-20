@@ -3,8 +3,8 @@ package controller
 import (
 	"context"
 	"encoding/json"
-	entity "github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
-	interactor "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
+	entity "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
+	interactor "github.com/brianshepanek/turnbull/_testing/output/usecase/interactor"
 	"net/http"
 )
 
@@ -26,7 +26,7 @@ func NewHttpFooScaffoldController(interactor interactor.FooScaffoldInteractor) *
 func (c *httpFooScaffoldController) Count(w http.ResponseWriter, r http.Request) {}
 func (c *httpFooScaffoldController) Browse(w http.ResponseWriter, r http.Request) {
 	ctx := context.Background()
-	req := entity.NewFoosScaffoldStruct()
+	req := entity.NewFoos()
 	resp, err := c.interactor.Browse(ctx, nil, req)
 	if err != nil {
 	}
@@ -35,7 +35,7 @@ func (c *httpFooScaffoldController) Browse(w http.ResponseWriter, r http.Request
 }
 func (c *httpFooScaffoldController) Read(w http.ResponseWriter, r http.Request) {
 	ctx := context.Background()
-	req := entity.NewFooScaffoldStruct()
+	req := entity.NewFoo()
 	resp, err := c.interactor.Read(ctx, nil, req)
 	if err != nil {
 	}
@@ -45,7 +45,7 @@ func (c *httpFooScaffoldController) Read(w http.ResponseWriter, r http.Request) 
 func (c *httpFooScaffoldController) Edit(w http.ResponseWriter, r http.Request) {}
 func (c *httpFooScaffoldController) Add(w http.ResponseWriter, r http.Request) {
 	ctx := context.Background()
-	req := entity.NewFooScaffoldStruct()
+	req := entity.NewFoo()
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 	}

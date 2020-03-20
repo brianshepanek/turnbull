@@ -2,72 +2,64 @@ package entity
 
 import "encoding/json"
 
-type FooScaffoldStruct struct {
+type fooStruct struct {
 	string string
 	int    int
 }
 
-type FoosScaffoldStruct []FooScaffoldInterface
+type foosStruct []fooInterface
 
-type FooScaffoldInterface interface {
+type fooInterface interface {
 	String() string
 	Int() int
 	SetString(string string)
 	SetInt(int int)
-	SetAll(req FooScaffoldInterface)
+	SetAll(req fooInterface)
 	MarshalJSON() ([]byte, error)
 	UnmarshalJSON(data []byte) error
 }
-type FoosScaffoldInterface interface {
+type foosInterface interface {
 	Len() int
-	Append(req FooScaffoldInterface)
-	Elements() []FooScaffoldInterface
+	Append(req fooInterface)
+	Elements() []fooInterface
 }
 
-func NewFooScaffoldStruct() FooScaffoldInterface {
-	return &FooScaffoldStruct{}
-}
-
-func NewFoosScaffoldStruct() FoosScaffoldInterface {
-	return &FoosScaffoldStruct{}
-}
-
-func (m *FoosScaffoldStruct) Len() int {
+func (m *foosStruct) Len() int {
 	if m != nil {
 		return len(*m)
 	}
 	return 0
 }
-func (m *FoosScaffoldStruct) Append(req FooScaffoldInterface) {
+func (m *foosStruct) Append(req fooInterface) {
 	if m != nil {
 		*m = append(*m, req)
 	}
 }
-func (m *FoosScaffoldStruct) Elements() []FooScaffoldInterface {
+func (m *foosStruct) Elements() []fooInterface {
 	return *m
 }
-func (m *FooScaffoldStruct) String() string {
+func (m *fooStruct) String() string {
 	return m.string
 }
 
-func (m *FooScaffoldStruct) Int() int {
+func (m *fooStruct) Int() int {
 	return m.int
 }
 
-func (m *FooScaffoldStruct) SetString(string string) {
+func (m *fooStruct) SetString(string string) {
 	m.string = string
 }
 
-func (m *FooScaffoldStruct) SetInt(int int) {
+func (m *fooStruct) SetInt(int int) {
 	m.int = int
 }
 
-func (m *FooScaffoldStruct) SetAll(req FooScaffoldInterface) {
+func (m *fooStruct) SetAll(req fooInterface) {
 	m.SetString(req.String())
 	m.SetInt(req.Int())
 }
 
-func (m *FooScaffoldStruct) MarshalJSON() ([]byte, error) {
+func (m *fooStruct) MarshalJSON() ([]byte, error) {
 	type jsonStructPrivate struct {
 		String string `json:"string"`
 		Int    int    `json:"int"`
@@ -79,7 +71,7 @@ func (m *FooScaffoldStruct) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&jsonStruct)
 }
 
-func (m *FooScaffoldStruct) UnmarshalJSON(data []byte) error {
+func (m *fooStruct) UnmarshalJSON(data []byte) error {
 	type jsonStructPrivate struct {
 		String string `json:"string"`
 		Int    int    `json:"int"`

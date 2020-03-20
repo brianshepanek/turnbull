@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"encoding/json"
-	entity "github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
+	entity "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
 	golangscribble "github.com/nanobox-io/golang-scribble"
 )
 
@@ -27,13 +27,13 @@ func (r *scribbleFooScaffoldRepository) Count(ctx context.Context, query interfa
 	req = &count
 	return nil
 }
-func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, query interface{}, req entity.FoosScaffoldInterface) error {
+func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, query interface{}, req entity.Foos) error {
 	records, err := r.driver.ReadAll(r.collection)
 	if err != nil {
 		return err
 	}
 	for _, record := range records {
-		resp := entity.NewFooScaffoldStruct()
+		resp := entity.NewFoo()
 		err := json.Unmarshal([]byte(record), resp)
 		if err != nil {
 			return err
@@ -42,15 +42,15 @@ func (r *scribbleFooScaffoldRepository) Browse(ctx context.Context, query interf
 	}
 	return nil
 }
-func (r *scribbleFooScaffoldRepository) Read(ctx context.Context, query interface{}, req entity.FooScaffoldInterface) error {
+func (r *scribbleFooScaffoldRepository) Read(ctx context.Context, query interface{}, req entity.Foo) error {
 	return r.driver.Read(r.collection, req.Id(), req)
 }
-func (r *scribbleFooScaffoldRepository) Edit(ctx context.Context, req entity.FooScaffoldInterface) error {
+func (r *scribbleFooScaffoldRepository) Edit(ctx context.Context, req entity.Foo) error {
 	return r.driver.Read(r.collection, req.Id(), req)
 }
-func (r *scribbleFooScaffoldRepository) Add(ctx context.Context, req entity.FooScaffoldInterface) error {
+func (r *scribbleFooScaffoldRepository) Add(ctx context.Context, req entity.Foo) error {
 	return r.driver.Write(r.collection, req.Id(), req)
 }
-func (r *scribbleFooScaffoldRepository) Delete(ctx context.Context, req entity.FooScaffoldInterface) error {
+func (r *scribbleFooScaffoldRepository) Delete(ctx context.Context, req entity.Foo) error {
 	return r.driver.Delete(r.collection, req.Id())
 }

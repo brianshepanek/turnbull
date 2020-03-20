@@ -12,39 +12,46 @@ const(
 	testOutputPath = "/go/src/github.com/brianshepanek/turnbull/_testing/output"
 
 	testOutputDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output"
-	testOutputScaffoldDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold"
+	testOutputScaffoldDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output"
 
-	testOutputScaffoldDomainDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/domain"
-	testOutputScaffoldDomainEntityDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
-	testOutputScaffoldDomainEntityDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity"
-	testOutputScaffoldDomainEntityFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/domain/entity/foo.go"
+	testOutputScaffoldDomainDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/domain"
+	testOutputScaffoldDomainEntityDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/domain/entity"
+	testOutputScaffoldDomainEntityDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
+	testOutputDomainEntityFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/domain/entity/foo.go"
+	testOutputScaffoldDomainEntityFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/domain/entity/foo_scaffold.go"
 
-	testOutputScaffoldUsecaseDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase"
-	testOutputScaffoldUsecaseInteractorDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
-	testOutputScaffoldUsecaseInteractorDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor"
-	testOutputScaffoldUsecaseInteractorFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/interactor/foo_interactor.go"
-	testOutputScaffoldUsecaseRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/repository"
-	testOutputScaffoldUsecaseRepositoryDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/repository"
-	testOutputScaffoldUsecaseRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/repository/foo_repository.go"
-	testOutputScaffoldUsecasePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/presenter"
-	testOutputScaffoldUsecasePresenterDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/presenter"
-	testOutputScaffoldUsecasePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/usecase/presenter/foo_presenter.go"
+	testOutputScaffoldUsecaseDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase"
+	testOutputScaffoldUsecaseInteractorDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/interactor"
+	testOutputScaffoldUsecaseInteractorDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/usecase/interactor"
+	testOutputScaffoldUsecaseInteractorFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/interactor/foo_interactor_scaffold.go"
+	testOutputScaffoldUsecaseRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/repository"
+	testOutputScaffoldUsecaseRepositoryDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/usecase/repository"
+	testOutputScaffoldUsecaseRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/repository/foo_repository_scaffold.go"
+	testOutputScaffoldUsecasePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/presenter"
+	testOutputScaffoldUsecasePresenterDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/usecase/presenter"
+	testOutputScaffoldUsecasePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/usecase/presenter/foo_presenter_scaffold.go"
 
-	testOutputScaffoldInterfaceDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface"
-	testOutputScaffoldInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/controller"
-	testOutputScaffoldInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/controller/foo_http_controller.go"
-	testOutputScaffoldInterfaceRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/repository"
-	testOutputScaffoldInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/repository/foo_scribble_repository.go"
-	testOutputScaffoldInterfacePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/presenter"
-	testOutputScaffoldInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/scaffold/interface/presenter/foo_default_presenter.go"
+	testOutputScaffoldInterfaceDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface"
+	testOutputScaffoldInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller"
+	testOutputScaffoldInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo_http_controller_scaffold.go"
+	testOutputScaffoldInterfaceRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository"
+	testOutputScaffoldInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo_scribble_repository_scaffold.go"
+	testOutputScaffoldInterfacePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter"
+	testOutputScaffoldInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo_default_presenter_scaffold.go"
 
 	testOutputScaffoldDomainEntityPackageName = "entity"
 
-	testOutputScaffoldDomainEntityStructId = "FooScaffoldStruct"
-	testOutputScaffoldDomainEntitySliceStructId = "FoosScaffoldStruct"
+	testOutputDomainEntityStructId = "foo"
+	testOutputDomainEntitySliceStructId = "foos"
 
-	testOutputScaffoldDomainEntityInterfaceId = "FooScaffoldInterface"
-	testOutputScaffoldDomainEntitySliceInterfaceId = "FoosScaffoldInterface"
+	testOutputDomainEntityInterfaceId = "Foo"
+	testOutputDomainEntitySliceInterfaceId = "Foos"
+
+	testOutputScaffoldDomainEntityStructId = "fooStruct"
+	testOutputScaffoldDomainEntitySliceStructId = "foosStruct"
+
+	testOutputScaffoldDomainEntityInterfaceId = "fooInterface"
+	testOutputScaffoldDomainEntitySliceInterfaceId = "foosInterface"
 
 	testOutputScaffoldDomainEntityStructFieldId = "bar"
 	testOutputScaffoldDomainEntityGetterId = "Bar"
@@ -56,6 +63,8 @@ const(
 	testOutputScaffoldDomainEntityAppendId = "Append"
 	testOutputScaffoldDomainEntityElementsId = "Elements"
 
+	testOutputDomainEntityInterfaceConstructorFunctionId = "NewFoo"
+	testOutputDomainEntitySliceInterfaceConstructorFunctionId = "NewFoos"
 	testOutputScaffoldDomainEntityInterfaceConstructorFunctionId = "NewFooScaffoldStruct"
 	testOutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId = "NewFoosScaffoldStruct"
 
@@ -192,6 +201,23 @@ func TestOutputScaffoldDomainEntityDirectoryImportPath(t *testing.T){
 
 	if dir != testOutputScaffoldDomainEntityDirectoryImportPath {
 		t.Errorf(`OutputScaffoldDomainEntityDirectoryImportPath() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityDirectoryImportPath, dir)
+	}
+}
+
+// Test Output Domain Entity File
+func TestOutputDomainEntityFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputDomainEntityFile(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputDomainEntityFile() failed with error %v`, err)
+	}
+
+	if file != testOutputDomainEntityFile {
+		t.Errorf(`OutputDomainEntityFile() failed; want "%s", got "%s"`, testOutputDomainEntityFile, file)
 	}
 }
 
@@ -517,6 +543,71 @@ func TestOutputScaffoldDomainEntityPackageName(t *testing.T){
 	}
 }
 
+// Test Output Domain Entity Struct ID
+func TestOutputDomainEntityStructId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputDomainEntityStructId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputDomainEntityStructId() failed with error %v`, err)
+	}
+
+	if id != testOutputDomainEntityStructId {
+		t.Errorf(`OutputDomainEntityStructId() failed; want "%s", got "%s"`, testOutputDomainEntityStructId, id)
+	}
+}
+
+// Test Output Domain Entity Slice Struct ID
+func TestOutputDomainEntitySliceStructId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputDomainEntitySliceStructId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputDomainEntitySliceStructId() failed with error %v`, err)
+	}
+
+	if id != testOutputDomainEntitySliceStructId {
+		t.Errorf(`OutputDomainEntitySliceStructId() failed; want "%s", got "%s"`, testOutputDomainEntitySliceStructId, id)
+	}
+}
+
+
+// Test Output Domain Entity Interface ID
+func TestOutputDomainEntityInterfaceId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputDomainEntityInterfaceId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputDomainEntityInterfaceId() failed with error %v`, err)
+	}
+
+	if id != testOutputDomainEntityInterfaceId {
+		t.Errorf(`OutputDomainEntityInterfaceId() failed; want "%s", got "%s"`, testOutputDomainEntityInterfaceId, id)
+	}
+}
+
+// Test Output Domain Entity Slice InterfaceID
+func TestOutputDomainEntitySliceInterfaceId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputDomainEntitySliceInterfaceId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputDomainEntitySliceInterfaceId() failed with error %v`, err)
+	}
+
+	if id != testOutputDomainEntitySliceInterfaceId {
+		t.Errorf(`OutputDomainEntitySliceInterfaceId() failed; want "%s", got "%s"`, testOutputDomainEntitySliceInterfaceId, id)
+	}
+}
+
 // Test Output Scaffold Domain Entity Struct ID
 func TestOutputScaffoldDomainEntityStructId(t *testing.T){
 
@@ -710,6 +801,22 @@ func TestOutputScaffoldDomainEntityElementsId(t *testing.T){
 	}
 }
 
+// Test Output Domain Entity Interface Constructor ID
+func TestOutputDomainEntityInterfaceConstructorFunctionId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputDomainEntityInterfaceConstructorFunctionId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputDomainEntityInterfaceConstructorFunctionId() failed with error %v`, err)
+	}
+
+	if id != testOutputDomainEntityInterfaceConstructorFunctionId {
+		t.Errorf(`OutputDomainEntityInterfaceConstructorFunctionId() failed; want "%s", got "%s"`, testOutputDomainEntityInterfaceConstructorFunctionId, id)
+	}
+}
+
 // Test Output Scaffold Domain Entity Interface Constructor ID
 func TestOutputScaffoldDomainEntityInterfaceConstructorFunctionId(t *testing.T){
 
@@ -723,6 +830,22 @@ func TestOutputScaffoldDomainEntityInterfaceConstructorFunctionId(t *testing.T){
 
 	if id != testOutputScaffoldDomainEntityInterfaceConstructorFunctionId {
 		t.Errorf(`OutputScaffoldDomainEntityInterfaceConstructorFunctionId() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityInterfaceConstructorFunctionId, id)
+	}
+}
+
+// Test Output Domain Entity Slice Interface Constructor ID
+func TestOutputDomainEntitySliceInterfaceConstructorFunctionId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputDomainEntitySliceInterfaceConstructorFunctionId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputDomainEntitySliceInterfaceConstructorFunctionId() failed with error %v`, err)
+	}
+
+	if id != testOutputDomainEntitySliceInterfaceConstructorFunctionId {
+		t.Errorf(`OutputDomainEntitySliceInterfaceConstructorFunctionId() failed; want "%s", got "%s"`, testOutputDomainEntitySliceInterfaceConstructorFunctionId, id)
 	}
 }
 

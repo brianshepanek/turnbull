@@ -1,3 +1,0 @@
-func (m *FooScaffoldStruct) SetBar(bar string) {
-	m.bar = bar
-}

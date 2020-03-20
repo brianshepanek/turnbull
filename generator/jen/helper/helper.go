@@ -57,7 +57,7 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 			if field.Slice {
 
 				// Slice Interface ID
-				id, err = generator.formatter.OutputScaffoldDomainEntitySliceInterfaceId(entity)
+				id, err = generator.formatter.OutputDomainEntitySliceInterfaceId(entity)
 				if err != nil {
 					return nil
 				}
@@ -65,7 +65,7 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 			} else {
 
 				// Interface ID
-				id , err = generator.formatter.OutputScaffoldDomainEntityInterfaceId(entity)
+				id , err = generator.formatter.OutputDomainEntityInterfaceId(entity)
 				if err != nil {
 					return nil
 				}

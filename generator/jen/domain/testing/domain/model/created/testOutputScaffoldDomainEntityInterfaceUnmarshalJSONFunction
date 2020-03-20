@@ -1,4 +1,4 @@
-func (m *FooScaffoldStruct) UnmarshalJSON(data []byte) error {
+func (m *fooStruct) UnmarshalJSON(data []byte) error {
 	type jsonStructPrivate struct {
 		String string `json:"string"`
 		Int    int    `json:"int"`

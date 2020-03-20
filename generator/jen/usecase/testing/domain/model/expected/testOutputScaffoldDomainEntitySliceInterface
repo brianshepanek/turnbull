@@ -1,5 +1,0 @@
-type FoosScaffoldInterface interface {
-	Len() int
-	Append(req FooScaffoldInterface)
-	Elements() []FooScaffoldInterface
-}

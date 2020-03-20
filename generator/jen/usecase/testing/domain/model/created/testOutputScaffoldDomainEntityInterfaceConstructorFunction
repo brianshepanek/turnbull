@@ -1,3 +1,0 @@
-func NewFooScaffoldStruct() FooScaffoldInterface {
-	return &FooScaffoldStruct{}
-}

@@ -1,4 +1,4 @@
-type FooScaffoldStruct struct {
+type fooStruct struct {
 	string string
 	int    int
 }

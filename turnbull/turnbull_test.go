@@ -98,6 +98,18 @@ func TestBuildStructure(t *testing.T){
 	}
 }
 
+// Test Build Domain Entity
+func TestBuildDomainEntity(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildDomainEntity(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildDomainEntity() failed with error %v`, err)
+	}
+}
+
 // Test Build Scaffold Domain Entity
 func TestBuildScaffoldDomainEntity(t *testing.T){
 
