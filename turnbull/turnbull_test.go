@@ -218,6 +218,18 @@ func TestBuildScaffoldInterfaceRepository(t *testing.T){
 	}
 }
 
+// Test Build Interface Presenter
+func TestBuildInterfacePresenter(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildInterfacePresenter("default", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildInterfacePresenter() failed with error %v`, err)
+	}
+}
+
 // Test Build Scaffold Interface Presenter
 func TestBuildScaffoldInterfacePresenter(t *testing.T){
 
@@ -227,6 +239,18 @@ func TestBuildScaffoldInterfacePresenter(t *testing.T){
 	// Return
 	if err != nil {
 		t.Errorf(`buildScaffoldInterfacePresenter() failed with error %v`, err)
+	}
+}
+
+// Test Build Interface Controller
+func TestBuildInterfaceController(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildInterfaceController("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildInterfaceController() failed with error %v`, err)
 	}
 }
 

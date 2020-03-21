@@ -36,11 +36,13 @@ const(
 
 	testOutputScaffoldInterfaceDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface"
 	testOutputScaffoldInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller"
+	testOutputInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo_http_controller.go"
 	testOutputScaffoldInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo_http_controller_scaffold.go"
 	testOutputScaffoldInterfaceRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository"
 	testOutputInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo_scribble_repository.go"
 	testOutputScaffoldInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo_scribble_repository_scaffold.go"
 	testOutputScaffoldInterfacePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter"
+	testOutputInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo_default_presenter.go"
 	testOutputScaffoldInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo_default_presenter_scaffold.go"
 
 	testOutputScaffoldDomainEntityPackageName = "entity"
@@ -96,14 +98,17 @@ const(
 	testOutputScaffoldInterfaceRepositoryConstructorFunctionId = "NewScribbleFooRepository"
 
 	testOutputScaffoldInterfacePresenterPackageName = "presenter"
-	testOutputScaffoldInterfacePresenterStructId = "defaultFooScaffoldPresenter"
-	testOutputScaffoldInterfacePresenterInterfaceId = "DefaultFooScaffoldPresenter"
-	testOutputScaffoldInterfacePresenterConstructorFunctionId = "NewDefaultFooScaffoldPresenter"
+	testOutputInterfacePresenterStructId = "defaultFooPresenter"
+	testOutputScaffoldInterfacePresenterStructId = "defaultFooPresenterStruct"
+	testOutputScaffoldInterfacePresenterInterfaceId = "DefaultFooPresenter"
+	testOutputScaffoldInterfacePresenterConstructorFunctionId = "NewDefaultFooPresenter"
 
 	testOutputScaffoldInterfaceControllerPackageName = "controller"
-	testOutputScaffoldInterfaceControllerStructId = "httpFooScaffoldController"
-	testOutputScaffoldInterfaceControllerInterfaceId = "HttpFooScaffoldController"
-	testOutputScaffoldInterfaceControllerConstructorFunctionId = "NewHttpFooScaffoldController"
+	testOutputInterfaceControllerStructId = "httpFooController"
+	testOutputScaffoldInterfaceControllerStructId = "httpFooControllerStruct"
+	testOutputInterfaceControllerInterfaceId = "HttpFooController"
+	testOutputScaffoldInterfaceControllerInterfaceId = "httpFooControllerInterface"
+	testOutputScaffoldInterfaceControllerConstructorFunctionId = "NewHttpFooController"
 
 )
 
@@ -502,6 +507,23 @@ func TestOutputScaffoldInterfaceControllerDirectory(t *testing.T){
 	}
 }
 
+// Test Output Interface Controller File
+func TestOutputInterfaceRepositoryController(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputInterfaceControllerFile("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfaceControllerFile() failed with error %v`, err)
+	}
+
+	if file != testOutputInterfaceControllerFile {
+		t.Errorf(`OutputInterfaceControllerFile() failed; want "%s", got "%s"`, testOutputInterfaceControllerFile, file)
+	}
+}
+
 // Test Output Scaffold Interface Controller File
 func TestOutputScaffoldInterfaceRepositoryController(t *testing.T){
 
@@ -584,6 +606,23 @@ func TestOutputScaffoldInterfacePresenterDirectory(t *testing.T){
 
 	if dir != testOutputScaffoldInterfacePresenterDirectory {
 		t.Errorf(`OutputScaffoldInterfacePresenterDirectory() failed; want "%s", got "%s"`, testOutputScaffoldInterfacePresenterDirectory, dir)
+	}
+}
+
+// Test Output Interface Presenter File
+func TestOutputInterfaceRepositoryPresenter(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputInterfacePresenterFile("default", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfacePresenterFile() failed with error %v`, err)
+	}
+
+	if file != testOutputInterfacePresenterFile {
+		t.Errorf(`OutputInterfacePresenterFile() failed; want "%s", got "%s"`, testOutputInterfacePresenterFile, file)
 	}
 }
 
@@ -1264,6 +1303,22 @@ func TestOutputScaffoldInterfacePresenterPackageName(t *testing.T){
 	}
 }
 
+// Test Output Interface Presenter Struct ID
+func TestOutputInterfacePresenterStructId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputInterfacePresenterStructId("default", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfacePresenterStructId() failed with error %v`, err)
+	}
+
+	if id != testOutputInterfacePresenterStructId {
+		t.Errorf(`OutputInterfacePresenterStructId() failed; want "%s", got "%s"`, testOutputInterfacePresenterStructId, id)
+	}
+}
+
 // Test Output Scaffold Interface Presenter Struct ID
 func TestOutputScaffoldInterfacePresenterStructId(t *testing.T){
 
@@ -1330,6 +1385,22 @@ func TestOutputScaffoldInterfaceControllerPackageName(t *testing.T){
 	}
 }
 
+// Test Output Interface Controller Struct ID
+func TestOutputInterfaceControllerStructId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputInterfaceControllerStructId("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfaceControllerStructId() failed with error %v`, err)
+	}
+
+	if id != testOutputInterfaceControllerStructId {
+		t.Errorf(`OutputInterfaceControllerStructId() failed; want "%s", got "%s"`, testOutputInterfaceControllerStructId, id)
+	}
+}
+
 // Test Output Scaffold Interface Controller Struct ID
 func TestOutputScaffoldInterfaceControllerStructId(t *testing.T){
 
@@ -1346,6 +1417,21 @@ func TestOutputScaffoldInterfaceControllerStructId(t *testing.T){
 	}
 }
 
+// Test Output Interface Controller Interface ID
+func TestOutputInterfaceControllerInterfaceId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputInterfaceControllerInterfaceId("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfaceControllerInterfaceId() failed with error %v`, err)
+	}
+
+	if id != testOutputInterfaceControllerInterfaceId {
+		t.Errorf(`OutputInterfaceControllerInterfaceId() failed; want "%s", got "%s"`, testOutputInterfaceControllerInterfaceId, id)
+	}
+}
 
 // Test Output Scaffold Interface Controller Interface ID
 func TestOutputScaffoldInterfaceControllerInterfaceId(t *testing.T){

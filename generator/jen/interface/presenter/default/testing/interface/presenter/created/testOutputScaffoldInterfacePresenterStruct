@@ -1,1 +1,1 @@
-type defaultFooScaffoldPresenter struct{}
+type defaultFooPresenterStruct struct{}

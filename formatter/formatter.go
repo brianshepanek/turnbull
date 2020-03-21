@@ -40,11 +40,13 @@ type Formatter interface{
 
 	OutputScaffoldInterfaceDirectory() (string, error)
 	OutputScaffoldInterfaceControllerDirectory() (string, error)
+	OutputInterfaceControllerFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceControllerFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryDirectory() (string, error)
 	OutputInterfaceRepositoryFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfacePresenterDirectory() (string, error)
+	OutputInterfacePresenterFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfacePresenterFile(driver string, entity model.Entity) (string, error)
 
 	OutputScaffoldDomainEntityPackageName() (string, error)
@@ -94,12 +96,15 @@ type Formatter interface{
 	OutputScaffoldInterfaceRepositoryConstructorFunctionId(driver string, entity model.Entity) (string, error)
 
 	OutputScaffoldInterfacePresenterPackageName() (string, error)
+	OutputInterfacePresenterStructId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfacePresenterStructId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfacePresenterInterfaceId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfacePresenterConstructorFunctionId(driver string, entity model.Entity) (string, error)
 
 	OutputScaffoldInterfaceControllerPackageName() (string, error)
+	OutputInterfaceControllerStructId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceControllerStructId(driver string, entity model.Entity) (string, error)
+	OutputInterfaceControllerInterfaceId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceControllerInterfaceId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceControllerConstructorFunctionId(driver string, entity model.Entity) (string, error)
 
@@ -272,6 +277,16 @@ func (formatter *formatter) OutputScaffoldInterfaceControllerDirectory() (string
 	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.PathSeparator), nil
 }
 
+func (formatter *formatter) OutputInterfaceControllerFile(driver string, entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldInterfaceControllerDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver,  formatter.config.Layers.Interface.Controller.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
+
 func (formatter *formatter) OutputScaffoldInterfaceControllerFile(driver string, entity model.Entity) (string, error) {
 	path, err  := formatter.OutputScaffoldInterfaceControllerDirectory()
 	if err != nil {
@@ -307,6 +322,16 @@ func (formatter *formatter) OutputScaffoldInterfaceRepositoryFile(driver string,
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterDirectory() (string, error) {
 	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputInterfacePresenterFile(driver string, entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldInterfacePresenterDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver,  formatter.config.Layers.Interface.Presenter.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterFile(driver string, entity model.Entity) (string, error) {
@@ -496,30 +521,42 @@ func (formatter *formatter) OutputScaffoldInterfacePresenterPackageName() (strin
 	return strcase.ToSnake(formatter.config.Layers.Interface.Presenter.Name), nil
 }
 
+func (formatter *formatter) OutputInterfacePresenterStructId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
+}
+
 func (formatter *formatter) OutputScaffoldInterfacePresenterStructId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name,formatter.config.Layers.Interface.Presenter.Name, "struct"}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterInterfaceId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToCamel(strings.Join([]string{driver, entity.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterConstructorFunctionId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerPackageName() (string, error) {
 	return strcase.ToSnake(formatter.config.Layers.Interface.Controller.Name), nil
 }
 
+func (formatter *formatter) OutputInterfaceControllerStructId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
+}
+
 func (formatter *formatter) OutputScaffoldInterfaceControllerStructId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Layers.Interface.Controller.Name, "struct"}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputInterfaceControllerInterfaceId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{driver, entity.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerInterfaceId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Layers.Interface.Controller.Name, "interface"}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerConstructorFunctionId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Scaffold.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
 }

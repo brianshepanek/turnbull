@@ -1,3 +1,3 @@
-func NewDefaultFooScaffoldPresenter() *defaultFooScaffoldPresenter {
-	return &defaultFooScaffoldPresenter{}
+func NewDefaultFooPresenter() *defaultFooPresenterStruct {
+	return &defaultFooPresenterStruct{}
 }

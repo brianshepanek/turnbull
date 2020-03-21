@@ -19,6 +19,7 @@ const(
 var (
 	testPresenterGenerator *presenterGenerator
 
+	testOutputInterfacePresenterFileName = "testOutputInterfacePresenterFile"
 	testOutputScaffoldInterfacePresenterFileName = "testOutputScaffoldInterfacePresenterFile"
 	testOutputScaffoldInterfacePresenterStructName = "testOutputScaffoldInterfacePresenterStruct"
 	testOutputScaffoldInterfacePresenterInterfaceName = "testOutputScaffoldInterfacePresenterInterface"
@@ -26,6 +27,7 @@ var (
 	testOutputScaffoldInterfacePresenterConstructorFunctionName = "testOutputScaffoldInterfacePresenterConstructorFunction"
 	testOutputScaffoldInterfacePresenterInterfaceFunctionName = "testOutputScaffoldInterfacePresenterInterfaceFunction"
 
+	testOutputInterfacePresenterFile string
 	testOutputScaffoldInterfacePresenterFile string
 	testOutputScaffoldInterfacePresenterStruct string
 	testOutputScaffoldInterfacePresenterInterface string
@@ -88,6 +90,7 @@ func init(){
 	testHelperGenerator := helper.New(formatter)
 	testPresenterGenerator = New(conf, formatter, testHelperGenerator)
 
+	testOutputInterfacePresenterFileFile, _ := ioutil.ReadFile("./testing/interface/presenter/expected/" + testOutputInterfacePresenterFileName)
 	testOutputScaffoldInterfacePresenterFileFile, _ := ioutil.ReadFile("./testing/interface/presenter/expected/" + testOutputScaffoldInterfacePresenterFileName)
 	testOutputScaffoldInterfacePresenterStructFile, _ := ioutil.ReadFile("./testing/interface/presenter/expected/" + testOutputScaffoldInterfacePresenterStructName)
 	testOutputScaffoldInterfacePresenterInterfaceFile, _ := ioutil.ReadFile("./testing/interface/presenter/expected/" + testOutputScaffoldInterfacePresenterInterfaceName)
@@ -95,6 +98,7 @@ func init(){
 	testOutputScaffoldInterfacePresenterConstructorFunctionFile, _ := ioutil.ReadFile("./testing/interface/presenter/expected/" + testOutputScaffoldInterfacePresenterConstructorFunctionName)
 	testOutputScaffoldInterfacePresenterInterfaceFunctionFile, _ := ioutil.ReadFile("./testing/interface/presenter/expected/" + testOutputScaffoldInterfacePresenterInterfaceFunctionName)
 
+	testOutputInterfacePresenterFile = string(testOutputInterfacePresenterFileFile)
 	testOutputScaffoldInterfacePresenterFile = string(testOutputScaffoldInterfacePresenterFileFile)
 	testOutputScaffoldInterfacePresenterStruct = string(testOutputScaffoldInterfacePresenterStructFile)
 	testOutputScaffoldInterfacePresenterInterface = string(testOutputScaffoldInterfacePresenterInterfaceFile)
@@ -102,6 +106,34 @@ func init(){
 	testOutputScaffoldInterfacePresenterConstructorFunction = string(testOutputScaffoldInterfacePresenterConstructorFunctionFile)
 	testOutputScaffoldInterfacePresenterInterfaceFunction = string(testOutputScaffoldInterfacePresenterInterfaceFunctionFile)
 
+}
+
+// Test Interface Presenter File
+func TestInterfacePresenterFile(t *testing.T){
+
+	// Build
+	statement, err := testPresenterGenerator.File(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+
+	f, err := os.Create("./testing/interface/presenter/created/" + testOutputInterfacePresenterFileName)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	buf := &bytes.Buffer{}
+	err = statement.Render(buf)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	_, err = f.Write(buf.Bytes())
+
+	if buf.String() != testOutputInterfacePresenterFile {
+		t.Errorf(`File() failed; want "%s", got "%s"`, testOutputInterfacePresenterFile, buf.String())
+	}
+	
 }
 
 // Test Scaffold Interface Presenter File
@@ -192,7 +224,7 @@ func TestScaffoldInterfacePresenterInterface(t *testing.T){
 func TestScaffoldInterfacePresenterConstructorFunction(t *testing.T){
 
 	// Build
-	statement, err := testPresenterGenerator.scaffoldInterfacePresenterConstructorFunction(testEntity)
+	statement, err := testPresenterGenerator.interfacePresenterConstructorFunction(testEntity)
 
 	// Return
 	if err != nil {

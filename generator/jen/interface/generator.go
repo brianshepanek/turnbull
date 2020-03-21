@@ -12,9 +12,11 @@ type RepositoryGenerator interface{
 }
 
 type PresenterGenerator interface{
+	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
 }
 
 type ControllerGenerator interface{
+	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
 }

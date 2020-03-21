@@ -33,6 +33,34 @@ func New(config *config.Config, formatter formatter.Formatter, helperGenerator h
 		helperGenerator :helperGenerator,
 	}
 }
+
+func (presenterGenerator *presenterGenerator) File(entity model.Entity) (*jen.File, error){
+	
+	
+	// File
+	packageName , err := presenterGenerator.formatter.OutputScaffoldInterfacePresenterPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+
+	// Struct
+	interfacePresenterStruct, err := presenterGenerator.interfacePresenterStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfacePresenterStruct)
+
+	// Constructor Function
+	interfacePresenterConstructorFunction, err := presenterGenerator.interfacePresenterConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfacePresenterConstructorFunction)
+
+	return f, nil
+}	
+
 func (presenterGenerator *presenterGenerator) ScaffoldFile(entity model.Entity) (*jen.File, error){
 	
 	
@@ -50,20 +78,6 @@ func (presenterGenerator *presenterGenerator) ScaffoldFile(entity model.Entity) 
 	}
 	f.Add(&interfacePresenterStruct)
 
-	// // Interface
-	// interfacePresenterInterface, err := presenterGenerator.scaffoldInterfacePresenterInterface(entity)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// f.Add(&interfacePresenterInterface)
-
-	// Constructor Function
-	interfacePresenterConstructorFunction, err := presenterGenerator.scaffoldInterfacePresenterConstructorFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&interfacePresenterConstructorFunction)
-
 	// Functions
 	for _, method := range entity.Methods {
 
@@ -78,6 +92,39 @@ func (presenterGenerator *presenterGenerator) ScaffoldFile(entity model.Entity) 
 
 	return f, nil
 }	
+
+func (presenterGenerator *presenterGenerator) interfacePresenterStruct(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := presenterGenerator.formatter.OutputInterfacePresenterStructId("default", entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := presenterGenerator.formatter.OutputScaffoldInterfacePresenterStructId("default", entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+
+	// Struct
+	resp.Struct(fields...)
+
+	return resp, nil
+
+}
 
 func (presenterGenerator *presenterGenerator) scaffoldInterfacePresenterStruct(entity model.Entity) (jen.Statement, error){
 
@@ -139,7 +186,7 @@ func (presenterGenerator *presenterGenerator) scaffoldInterfacePresenterInterfac
 
 }
 
-func (presenterGenerator *presenterGenerator) scaffoldInterfacePresenterConstructorFunction(entity model.Entity) (jen.Statement, error){
+func (presenterGenerator *presenterGenerator) interfacePresenterConstructorFunction(entity model.Entity) (jen.Statement, error){
 
 	// Vars
 	var resp jen.Statement

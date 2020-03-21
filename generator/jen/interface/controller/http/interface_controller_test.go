@@ -20,11 +20,13 @@ const(
 var (
 	testControllerGenerator *controllerGenerator
 
+	testOutputInterfaceControllerFileName = "testOutputInterfaceControllerFile"
 	testOutputScaffoldInterfaceControllerFileName = "testOutputScaffoldInterfaceControllerFile"
 	testOutputScaffoldInterfaceControllerStructName = "testOutputScaffoldInterfaceControllerStruct"
 	testOutputScaffoldInterfaceControllerConstructorFunctionName = "testOutputScaffoldInterfaceControllerConstructorFunction"
 	testOutputScaffoldInterfaceControllerMethodName = "testOutputScaffoldInterfaceControllerMethod"
 	
+	testOutputInterfaceControllerFile string
 	testOutputScaffoldInterfaceControllerFile string
 	testOutputScaffoldInterfaceControllerStruct string
 	testOutputScaffoldInterfaceControllerConstructorFunction string
@@ -85,16 +87,46 @@ func init(){
 	testHelperGenerator := helper.New(formatter)
 	testControllerGenerator = New(conf, formatter, testHelperGenerator)
 
+	testOutputInterfaceControllerFileFile, _ := ioutil.ReadFile("./testing/interface/controller/expected/" + testOutputInterfaceControllerFileName)
 	testOutputScaffoldInterfaceControllerFileFile, _ := ioutil.ReadFile("./testing/interface/controller/expected/" + testOutputScaffoldInterfaceControllerFileName)
 	testOutputScaffoldInterfaceControllerStructFile, _ := ioutil.ReadFile("./testing/interface/controller/expected/" + testOutputScaffoldInterfaceControllerStructName)
 	testOutputScaffoldInterfaceControllerConstructorFunctionFile, _ := ioutil.ReadFile("./testing/interface/controller/expected/" + testOutputScaffoldInterfaceControllerConstructorFunctionName)
 	testOutputScaffoldInterfaceControllerMethodFile, _ := ioutil.ReadFile("./testing/interface/controller/expected/" + testOutputScaffoldInterfaceControllerMethodName)
 	
+	testOutputInterfaceControllerFile = string(testOutputInterfaceControllerFileFile)
 	testOutputScaffoldInterfaceControllerFile = string(testOutputScaffoldInterfaceControllerFileFile)
 	testOutputScaffoldInterfaceControllerStruct = string(testOutputScaffoldInterfaceControllerStructFile)
 	testOutputScaffoldInterfaceControllerConstructorFunction = string(testOutputScaffoldInterfaceControllerConstructorFunctionFile)
 	testOutputScaffoldInterfaceControllerMethod = string(testOutputScaffoldInterfaceControllerMethodFile)
 
+}
+
+// Test Interface Controller File
+func TestInterfaceControllerFile(t *testing.T){
+
+	// Build
+	statement, err := testControllerGenerator.File(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+
+	f, err := os.Create("./testing/interface/controller/created/" + testOutputInterfaceControllerFileName)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	buf := &bytes.Buffer{}
+	err = statement.Render(buf)
+	if err != nil {
+		t.Errorf(`File() failed with error %v`, err)
+	}
+	_, err = f.Write(buf.Bytes())
+
+	if buf.String() != testOutputInterfaceControllerFile {
+		t.Errorf(`File() failed; want "%s", got "%s"`, testOutputInterfaceControllerFile, buf.String())
+	}
+	
 }
 
 // Test Scaffold Interface Controller File
@@ -153,11 +185,11 @@ func TestScaffoldInterfaceControllerStruct(t *testing.T){
 	
 }
 
-// Test Scaffold Interface Controller Constructor Function
-func TestScaffoldInterfaceControllerConstructorFunction(t *testing.T){
+// Test Interface Controller Constructor Function
+func TestInterfaceControllerConstructorFunction(t *testing.T){
 
 	// Build
-	statement, err := testControllerGenerator.scaffoldInterfaceControllerConstructorFunction(testEntity)
+	statement, err := testControllerGenerator.interfaceControllerConstructorFunction(testEntity)
 
 	// Return
 	if err != nil {

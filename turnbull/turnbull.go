@@ -355,6 +355,38 @@ func (turnbull *turnbull) buildScaffoldInterfaceRepository(driver string, entity
 	return nil
 }
 
+// Build Interface Presenter
+func (turnbull *turnbull) buildInterfacePresenter(driver string, entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.InterfacePresenter(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputInterfacePresenterFile(driver, entity)
+	if err != nil {
+		return err
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Build Scaffold Interface Presenter
 func (turnbull *turnbull) buildScaffoldInterfacePresenter(driver string, entity model.Entity) (error){
 
@@ -367,6 +399,38 @@ func (turnbull *turnbull) buildScaffoldInterfacePresenter(driver string, entity 
 
 	// File Name
 	fileName, err := turnbull.formatter.OutputScaffoldInterfacePresenterFile(driver, entity)
+	if err != nil {
+		return err
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Build Interface Controller
+func (turnbull *turnbull) buildInterfaceController(driver string, entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.InterfaceController(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputInterfaceControllerFile(driver, entity)
 	if err != nil {
 		return err
 	}

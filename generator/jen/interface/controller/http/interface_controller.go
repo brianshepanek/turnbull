@@ -33,6 +33,39 @@ func New(config *config.Config, formatter formatter.Formatter, helperGenerator h
 	}
 }
 
+func (controllerGenerator *controllerGenerator) File(entity model.Entity) (*jen.File, error){
+
+	// File
+	packageName , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+
+	// Struct
+	interfaceControllerStruct, err := controllerGenerator.interfaceControllerStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceControllerStruct)
+
+	// Interface
+	interfaceControllerInterface, err := controllerGenerator.interfaceControllerInterface(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceControllerInterface)
+
+	// Constructor Function
+	interfaceControllerConstructorFunction, err := controllerGenerator.interfaceControllerConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceControllerConstructorFunction)
+
+	return f, nil
+}
+
 func (controllerGenerator *controllerGenerator) ScaffoldFile(entity model.Entity) (*jen.File, error){
 
 	// File
@@ -55,13 +88,6 @@ func (controllerGenerator *controllerGenerator) ScaffoldFile(entity model.Entity
 		return nil, err
 	}
 	f.Add(&interfaceControllerInterface)
-
-	// Constructor Function
-	interfaceControllerConstructorFunction, err := controllerGenerator.scaffoldInterfaceControllerConstructorFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&interfaceControllerConstructorFunction)
 
 	// Methods
 	for _, entityMethod := range entity.Methods {
@@ -107,6 +133,72 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerStruc
 
 	return fields, nil
 
+}
+
+func (controllerGenerator *controllerGenerator) interfaceControllerStruct(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := controllerGenerator.formatter.OutputInterfaceControllerStructId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerStructId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+
+	// Struct
+	resp.Struct(fields...)
+
+	return resp, nil
+
+}
+
+func (controllerGenerator *controllerGenerator) interfaceControllerInterface(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := controllerGenerator.formatter.OutputInterfaceControllerInterfaceId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Scaffold
+	scaffoldId , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerInterfaceId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fields
+	fields = append(fields, jen.Id(scaffoldId))
+
+
+	// Interface
+	resp.Interface(fields...)
+
+	return resp, nil
+	
 }
 
 func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerStruct(entity model.Entity) (jen.Statement, error){
@@ -174,7 +266,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerInter
 
 }
 
-func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerConstructorFunction(entity model.Entity) (jen.Statement, error){
+func (controllerGenerator *controllerGenerator) interfaceControllerConstructorFunction(entity model.Entity) (jen.Statement, error){
 
 	// Vars
 	var resp jen.Statement
@@ -200,7 +292,19 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerConst
 	}
 
 	// Struct ID
-	structId , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerStructId("http", entity)
+	structId , err := controllerGenerator.formatter.OutputInterfaceControllerStructId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Scaffold Struct ID
+	scaffoldStructId , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerStructId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Interface ID
+	interfaceId , err := controllerGenerator.formatter.OutputInterfaceControllerInterfaceId("http", entity)
 	if err != nil {
 		return nil, err
 	}
@@ -211,8 +315,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerConst
 	resp.Params(fields...)
 
 	// Qual
-	resp.Op("*")
-	resp.Qual("", structId)
+	resp.Qual("", interfaceId)
 
 	// Block
 	resp.Block(
@@ -220,7 +323,10 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerConst
 			jen.Op("&").
 			Id(structId).
 			Values(
-				jen.Id(interactorPackageName),
+				jen.Id(scaffoldStructId).
+				Values(
+					jen.Id(interactorPackageName),
+				),
 			),
 		),
 	)

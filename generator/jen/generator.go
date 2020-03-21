@@ -185,10 +185,38 @@ func (generator *Generator) ScaffoldInterfaceRepository(entity model.Entity, wri
 	return nil
 }
 
+func (generator *Generator) InterfacePresenter(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.interfacePresenterGenerator.File(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}
+
 func (generator *Generator) ScaffoldInterfacePresenter(entity model.Entity, writer io.Writer) (error){
 
 	// File
 	file, err := generator.interfacePresenterGenerator.ScaffoldFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	file.Render(writer)
+
+	return nil
+}
+
+func (generator *Generator) InterfaceController(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.interfaceControllerGenerator.File(entity)
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-func (c *httpFooScaffoldController) Add(w http.ResponseWriter, r http.Request) {
+func (c *httpFooControllerStruct) Add(w http.ResponseWriter, r http.Request) {
 	ctx := context.Background()
 	req := entity.NewFoo()
 	err := json.NewDecoder(r.Body).Decode(req)
