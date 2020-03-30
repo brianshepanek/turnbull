@@ -1,6 +1,9 @@
 package entity
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type fooStruct struct {
 	id       string
@@ -26,6 +29,8 @@ type fooInterface interface {
 	SetInt(int int)
 	SetTags(tags []string)
 	SetCreated(created time.Time)
+	BeforeRead(ctx context.Context) error
+	BeforeAdd(ctx context.Context) error
 }
 type foosInterface interface {
 	Len() int
@@ -93,4 +98,12 @@ func (m *fooStruct) SetTags(tags []string) {
 
 func (m *fooStruct) SetCreated(created time.Time) {
 	m.created = created
+}
+
+func (m *fooStruct) BeforeRead(ctx context.Context) error {
+	return nil
+}
+
+func (m *fooStruct) BeforeAdd(ctx context.Context) error {
+	return nil
 }

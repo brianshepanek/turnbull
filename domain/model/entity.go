@@ -20,4 +20,10 @@ type Field struct {
 type Method struct {
 	Name string
 	Type string
+	Callbacks []Callback
+}
+
+type Callback struct {
+	Name string
+	Type string
 }

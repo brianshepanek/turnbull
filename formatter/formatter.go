@@ -67,6 +67,7 @@ type Formatter interface{
 	OutputScaffoldDomainEntityFieldId(field model.Field) (string,  error)
 	OutputScaffoldDomainEntityGetterId(field model.Field) (string,  error)
 	OutputScaffoldDomainEntitySetterId(field model.Field) (string,  error)
+	OutputScaffoldDomainEntityCallbackId(callback model.Callback, method model.Method) (string,  error)
 	OutputScaffoldDomainEntitySetAllSetterId() (string,  error)
 	OutputScaffoldDomainEntityLenId() (string,  error)
 	OutputScaffoldDomainEntityAppendId() (string,  error)
@@ -428,6 +429,10 @@ func (formatter *formatter) OutputScaffoldDomainEntityGetterId(field model.Field
 
 func (formatter *formatter) OutputScaffoldDomainEntitySetterId(field model.Field) (string, error) {
 	return strcase.ToCamel(strings.Join([]string{formatter.config.Layers.Domain.SetterVerb, field.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldDomainEntityCallbackId(callback model.Callback, method model.Method) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{callback.Type, method.Type}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntitySetAllSetterId() (string, error) {

@@ -3,4 +3,5 @@ type fooInterface interface {
 	Int() int
 	SetString(string string)
 	SetInt(int int)
+	BeforeAdd(ctx context.Context) error
 }

@@ -222,6 +222,18 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 		f.Line()
 	}
 
+	// Callbacks
+	for _, method := range entity.Methods {
+		for _, callback := range method.Callbacks {
+			entityCallback, err := entityGenerator.scaffoldEntityInterfaceCallbackFunction(callback, method, entity)
+			if err != nil {
+				return nil, err
+			}
+			f.Add(&entityCallback)
+			f.Line()
+		}
+	}
+
 	// // Set All Setter
 	// setAllSetter, err := entityGenerator.scaffoldEntityInterfaceSetAllSetterFunction(entity)
 	// if err != nil {
@@ -479,6 +491,20 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterface(entity model.Ent
 		fields = append(fields, code)
 	}
 
+	// Callbacks
+	for _, method := range entity.Methods {
+		for _, callback := range method.Callbacks {
+
+			// Callback
+			code, err := entityGenerator.scaffoldEntityInterfaceCallback(callback, method, entity)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, code)
+
+		}
+	}
+
 	// // Set All
 	// code, err := entityGenerator.scaffoldEntityInterfaceSetAllSetter(entity)
 	// if err != nil {
@@ -619,6 +645,41 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetter(field mode
 	return &statement, nil
 }
 
+func (entityGenerator *entityGenerator) scaffoldEntityInterfaceCallback(callback model.Callback, method model.Method, entity model.Entity) (jen.Code, error){
+	
+	// ID
+	var statement, args, vals jen.Statement
+	id , err := entityGenerator.formatter.OutputScaffoldDomainEntityCallbackId(callback, method)
+	if err != nil {
+		return nil, err
+	}
+
+	// ID
+	statement.Id(id)
+
+	// Args
+	args.Id("ctx")
+	err = entityGenerator.helperGenerator.Field("", model.Field{Package : "context", Type : "Context"}, entity, &args)
+	if err != nil {
+		return nil, err
+	}
+
+	// Params
+	statement.Params(&args)
+
+	// Vals
+	err = entityGenerator.helperGenerator.Field("", model.Field{Type : "error"}, entity, &vals)
+	if err != nil {
+		return nil, err
+	}
+
+	// List
+	statement.List(&vals)
+
+
+	return &statement, nil
+
+}
 
 func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetAllSetter(entity model.Entity) (jen.Code, error){
 	
@@ -1216,6 +1277,63 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetterFunction(fi
 		Dot(fieldId).
 		Op("=").
 		Id(fieldId),
+	)
+	
+	return statement, nil
+}
+
+func (entityGenerator *entityGenerator) scaffoldEntityInterfaceCallbackFunction(callback model.Callback, method model.Method, entity model.Entity) (jen.Statement, error){
+	
+	// ID
+	var statement, args, vals jen.Statement
+	id , err := entityGenerator.formatter.OutputScaffoldDomainEntityCallbackId(callback, method)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Struct ID
+	structId , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Func
+	statement.Func()
+
+	// Params
+	statement.Params(
+		jen.Id("m").
+		Op("*").
+		Qual("", structId),
+	)
+
+	// ID
+	statement.Id(id)
+
+	// Args
+	args.Id("ctx")
+	err = entityGenerator.helperGenerator.Field("", model.Field{Package : "context", Type : "Context"}, entity, &args)
+	if err != nil {
+		return nil, err
+	}
+
+	// Params
+	statement.Params(&args)
+
+	// Vals
+	err = entityGenerator.helperGenerator.Field("", model.Field{Type : "error"}, entity, &vals)
+	if err != nil {
+		return nil, err
+	}
+
+	// List
+	statement.List(&vals)
+
+	// Return
+	statement.Block(
+		jen.Return(
+			jen.Nil(),
+		),	
 	)
 	
 	return statement, nil

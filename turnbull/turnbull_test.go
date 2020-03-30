@@ -22,7 +22,6 @@ var (
 	testTurnbull *turnbull
 	testEntity  = model.Entity{
 		Name : "foo",
-		JSON : true,
 		Fields : []model.Field{
 			model.Field{
 				Name : "id",
@@ -59,6 +58,11 @@ var (
 			model.Method{
 				Name : "read",
 				Type : "read",
+				Callbacks : []model.Callback {
+					model.Callback {
+						Type : "before",
+					},
+				},
 			},
 			model.Method{
 				Name : "edit",
@@ -67,6 +71,11 @@ var (
 			model.Method{
 				Name : "add",
 				Type : "add",
+				Callbacks : []model.Callback {
+					model.Callback {
+						Type : "before",
+					},
+				},
 			},
 			model.Method{
 				Name : "delete",

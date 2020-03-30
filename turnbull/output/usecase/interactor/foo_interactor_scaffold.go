@@ -20,35 +20,48 @@ type fooInteractorInterface interface {
 }
 
 func (i *fooInteractorStruct) Browse(ctx context.Context, query interface{}, req entity.Foos) (entity.Foos, error) {
-	err := i.repository.Browse(ctx, query, req)
+	var err error
+	err = i.repository.Browse(ctx, query, req)
 	if err != nil {
 		return nil, err
 	}
 	return i.presenter.Browse(ctx, req)
 }
 func (i *fooInteractorStruct) Read(ctx context.Context, query interface{}, req entity.Foo) (entity.Foo, error) {
-	err := i.repository.Read(ctx, query, req)
+	var err error
+	err = req.BeforeRead(ctx)
+	if err != nil {
+		return nil, err
+	}
+	err = i.repository.Read(ctx, query, req)
 	if err != nil {
 		return nil, err
 	}
 	return i.presenter.Read(ctx, req)
 }
 func (i *fooInteractorStruct) Edit(ctx context.Context, req entity.Foo) (entity.Foo, error) {
-	err := i.repository.Edit(ctx, req)
+	var err error
+	err = i.repository.Edit(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	return i.presenter.Edit(ctx, req)
 }
 func (i *fooInteractorStruct) Add(ctx context.Context, req entity.Foo) (entity.Foo, error) {
-	err := i.repository.Add(ctx, req)
+	var err error
+	err = req.BeforeAdd(ctx)
+	if err != nil {
+		return nil, err
+	}
+	err = i.repository.Add(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	return i.presenter.Add(ctx, req)
 }
 func (i *fooInteractorStruct) Delete(ctx context.Context, req entity.Foo) (entity.Foo, error) {
-	err := i.repository.Delete(ctx, req)
+	var err error
+	err = i.repository.Delete(ctx, req)
 	if err != nil {
 		return nil, err
 	}

@@ -366,6 +366,7 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorMethod(
 	// Config
 	configMethod, err := interactorGenerator.config.Method(method)
 	
+	var entityVar, contextVar string
 	var arguments, returnValues, repositoryArguments, repositoryReturnValues, presenterArguments []jen.Code
 	for _, argument := range configMethod.Repository.Arguments {
 
@@ -380,6 +381,16 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorMethod(
 		// Append
 		arguments = append(arguments, &statement)
 		repositoryArguments = append(repositoryArguments, jen.Id(argument.Name))
+
+		// Entity Var
+		if argument.Type == "self" {
+			entityVar = argument.Name
+		}
+
+		// Context Var
+		if argument.Type == "Context" {
+			contextVar = argument.Name
+		}
 
 	}
 
@@ -419,6 +430,37 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorMethod(
 
 		// Append
 		returnValues = append(returnValues, &statement)
+
+	}
+
+	// Callbacks
+	var hasBefore, hasAfter bool
+	var beforeId, afterId string
+	for _, callback := range method.Callbacks {
+		
+		// Before
+		if callback.Type == "before" {
+			hasBefore = true
+
+			// Struct ID
+			beforeId , err = interactorGenerator.formatter.OutputScaffoldDomainEntityCallbackId(callback, method)
+			if err != nil {
+				return nil, err
+			}
+
+		}
+
+		// After
+		if callback.Type == "after" {
+			hasAfter = true
+
+			// Struct ID
+			afterId , err = interactorGenerator.formatter.OutputScaffoldDomainEntityCallbackId(callback, method)
+			if err != nil {
+				return nil, err
+			}
+
+		}
 
 	}
 
@@ -478,15 +520,57 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorMethod(
 	)	
 
 	// Block
-	resp.Block(
+	var block []jen.Code
+
+	// Var
+	block = append(block,
+		jen.Var().
+		Id("err").
+		Error(),
+	)
+
+	// Has Before
+	if hasBefore{
+		
+		block = append(block, 
+			jen.Err().
+			Op("=").
+			Id(entityVar).
+			Dot(beforeId).
+			Params(
+				jen.Id(contextVar),
+			),
+		)
+		block = append(block, 
+			jen.If(
+				jen.Err().
+				Op("!=").
+				Nil(),
+			).
+			Block(
+				jen.Return(
+					jen.List(
+						jen.Nil(),
+						jen.Err(),
+					),
+				),
+			),
+		)
+	}
+	
+
+	block = append(block,
 		jen.List(repositoryReturnValues...).
-		Op(":=").
+		Op("=").
 		Id("i").
 		Dot(repositoryPackageName).
 		Dot(repositoryInterfaceMethodId).
 		Call(
 			jen.List(repositoryArguments...),
 		),
+	)
+
+	block = append(block,
 		jen.If(
 			jen.Err().
 			Op("!=").
@@ -500,6 +584,39 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorMethod(
 				),
 			),
 		),
+	)
+
+	// Has After
+	if hasAfter {
+		block = append(block, 
+			jen.Err().
+			Op("=").
+			Id(entityVar).
+			Dot(afterId).
+			Params(
+				jen.Id(contextVar),
+			),
+		)
+	
+		block = append(block, 
+			jen.If(
+				jen.Err().
+				Op("!=").
+				Nil(),
+			).
+			Block(
+				jen.Return(
+					jen.List(
+						jen.Nil(),
+						jen.Err(),
+					),
+				),
+			),
+		)
+	}
+	
+
+	block = append(block,
 		jen.Return(
 			jen.Id("i").
 			Dot(presenterPackageName).
@@ -509,6 +626,8 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorMethod(
 			),
 		),
 	)
+	
+	resp.Block(block...)
 
 	return resp, nil
 

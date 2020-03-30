@@ -71,6 +71,7 @@ const(
 	testOutputScaffoldDomainEntityGetterId = "Bar"
 	testOutputScaffoldDomainEntityJSONTagId = "bar"
 	testOutputScaffoldDomainEntitySetterId = "SetBar"
+	testOutputScaffoldDomainEntityCallbackId = "BeforeAdd"
 	testOutputScaffoldDomainEntitySetAllSetterId = "SetAll"
 
 	testOutputScaffoldDomainEntityLenId = "Len"
@@ -132,6 +133,9 @@ var (
 	testMethod  = model.Method{
 		Name : "add",
 		Type : "add",
+	}
+	testCallback = model.Callback{
+		Type : "before",
 	}
 )
 
@@ -942,6 +946,22 @@ func TestOutputScaffoldDomainEntitySetterId(t *testing.T){
 
 	if id != testOutputScaffoldDomainEntitySetterId {
 		t.Errorf(`OutputScaffoldDomainEntitySetterId() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntitySetterId, id)
+	}
+}
+
+// Test Output Scaffold Domain Entity Callback ID
+func TestOutputScaffoldDomainEntityCallbackId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldDomainEntityCallbackId(testCallback, testMethod)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldDomainEntityCallbackId() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldDomainEntityCallbackId {
+		t.Errorf(`OutputScaffoldDomainEntityCallbackId() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityCallbackId, id)
 	}
 }
 

@@ -1,5 +1,7 @@
 package entity
 
+import "context"
+
 type fooStruct struct {
 	string string
 	int    int
@@ -12,6 +14,7 @@ type fooInterface interface {
 	Int() int
 	SetString(string string)
 	SetInt(int int)
+	BeforeAdd(ctx context.Context) error
 }
 type foosInterface interface {
 	Len() int
@@ -47,4 +50,8 @@ func (m *fooStruct) SetString(string string) {
 
 func (m *fooStruct) SetInt(int int) {
 	m.int = int
+}
+
+func (m *fooStruct) BeforeAdd(ctx context.Context) error {
+	return nil
 }

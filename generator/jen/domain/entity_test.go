@@ -37,6 +37,11 @@ var(
 			model.Method{
 				Name : "add",
 				Type : "add",
+				Callbacks : []model.Callback {
+					model.Callback {
+						Type : "before",
+					},
+				},
 			},
 			model.Method{
 				Name : "read",
