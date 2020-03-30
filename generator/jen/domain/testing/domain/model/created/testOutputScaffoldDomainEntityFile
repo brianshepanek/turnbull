@@ -1,7 +1,5 @@
 package entity
 
-import "encoding/json"
-
 type fooStruct struct {
 	string string
 	int    int
@@ -14,9 +12,6 @@ type fooInterface interface {
 	Int() int
 	SetString(string string)
 	SetInt(int int)
-	SetAll(req fooInterface)
-	MarshalJSON() ([]byte, error)
-	UnmarshalJSON(data []byte) error
 }
 type foosInterface interface {
 	Len() int
@@ -52,36 +47,4 @@ func (m *fooStruct) SetString(string string) {
 
 func (m *fooStruct) SetInt(int int) {
 	m.int = int
-}
-
-func (m *fooStruct) SetAll(req fooInterface) {
-	m.SetString(req.String())
-	m.SetInt(req.Int())
-}
-
-func (m *fooStruct) MarshalJSON() ([]byte, error) {
-	type jsonStructPrivate struct {
-		String string `json:"string"`
-		Int    int    `json:"int"`
-	}
-	jsonStruct := jsonStructPrivate{
-		Int:    m.Int(),
-		String: m.String(),
-	}
-	return json.Marshal(&jsonStruct)
-}
-
-func (m *fooStruct) UnmarshalJSON(data []byte) error {
-	type jsonStructPrivate struct {
-		String string `json:"string"`
-		Int    int    `json:"int"`
-	}
-	jsonStruct := jsonStructPrivate{}
-	err := json.Unmarshal(data, &jsonStruct)
-	if err != nil {
-		return err
-	}
-	m.SetString(jsonStruct.String)
-	m.SetInt(jsonStruct.Int)
-	return nil
 }

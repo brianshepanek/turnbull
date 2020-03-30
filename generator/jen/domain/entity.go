@@ -222,31 +222,31 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 		f.Line()
 	}
 
-	// Set All Setter
-	setAllSetter, err := entityGenerator.scaffoldEntityInterfaceSetAllSetterFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&setAllSetter)
-	f.Line()
+	// // Set All Setter
+	// setAllSetter, err := entityGenerator.scaffoldEntityInterfaceSetAllSetterFunction(entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// f.Add(&setAllSetter)
+	// f.Line()
 
-	// JSON
-	if entity.JSON {
+	// // JSON
+	// if entity.JSON {
 
-		entityMarshalJSON, err := entityGenerator.scaffoldEntityInterfaceMarshalJSONFunction(entity)
-		if err != nil {
-			return nil, err
-		}
-		f.Add(&entityMarshalJSON)
-		f.Line()
+	// 	entityMarshalJSON, err := entityGenerator.scaffoldEntityInterfaceMarshalJSONFunction(entity)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	f.Add(&entityMarshalJSON)
+	// 	f.Line()
 
-		entityUnmarshalJSON, err := entityGenerator.scaffoldEntityInterfaceUnmarshalJSONFunction(entity)
-		if err != nil {
-			return nil, err
-		}
-		f.Add(&entityUnmarshalJSON)
-		f.Line()
-	}
+	// 	entityUnmarshalJSON, err := entityGenerator.scaffoldEntityInterfaceUnmarshalJSONFunction(entity)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	f.Add(&entityUnmarshalJSON)
+	// 	f.Line()
+	// }
 	
 	
 	return f, nil
@@ -479,34 +479,34 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterface(entity model.Ent
 		fields = append(fields, code)
 	}
 
-	// Set All
-	code, err := entityGenerator.scaffoldEntityInterfaceSetAllSetter(entity)
-	if err != nil {
-		return nil, err
-	}
-	fields = append(fields, code)
+	// // Set All
+	// code, err := entityGenerator.scaffoldEntityInterfaceSetAllSetter(entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// fields = append(fields, code)
 
-	// JSON
-	if entity.JSON {
+	// // JSON
+	// if entity.JSON {
 
-		code, err := entityGenerator.scaffoldEntityInterfaceMarshalJSON()
-		if err != nil {
-			return nil, err
-		}
-		fields = append(fields, code)
+	// 	code, err := entityGenerator.scaffoldEntityInterfaceMarshalJSON()
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	fields = append(fields, code)
 
-	}
+	// }
 
-	// JSON
-	if entity.JSON {
+	// // JSON
+	// if entity.JSON {
 
-		code, err := entityGenerator.scaffoldEntityInterfaceUnmarshalJSON()
-		if err != nil {
-			return nil, err
-		}
-		fields = append(fields, code)
+	// 	code, err := entityGenerator.scaffoldEntityInterfaceUnmarshalJSON()
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	fields = append(fields, code)
 
-	}
+	// }
 
 
 	// Interface

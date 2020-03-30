@@ -5,7 +5,6 @@ import(
 	"github.com/brianshepanek/turnbull/domain/model"
 	"github.com/brianshepanek/turnbull/config"
 	"github.com/brianshepanek/turnbull/formatter"
-	// generatorInterface "github.com/brianshepanek/turnbull/generator/jen/interface"
 	"github.com/brianshepanek/turnbull/generator/jen/helper"
 )
 
@@ -14,25 +13,6 @@ type repositoryGenerator struct{
 	formatter formatter.Formatter
 	helperGenerator helper.Generator
 }
-
-// type RepositoryGenerator interface{
-
-// 	ScaffoldFile(entity model.Entity) (*jen.File, error)
-	
-// 	scaffoldInterfaceRepositoryStructFields() ([]jen.Code, error)
-// 	scaffoldInterfaceRepositoryStruct(entity model.Entity) (jen.Statement, error)
-// 	scaffoldInterfaceRepositoryConstructorFunction(entity model.Entity) (jen.Statement, error)
-// 	scaffoldInterfaceRepositoryMethod(method model.Method, entity model.Entity) (jen.Statement, error)
-
-	
-// 	scaffoldInterfaceRepositoryBrowseMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error)
-// 	scaffoldInterfaceRepositoryReadMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error)
-// 	scaffoldInterfaceRepositoryEditMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error)
-// 	scaffoldInterfaceRepositoryAddMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error)
-// 	scaffoldInterfaceRepositoryDeleteMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error)
-// 	scaffoldInterfaceRepositoryCountMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error)
-
-// }
 
 func New(config *config.Config, formatter formatter.Formatter, helperGenerator helper.Generator) *repositoryGenerator {
 	return &repositoryGenerator{

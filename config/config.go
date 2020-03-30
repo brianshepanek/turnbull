@@ -84,6 +84,9 @@ type PresenterMethod struct {
 	ReturnValues []model.Field
 }
 
+type Registry struct {
+	Name string
+}
 
 
 type Config struct {
@@ -94,6 +97,7 @@ type Config struct {
 	Scaffold Scaffold
 	Layers Layers
 	Methods []Method
+	Registry Registry
 	// EntityName string
 	// entitiesDirName string
 	// interactorName string
@@ -123,6 +127,9 @@ func New(configPath string, outputPath string) (*Config, error) {
 		WorkspaceSourceDirName : "src",
 		Scaffold : Scaffold {
 			Name : "scaffold",
+		},
+		Registry : Registry {
+			Name : "registry",
 		},
 		Layers : Layers {
 			Domain : Domain {

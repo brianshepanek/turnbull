@@ -177,3 +177,15 @@ func TestBuildOutputScaffoldInterfacePresenterDirectory(t *testing.T){
 		t.Errorf(`buildOutputScaffoldInterfacePresenterDirectory() failed with error %v`, err)
 	}
 }
+
+// Test Build Output Scaffold Registry Directory
+func TestBuildOutputRegistryDirectory(t *testing.T){
+
+	// Build
+	err := testStructure.buildRegistryDirectory()
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildRegistoryDirectory() failed with error %v`, err)
+	}
+}

@@ -1,0 +1,5 @@
+type mongoFooRepositoryStruct struct {
+	client     *mongo.Client
+	db         string
+	collection string
+}

@@ -18,6 +18,12 @@ type Formatter interface{
 	OutputDirectory() (string, error)
 	OutputScaffoldDirectory() (string, error)
 
+	OutputRegistryPackageName() (string, error)
+	OutputRegistryDirectory() (string, error)
+	OutputRegistryEntityFile(entity model.Entity) (string, error)
+	OutputRegistryEntityPresenterConstructorFunctionId(entity model.Entity) (string, error)
+	OutputRegistryEntityRepositoryConstructorFunctionId(entity model.Entity) (string, error)
+
 	OutputScaffoldDomainDirectory() (string, error)
 	OutputScaffoldDomainEntityDirectory() (string, error)
 	OutputScaffoldDomainEntityDirectoryImportPath() (string, error)
@@ -121,6 +127,36 @@ func New(config *config.Config) Formatter {
 func (formatter *formatter) OutputDirectory() (string, error) {
 	return strings.Join([]string{formatter.config.AbsOutputPath}, formatter.config.PathSeparator), nil
 }
+
+// Registry
+func (formatter *formatter) OutputRegistryPackageName() (string, error) {
+	return strcase.ToSnake(formatter.config.Registry.Name), nil
+}
+
+func (formatter *formatter) OutputRegistryDirectory() (string, error) {
+	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Registry.Name}, formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputRegistryEntityFile(entity model.Entity) (string, error) {
+	
+	path, err  := formatter.OutputRegistryDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Registry.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+
+}
+
+func (formatter *formatter) OutputRegistryEntityPresenterConstructorFunctionId(entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{"new", entity.Name, formatter.config.Layers.Usecase.Presenter.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputRegistryEntityRepositoryConstructorFunctionId(entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{"new", entity.Name, formatter.config.Layers.Usecase.Repository.Name}, formatter.config.StringSeparator)), nil
+}
+
 
 // Domain
 

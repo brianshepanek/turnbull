@@ -4,6 +4,7 @@ type Entity struct {
 	Name string
 	Fields []Field
 	JSON bool
+	BSON bool
 	Methods []Method
 }
 

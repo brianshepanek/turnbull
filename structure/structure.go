@@ -44,7 +44,7 @@ func (structure *structure) Build() (error){
 	if err != nil {
 		return err
 	}
-	err = structure.buildOutputScaffoldDirectory()
+	err = structure.buildRegistryDirectory()
 	if err != nil {
 		return err
 	}
@@ -197,6 +197,14 @@ func (structure *structure) buildOutputScaffoldInterfaceRepositoryDirectory() (e
 
 func (structure *structure) buildOutputScaffoldInterfacePresenterDirectory() (error){
 	dir, err := structure.formatter.OutputScaffoldInterfacePresenterDirectory()
+	if err != nil {
+		return err
+	}
+	return structure.makeDir(dir)
+}
+
+func (structure *structure) buildRegistryDirectory() (error){
+	dir, err := structure.formatter.OutputRegistryDirectory()
 	if err != nil {
 		return err
 	}

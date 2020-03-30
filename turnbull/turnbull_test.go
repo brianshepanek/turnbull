@@ -8,7 +8,7 @@ import(
 	"github.com/brianshepanek/turnbull/structure"
 	"github.com/brianshepanek/turnbull/generator/jen"
 	"github.com/brianshepanek/turnbull/generator/jen/helper"
-	scribbleRepositoryGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/repository/scribble"
+	mongoRepositoryGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/repository/mongo"
 	defaultPresenterGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/presenter/default"
 	httpControllerGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/controller/http"
 )
@@ -29,7 +29,11 @@ var (
 				Type : "string",
 			},
 			model.Field{
-				Name : "string",
+				Name : "title",
+				Type : "string",
+			},
+			model.Field{
+				Name : "subtitle",
 				Type : "string",
 			},
 			model.Field{
@@ -78,7 +82,7 @@ func init(){
 	structure := structure.New(formatter)
 
 	testHelperGenerator := helper.New(formatter)
-	interfaceRepositoryGenerator := scribbleRepositoryGenerator.New(conf, formatter, testHelperGenerator)
+	interfaceRepositoryGenerator := mongoRepositoryGenerator.New(conf, formatter, testHelperGenerator)
 	interfacePresenterGenerator := defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
 	interfaceControllerGenerator := httpControllerGenerator.New(conf, formatter, testHelperGenerator)
 	generator := generator.New(conf, formatter, interfaceControllerGenerator, interfacePresenterGenerator, interfaceRepositoryGenerator)
@@ -198,7 +202,7 @@ func TestBuildScaffoldUsecaseInteractor(t *testing.T){
 func TestBuildInterfaceRepository(t *testing.T){
 
 	// Build
-	err := testTurnbull.buildInterfaceRepository("scribble", testEntity)
+	err := testTurnbull.buildInterfaceRepository("mongo", testEntity)
 
 	// Return
 	if err != nil {
@@ -210,7 +214,7 @@ func TestBuildInterfaceRepository(t *testing.T){
 func TestBuildScaffoldInterfaceRepository(t *testing.T){
 
 	// Build
-	err := testTurnbull.buildScaffoldInterfaceRepository("scribble", testEntity)
+	err := testTurnbull.buildScaffoldInterfaceRepository("mongo", testEntity)
 
 	// Return
 	if err != nil {

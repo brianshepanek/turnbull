@@ -14,6 +14,12 @@ const(
 	testOutputDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output"
 	testOutputScaffoldDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output"
 
+	
+	testOutputRegistryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/registry"
+	testOutputRegistryEntityFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/registry/foo_registry.go"
+	testOutputRegistryEntityRepositoryConstructorFunctionId = "NewFooRepository"
+	testOutputRegistryEntityPresenterConstructorFunctionId = "NewFooPresenter"
+
 	testOutputScaffoldDomainDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/domain"
 	testOutputScaffoldDomainEntityDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/domain/entity"
 	testOutputScaffoldDomainEntityDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
@@ -44,6 +50,8 @@ const(
 	testOutputScaffoldInterfacePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter"
 	testOutputInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo_default_presenter.go"
 	testOutputScaffoldInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo_default_presenter_scaffold.go"
+
+	testOutputRegistryPackageName = "registry"
 
 	testOutputScaffoldDomainEntityPackageName = "entity"
 
@@ -147,6 +155,74 @@ func TestOutputDirectory(t *testing.T){
 
 	if dir != testOutputDirectory {
 		t.Errorf(`OutputDirectory() failed; want "%s", got "%s"`, testOutputDirectory, dir)
+	}
+}
+
+// Test Output Registry Directory
+func TestOutputRegistryDirectory(t *testing.T){
+
+	// Build
+
+	dir, err := testFormatter.OutputRegistryDirectory()
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputRegistryDirectory() failed with error %v`, err)
+	}
+
+	if dir != testOutputRegistryDirectory {
+		t.Errorf(`OutputRegistryDirectory() failed; want "%s", got "%s"`, testOutputRegistryDirectory, dir)
+	}
+}
+
+// Test Output Registry Entity File
+func TestOutputRegistryEntityFile(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputRegistryEntityFile(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputRegistryEntityFile() failed with error %v`, err)
+	}
+
+	if file != testOutputRegistryEntityFile {
+		t.Errorf(`OutputRegistryEntityFile() failed; want "%s", got "%s"`, testOutputRegistryEntityFile, file)
+	}
+}
+
+// Test Output Registry Entity Presenter Constructor Function ID
+func TestOutputRegistryEntityPresenterConstructorFunctionId(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputRegistryEntityPresenterConstructorFunctionId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputRegistryEntityPresenterConstructorFunctionId() failed with error %v`, err)
+	}
+
+	if file != testOutputRegistryEntityPresenterConstructorFunctionId {
+		t.Errorf(`OutputRegistryEntityPresenterConstructorFunctionId() failed; want "%s", got "%s"`, testOutputRegistryEntityPresenterConstructorFunctionId, file)
+	}
+}
+
+// Test Output Registry Entity Repository Constructor Function ID
+func TestOutputRegistryEntityRepositoryConstructorFunctionId(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputRegistryEntityRepositoryConstructorFunctionId(testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputRegistryEntityRepositoryConstructorId() failed with error %v`, err)
+	}
+
+	if file != testOutputRegistryEntityRepositoryConstructorFunctionId {
+		t.Errorf(`OutputRegistryEntityRepositoryConstructorId() failed; want "%s", got "%s"`, testOutputRegistryEntityRepositoryConstructorFunctionId, file)
 	}
 }
 
@@ -640,6 +716,22 @@ func TestOutputScaffoldInterfaceRepositoryPresenter(t *testing.T){
 
 	if file != testOutputScaffoldInterfacePresenterFile {
 		t.Errorf(`OutputScaffoldInterfacePresenterFile() failed; want "%s", got "%s"`, testOutputScaffoldInterfacePresenterFile, file)
+	}
+}
+
+// Test Output Registry Package Name
+func TestOutputRegistryPackageName(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputRegistryPackageName()
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputRegistryPackageName() failed with error %v`, err)
+	}
+
+	if id != testOutputRegistryPackageName {
+		t.Errorf(`OutputRegistryPackageName() failed; want "%s", got "%s"`, testOutputRegistryPackageName, id)
 	}
 }
 
