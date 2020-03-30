@@ -6,7 +6,7 @@ type mongoFooRepository struct {
 	mongoFooRepositoryStruct
 }
 
-func NewMongoFooRepository(client *mongo.Client, db string, collection string) *mongoFooRepository {
+func New(client *mongo.Client, db string, collection string) *mongoFooRepository {
 	return &mongoFooRepository{mongoFooRepositoryStruct{
 		client:     client,
 		collection: collection,

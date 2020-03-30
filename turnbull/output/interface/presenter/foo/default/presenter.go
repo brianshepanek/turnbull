@@ -4,6 +4,6 @@ type defaultFooPresenter struct {
 	defaultFooPresenterStruct
 }
 
-func NewDefaultFooPresenter() *defaultFooPresenterStruct {
+func New() *defaultFooPresenterStruct {
 	return &defaultFooPresenterStruct{}
 }

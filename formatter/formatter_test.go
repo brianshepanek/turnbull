@@ -42,14 +42,14 @@ const(
 
 	testOutputScaffoldInterfaceDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface"
 	testOutputScaffoldInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller"
-	testOutputInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo_http_controller.go"
-	testOutputScaffoldInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo_http_controller_scaffold.go"
+	testOutputInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http/controller.go"
+	testOutputScaffoldInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http/scaffold.go"
 	testOutputScaffoldInterfaceRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository"
-	testOutputInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo_scribble_repository.go"
-	testOutputScaffoldInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo_scribble_repository_scaffold.go"
+	testOutputInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo/scribble/repository.go"
+	testOutputScaffoldInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo/scribble/scaffold.go"
 	testOutputScaffoldInterfacePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter"
-	testOutputInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo_default_presenter.go"
-	testOutputScaffoldInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo_default_presenter_scaffold.go"
+	testOutputInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo/default/presenter.go"
+	testOutputScaffoldInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo/default/scaffold.go"
 
 	testOutputRegistryPackageName = "registry"
 
@@ -103,20 +103,20 @@ const(
 	testOutputScaffoldInterfaceRepositoryPackageName = "repository"
 	testOutputInterfaceRepositoryStructId = "scribbleFooRepository"
 	testOutputScaffoldInterfaceRepositoryStructId = "scribbleFooRepositoryStruct"
-	testOutputScaffoldInterfaceRepositoryConstructorFunctionId = "NewScribbleFooRepository"
+	testOutputScaffoldInterfaceRepositoryConstructorFunctionId = "New"
 
 	testOutputScaffoldInterfacePresenterPackageName = "presenter"
 	testOutputInterfacePresenterStructId = "defaultFooPresenter"
 	testOutputScaffoldInterfacePresenterStructId = "defaultFooPresenterStruct"
 	testOutputScaffoldInterfacePresenterInterfaceId = "DefaultFooPresenter"
-	testOutputScaffoldInterfacePresenterConstructorFunctionId = "NewDefaultFooPresenter"
+	testOutputScaffoldInterfacePresenterConstructorFunctionId = "New"
 
 	testOutputScaffoldInterfaceControllerPackageName = "controller"
 	testOutputInterfaceControllerStructId = "httpFooController"
 	testOutputScaffoldInterfaceControllerStructId = "httpFooControllerStruct"
 	testOutputInterfaceControllerInterfaceId = "HttpFooController"
 	testOutputScaffoldInterfaceControllerInterfaceId = "httpFooControllerInterface"
-	testOutputScaffoldInterfaceControllerConstructorFunctionId = "NewHttpFooController"
+	testOutputScaffoldInterfaceControllerConstructorFunctionId = "New"
 
 )
 

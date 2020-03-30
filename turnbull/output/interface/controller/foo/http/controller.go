@@ -9,6 +9,6 @@ type HttpFooController interface {
 	httpFooControllerInterface
 }
 
-func NewHttpFooController(interactor interactor.FooInteractor) HttpFooController {
+func New(interactor interactor.FooInteractor) HttpFooController {
 	return &httpFooController{httpFooControllerStruct{interactor}}
 }

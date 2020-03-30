@@ -6,7 +6,7 @@ type scribbleFooRepository struct {
 	scribbleFooRepositoryStruct
 }
 
-func NewScribbleFooRepository(driver *golangscribble.Driver, collection string) *scribbleFooRepository {
+func New(driver *golangscribble.Driver, collection string) *scribbleFooRepository {
 	return &scribbleFooRepository{scribbleFooRepositoryStruct{
 		collection: collection,
 		driver:     driver,

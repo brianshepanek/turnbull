@@ -2,6 +2,7 @@ package turnbull
 
 import(
 	"os"
+	"path/filepath"
 	"bytes"
 	"github.com/brianshepanek/turnbull/domain/model"
 	"github.com/brianshepanek/turnbull/formatter"
@@ -307,6 +308,15 @@ func (turnbull *turnbull) buildInterfaceRepository(driver string, entity model.E
 		return err
 	}
 
+	// Ensure
+	dirName := filepath.Dir(fileName)
+	if _, serr := os.Stat(dirName); serr != nil {
+		merr := os.MkdirAll(dirName, os.ModePerm)
+		if merr != nil {
+			return err
+		}
+	}
+
 	// File
 	file, err := os.Create(fileName)
 	if err != nil {
@@ -337,6 +347,15 @@ func (turnbull *turnbull) buildScaffoldInterfaceRepository(driver string, entity
 	fileName, err := turnbull.formatter.OutputScaffoldInterfaceRepositoryFile(driver, entity)
 	if err != nil {
 		return err
+	}
+
+	// Ensure
+	dirName := filepath.Dir(fileName)
+	if _, serr := os.Stat(dirName); serr != nil {
+		merr := os.MkdirAll(dirName, os.ModePerm)
+		if merr != nil {
+			return err
+		}
 	}
 
 	// File
@@ -371,6 +390,15 @@ func (turnbull *turnbull) buildInterfacePresenter(driver string, entity model.En
 		return err
 	}
 
+	// Ensure
+	dirName := filepath.Dir(fileName)
+	if _, serr := os.Stat(dirName); serr != nil {
+		merr := os.MkdirAll(dirName, os.ModePerm)
+		if merr != nil {
+			return err
+		}
+	}
+
 	// File
 	file, err := os.Create(fileName)
 	if err != nil {
@@ -401,6 +429,15 @@ func (turnbull *turnbull) buildScaffoldInterfacePresenter(driver string, entity 
 	fileName, err := turnbull.formatter.OutputScaffoldInterfacePresenterFile(driver, entity)
 	if err != nil {
 		return err
+	}
+
+	// Ensure
+	dirName := filepath.Dir(fileName)
+	if _, serr := os.Stat(dirName); serr != nil {
+		merr := os.MkdirAll(dirName, os.ModePerm)
+		if merr != nil {
+			return err
+		}
 	}
 
 	// File
@@ -435,6 +472,15 @@ func (turnbull *turnbull) buildInterfaceController(driver string, entity model.E
 		return err
 	}
 
+	// Ensure
+	dirName := filepath.Dir(fileName)
+	if _, serr := os.Stat(dirName); serr != nil {
+		merr := os.MkdirAll(dirName, os.ModePerm)
+		if merr != nil {
+			return err
+		}
+	}
+
 	// File
 	file, err := os.Create(fileName)
 	if err != nil {
@@ -465,6 +511,15 @@ func (turnbull *turnbull) buildScaffoldInterfaceController(driver string, entity
 	fileName, err := turnbull.formatter.OutputScaffoldInterfaceControllerFile(driver, entity)
 	if err != nil {
 		return err
+	}
+
+	// Ensure
+	dirName := filepath.Dir(fileName)
+	if _, serr := os.Stat(dirName); serr != nil {
+		merr := os.MkdirAll(dirName, os.ModePerm)
+		if merr != nil {
+			return err
+		}
 	}
 
 	// File
