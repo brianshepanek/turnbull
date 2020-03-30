@@ -25,32 +25,35 @@ type foo struct {
 
 func (m *foo) MarshalJSON() ([]byte, error) {
 	type jsonStructPrivate struct {
-		Id       string    `json:"id,omitempty"`
+		Id       int64     `json:"id,omitempty"`
 		Title    string    `json:"title,omitempty"`
 		Subtitle string    `json:"subtitle,omitempty"`
-		Int      int       `json:"int,omitempty"`
+		Views    int       `json:"views,omitempty"`
 		Tags     []string  `json:"tags,omitempty"`
 		Created  time.Time `json:"created,omitempty"`
+		Modified time.Time `json:"modified,omitempty"`
 	}
 	jsonStruct := jsonStructPrivate{
 		Created:  m.Created(),
 		Id:       m.Id(),
-		Int:      m.Int(),
+		Modified: m.Modified(),
 		Subtitle: m.Subtitle(),
 		Tags:     m.Tags(),
 		Title:    m.Title(),
+		Views:    m.Views(),
 	}
 	return json.Marshal(&jsonStruct)
 }
 
 func (m *foo) UnmarshalJSON(data []byte) error {
 	type jsonStructPrivate struct {
-		Id       string    `json:"id,omitempty"`
+		Id       int64     `json:"id,omitempty"`
 		Title    string    `json:"title,omitempty"`
 		Subtitle string    `json:"subtitle,omitempty"`
-		Int      int       `json:"int,omitempty"`
+		Views    int       `json:"views,omitempty"`
 		Tags     []string  `json:"tags,omitempty"`
 		Created  time.Time `json:"created,omitempty"`
+		Modified time.Time `json:"modified,omitempty"`
 	}
 	jsonStruct := jsonStructPrivate{}
 	err := json.Unmarshal(data, &jsonStruct)
@@ -60,9 +63,10 @@ func (m *foo) UnmarshalJSON(data []byte) error {
 	m.SetId(jsonStruct.Id)
 	m.SetTitle(jsonStruct.Title)
 	m.SetSubtitle(jsonStruct.Subtitle)
-	m.SetInt(jsonStruct.Int)
+	m.SetViews(jsonStruct.Views)
 	m.SetTags(jsonStruct.Tags)
 	m.SetCreated(jsonStruct.Created)
+	m.SetModified(jsonStruct.Modified)
 	return nil
 }
 
@@ -78,7 +82,7 @@ func (c *httpFooControllerStruct) Browse(w http.ResponseWriter, r *http.Request)
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp.Elements())
+	json.NewEncoder(w).Encode(foos)
 }
 func (c *httpFooControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()

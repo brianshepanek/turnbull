@@ -676,9 +676,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 		).
 		Dot("Encode").
 		Call(
-			jen.Id("resp").
-			Dot("Elements").
-			Call(),
+			jen.Id(jsonSliceId),
 		),
 	)
 

@@ -19,32 +19,35 @@ type foo struct {
 
 func (m *foo) MarshalBSON() ([]byte, error) {
 	type bsonStructPrivate struct {
-		Id       string    `bson:"id"`
+		Id       int64     `bson:"id"`
 		Title    string    `bson:"title"`
 		Subtitle string    `bson:"subtitle"`
-		Int      int       `bson:"int"`
+		Views    int       `bson:"views"`
 		Tags     []string  `bson:"tags"`
 		Created  time.Time `bson:"created"`
+		Modified time.Time `bson:"modified"`
 	}
 	bsonStruct := bsonStructPrivate{
 		Created:  m.Created(),
 		Id:       m.Id(),
-		Int:      m.Int(),
+		Modified: m.Modified(),
 		Subtitle: m.Subtitle(),
 		Tags:     m.Tags(),
 		Title:    m.Title(),
+		Views:    m.Views(),
 	}
 	return bson.Marshal(&bsonStruct)
 }
 
 func (m *foo) UnmarshalBSON(data []byte) error {
 	type bsonStructPrivate struct {
-		Id       string    `bson:"id"`
+		Id       int64     `bson:"id"`
 		Title    string    `bson:"title"`
 		Subtitle string    `bson:"subtitle"`
-		Int      int       `bson:"int"`
+		Views    int       `bson:"views"`
 		Tags     []string  `bson:"tags"`
 		Created  time.Time `bson:"created"`
+		Modified time.Time `bson:"modified"`
 	}
 	bsonStruct := bsonStructPrivate{}
 	err := bson.Unmarshal(data, &bsonStruct)
@@ -54,9 +57,10 @@ func (m *foo) UnmarshalBSON(data []byte) error {
 	m.SetId(bsonStruct.Id)
 	m.SetTitle(bsonStruct.Title)
 	m.SetSubtitle(bsonStruct.Subtitle)
-	m.SetInt(bsonStruct.Int)
+	m.SetViews(bsonStruct.Views)
 	m.SetTags(bsonStruct.Tags)
 	m.SetCreated(bsonStruct.Created)
+	m.SetModified(bsonStruct.Modified)
 	return nil
 }
 

@@ -25,7 +25,7 @@ var (
 		Fields : []model.Field{
 			model.Field{
 				Name : "id",
-				Type : "string",
+				Type : "int64",
 			},
 			model.Field{
 				Name : "title",
@@ -36,7 +36,7 @@ var (
 				Type : "string",
 			},
 			model.Field{
-				Name : "int",
+				Name : "views",
 				Type : "int",
 			},
 			model.Field{
@@ -46,6 +46,11 @@ var (
 			},
 			model.Field{
 				Name : "created",
+				Package : "time",
+				Type : "Time",
+			},
+			model.Field{
+				Name : "modified",
 				Package : "time",
 				Type : "Time",
 			},

@@ -6,29 +6,32 @@ import (
 )
 
 type fooStruct struct {
-	id       string
+	id       int64
 	title    string
 	subtitle string
-	int      int
+	views    int
 	tags     []string
 	created  time.Time
+	modified time.Time
 }
 
 type foosStruct []fooInterface
 
 type fooInterface interface {
-	Id() string
+	Id() int64
 	Title() string
 	Subtitle() string
-	Int() int
+	Views() int
 	Tags() []string
 	Created() time.Time
-	SetId(id string)
+	Modified() time.Time
+	SetId(id int64)
 	SetTitle(title string)
 	SetSubtitle(subtitle string)
-	SetInt(int int)
+	SetViews(views int)
 	SetTags(tags []string)
 	SetCreated(created time.Time)
+	SetModified(modified time.Time)
 	BeforeRead(ctx context.Context) error
 	BeforeAdd(ctx context.Context) error
 }
@@ -52,7 +55,7 @@ func (m *foosStruct) Append(req fooInterface) {
 func (m *foosStruct) Elements() []fooInterface {
 	return *m
 }
-func (m *fooStruct) Id() string {
+func (m *fooStruct) Id() int64 {
 	return m.id
 }
 
@@ -64,8 +67,8 @@ func (m *fooStruct) Subtitle() string {
 	return m.subtitle
 }
 
-func (m *fooStruct) Int() int {
-	return m.int
+func (m *fooStruct) Views() int {
+	return m.views
 }
 
 func (m *fooStruct) Tags() []string {
@@ -76,7 +79,11 @@ func (m *fooStruct) Created() time.Time {
 	return m.created
 }
 
-func (m *fooStruct) SetId(id string) {
+func (m *fooStruct) Modified() time.Time {
+	return m.modified
+}
+
+func (m *fooStruct) SetId(id int64) {
 	m.id = id
 }
 
@@ -88,8 +95,8 @@ func (m *fooStruct) SetSubtitle(subtitle string) {
 	m.subtitle = subtitle
 }
 
-func (m *fooStruct) SetInt(int int) {
-	m.int = int
+func (m *fooStruct) SetViews(views int) {
+	m.views = views
 }
 
 func (m *fooStruct) SetTags(tags []string) {
@@ -98,6 +105,10 @@ func (m *fooStruct) SetTags(tags []string) {
 
 func (m *fooStruct) SetCreated(created time.Time) {
 	m.created = created
+}
+
+func (m *fooStruct) SetModified(modified time.Time) {
+	m.modified = modified
 }
 
 func (m *fooStruct) BeforeRead(ctx context.Context) error {
