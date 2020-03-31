@@ -13,8 +13,8 @@ type fooInteractorStruct struct {
 }
 type fooInteractorInterface interface {
 	Add(ctx context.Context, req entity.Foo) (entity.Foo, error)
-	Read(ctx context.Context, query interface{}, req entity.Foo) (entity.Foo, error)
-	Browse(ctx context.Context, query interface{}, req entity.Foos) (entity.Foos, error)
+	Read(ctx context.Context, id string, req entity.Foo) (entity.Foo, error)
+	Browse(ctx context.Context, req entity.Foos) (entity.Foos, error)
 }
 
 func (i *fooInteractorStruct) Add(ctx context.Context, req entity.Foo) (entity.Foo, error) {
@@ -25,17 +25,17 @@ func (i *fooInteractorStruct) Add(ctx context.Context, req entity.Foo) (entity.F
 	}
 	return i.presenter.Add(ctx, req)
 }
-func (i *fooInteractorStruct) Read(ctx context.Context, query interface{}, req entity.Foo) (entity.Foo, error) {
+func (i *fooInteractorStruct) Read(ctx context.Context, id string, req entity.Foo) (entity.Foo, error) {
 	var err error
-	err = i.repository.Read(ctx, query, req)
+	err = i.repository.Read(ctx, id, req)
 	if err != nil {
 		return nil, err
 	}
 	return i.presenter.Read(ctx, req)
 }
-func (i *fooInteractorStruct) Browse(ctx context.Context, query interface{}, req entity.Foos) (entity.Foos, error) {
+func (i *fooInteractorStruct) Browse(ctx context.Context, req entity.Foos) (entity.Foos, error) {
 	var err error
-	err = i.repository.Browse(ctx, query, req)
+	err = i.repository.Browse(ctx, req)
 	if err != nil {
 		return nil, err
 	}

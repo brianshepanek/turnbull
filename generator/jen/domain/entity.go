@@ -234,13 +234,21 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 		}
 	}
 
-	// // Set All Setter
-	// setAllSetter, err := entityGenerator.scaffoldEntityInterfaceSetAllSetterFunction(entity)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// f.Add(&setAllSetter)
-	// f.Line()
+	// Set All Setter
+	setAllSetter, err := entityGenerator.scaffoldEntityInterfaceSetAllSetterFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&setAllSetter)
+	f.Line()
+
+	// To Primary
+	toPrimary, err := entityGenerator.scaffoldEntityInterfaceToPrimaryFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&toPrimary)
+	f.Line()
 
 	// // JSON
 	// if entity.JSON {
@@ -505,12 +513,19 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterface(entity model.Ent
 		}
 	}
 
-	// // Set All
-	// code, err := entityGenerator.scaffoldEntityInterfaceSetAllSetter(entity)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// fields = append(fields, code)
+	// Set All
+	setAllCode, err := entityGenerator.scaffoldEntityInterfaceSetAllSetter(entity)
+	if err != nil {
+		return nil, err
+	}
+	fields = append(fields, setAllCode)
+
+	// To Primary
+	toPrimaryCode, err := entityGenerator.scaffoldEntityInterfaceToPrimary(entity)
+	if err != nil {
+		return nil, err
+	}
+	fields = append(fields, toPrimaryCode)
 
 	// // JSON
 	// if entity.JSON {
@@ -679,6 +694,48 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceCallback(callback
 
 	return &statement, nil
 
+}
+
+func (entityGenerator *entityGenerator) scaffoldEntityInterfaceToPrimary(entity model.Entity) (jen.Code, error){
+	
+	// ID
+	var statement, vals jen.Statement
+	id , err := entityGenerator.formatter.OutputScaffoldDomainEntityToPrimaryId()
+	if err != nil {
+		return nil, err
+	}
+	
+	// Set
+	statement.Id(id)
+
+	// Params
+	statement.Params(
+		jen.List(
+			jen.Id("ctx").
+			Qual("context", "Context"),
+
+			jen.Id("req").
+			Interface(),
+		),
+	)
+
+	// Vals
+	for _, field := range entity.Fields {
+		if field.Primary {
+			err = entityGenerator.helperGenerator.Field("", field, entity, &vals)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	err = entityGenerator.helperGenerator.Field("", model.Field{Type : "error"}, entity, &vals)
+
+	// Set
+	statement.Parens(
+		jen.List(vals...),
+	)
+	
+	return &statement, nil
 }
 
 func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetAllSetter(entity model.Entity) (jen.Code, error){
@@ -1407,6 +1464,86 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetAllSetterFunct
 	statement.Block(
 		block...,
 	)
+	
+	return statement, nil
+}
+
+func (entityGenerator *entityGenerator) scaffoldEntityInterfaceToPrimaryFunction(entity model.Entity) (jen.Statement, error){
+	
+	// ID
+	var statement, vals jen.Statement
+	id , err := entityGenerator.formatter.OutputScaffoldDomainEntityToPrimaryId()
+	if err != nil {
+		return nil, err
+	}
+
+	// Struct ID
+	structId , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Func
+	statement.Func()
+
+	// Params
+	statement.Params(
+		jen.Id("m").
+		Op("*").
+		Qual("", structId),
+	)
+	
+	// Set
+	statement.Id(id)
+
+	// Params
+	statement.Params(
+		jen.List(
+			jen.Id("ctx").
+			Qual("context", "Context"),
+
+			jen.Id("req").
+			Interface(),
+		),
+	)
+
+	// Vals
+	var primaryField model.Field
+	for _, field := range entity.Fields {
+		if field.Primary {
+			primaryField = field
+		}
+	}
+	err = entityGenerator.helperGenerator.Field("", primaryField, entity, &vals)
+	if err != nil {
+		return nil, err
+	}
+	err = entityGenerator.helperGenerator.Field("", model.Field{Type : "error"}, entity, &vals)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set
+	statement.Parens(
+		jen.List(vals...),
+	)
+
+	// Block
+	var block []jen.Code
+	block = append(block, 
+		jen.Var().
+		Id("resp").
+		Qual(primaryField.Package, primaryField.Type),
+	)
+	block = append(block, 
+		jen.Return(
+			jen.List(
+				jen.Id("resp"),
+				jen.Nil(),
+			),
+		),
+	)
+	statement.Block(block...)
 	
 	return statement, nil
 }

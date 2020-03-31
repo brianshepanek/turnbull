@@ -12,7 +12,7 @@ type scribbleFooRepositoryStruct struct {
 	collection string
 }
 
-func (r *scribbleFooRepositoryStruct) Count(ctx context.Context, query interface{}, req int) error {
+func (r *scribbleFooRepositoryStruct) Count(ctx context.Context, req int) error {
 	records, err := r.driver.ReadAll(r.collection)
 	if err != nil {
 		return err
@@ -21,7 +21,7 @@ func (r *scribbleFooRepositoryStruct) Count(ctx context.Context, query interface
 	req = &count
 	return nil
 }
-func (r *scribbleFooRepositoryStruct) Browse(ctx context.Context, query interface{}, req entity.Foos) error {
+func (r *scribbleFooRepositoryStruct) Browse(ctx context.Context, req entity.Foos) error {
 	records, err := r.driver.ReadAll(r.collection)
 	if err != nil {
 		return err
@@ -36,15 +36,15 @@ func (r *scribbleFooRepositoryStruct) Browse(ctx context.Context, query interfac
 	}
 	return nil
 }
-func (r *scribbleFooRepositoryStruct) Read(ctx context.Context, query interface{}, req entity.Foo) error {
+func (r *scribbleFooRepositoryStruct) Read(ctx context.Context, id string, req entity.Foo) error {
 	return r.driver.Read(r.collection, req.Id(), req)
 }
-func (r *scribbleFooRepositoryStruct) Edit(ctx context.Context, req entity.Foo) error {
+func (r *scribbleFooRepositoryStruct) Edit(ctx context.Context, id string, req entity.Foo) error {
 	return r.driver.Read(r.collection, req.Id(), req)
 }
 func (r *scribbleFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
 	return r.driver.Write(r.collection, req.Id(), req)
 }
-func (r *scribbleFooRepositoryStruct) Delete(ctx context.Context, req entity.Foo) error {
+func (r *scribbleFooRepositoryStruct) Delete(ctx context.Context, id string, req entity.Foo) error {
 	return r.driver.Delete(r.collection, req.Id())
 }

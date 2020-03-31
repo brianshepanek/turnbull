@@ -7,6 +7,6 @@ import (
 
 type fooRepository interface {
 	Add(ctx context.Context, req entity.Foo) error
-	Read(ctx context.Context, query interface{}, req entity.Foo) error
-	Browse(ctx context.Context, query interface{}, req entity.Foos) error
+	Read(ctx context.Context, id string, req entity.Foo) error
+	Browse(ctx context.Context, req entity.Foos) error
 }

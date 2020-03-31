@@ -1,5 +1,5 @@
 type fooInteractorInterface interface {
 	Add(ctx context.Context, req entity.Foo) (entity.Foo, error)
-	Read(ctx context.Context, query interface{}, req entity.Foo) (entity.Foo, error)
-	Browse(ctx context.Context, query interface{}, req entity.Foos) (entity.Foos, error)
+	Read(ctx context.Context, id string, req entity.Foo) (entity.Foo, error)
+	Browse(ctx context.Context, req entity.Foos) (entity.Foos, error)
 }

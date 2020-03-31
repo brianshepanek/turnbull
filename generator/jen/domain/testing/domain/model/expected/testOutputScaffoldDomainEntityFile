@@ -15,6 +15,8 @@ type fooInterface interface {
 	SetString(string string)
 	SetInt(int int)
 	BeforeAdd(ctx context.Context) error
+	SetAll(req fooInterface)
+	ToPrimary(ctx context.Context, req interface{}) (string, error)
 }
 type foosInterface interface {
 	Len() int
@@ -54,4 +56,14 @@ func (m *fooStruct) SetInt(int int) {
 
 func (m *fooStruct) BeforeAdd(ctx context.Context) error {
 	return nil
+}
+
+func (m *fooStruct) SetAll(req fooInterface) {
+	m.SetString(req.String())
+	m.SetInt(req.Int())
+}
+
+func (m *fooStruct) ToPrimary(ctx context.Context, req interface{}) (string, error) {
+	var resp string
+	return resp, nil
 }

@@ -64,7 +64,7 @@ func (m *foo) UnmarshalBSON(data []byte) error {
 	return nil
 }
 
-func (r *mongoFooRepositoryStruct) Browse(ctx context.Context, query interface{}, req entity.Foos) error {
+func (r *mongoFooRepositoryStruct) Browse(ctx context.Context, req entity.Foos) error {
 	collection := r.client.Database(r.db).Collection(r.collection)
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
@@ -80,10 +80,10 @@ func (r *mongoFooRepositoryStruct) Browse(ctx context.Context, query interface{}
 	}
 	return nil
 }
-func (r *mongoFooRepositoryStruct) Read(ctx context.Context, query interface{}, req entity.Foo) error {
+func (r *mongoFooRepositoryStruct) Read(ctx context.Context, id int64, req entity.Foo) error {
 	return nil
 }
-func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, req entity.Foo) error {
+func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Foo) error {
 	return nil
 }
 func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
@@ -97,6 +97,6 @@ func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) erro
 	err = collection.FindOne(ctx, filter).Decode(foo)
 	return nil
 }
-func (r *mongoFooRepositoryStruct) Delete(ctx context.Context, req entity.Foo) error {
+func (r *mongoFooRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Foo) error {
 	return nil
 }

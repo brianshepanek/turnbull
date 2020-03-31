@@ -22,6 +22,7 @@ type Domain struct {
 	LenName string
 	AppendName string
 	ElementsName string
+	ToPrimaryName string
 }
 
 type Entity struct {
@@ -138,6 +139,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 				LenName : "len",
 				AppendName : "append",
 				ElementsName : "elements",
+				ToPrimaryName : "to_primary",
 				Entity : Entity {
 					Name : "entity",
 				},
@@ -248,10 +250,6 @@ func New(configPath string, outputPath string) (*Config, error) {
 							Type : "Context",
 						},
 						model.Field {
-							Name : "query",
-							Type : "interface{}",
-						},
-						model.Field {
 							Slice : true,
 							Name : "req",
 							Type : "self",
@@ -298,8 +296,8 @@ func New(configPath string, outputPath string) (*Config, error) {
 							Type : "Context",
 						},
 						model.Field {
-							Name : "query",
-							Type : "interface{}",
+							Name : "id",
+							Type : "primary",
 						},
 						model.Field {
 							Name : "req",
@@ -347,6 +345,10 @@ func New(configPath string, outputPath string) (*Config, error) {
 							Type : "Context",
 						},
 						model.Field {
+							Name : "id",
+							Type : "primary",
+						},
+						model.Field {
 							Name : "req",
 							Type : "self",
 						},
@@ -392,6 +394,10 @@ func New(configPath string, outputPath string) (*Config, error) {
 							Type : "Context",
 						},
 						model.Field {
+							Name : "id",
+							Type : "primary",
+						},
+						model.Field {
 							Name : "req",
 							Type : "self",
 						},
@@ -435,10 +441,6 @@ func New(configPath string, outputPath string) (*Config, error) {
 							Name : "ctx",
 							Package : "context",
 							Type : "Context",
-						},
-						model.Field {
-							Name : "query",
-							Type : "interface{}",
 						},
 						model.Field {
 							Name : "req",

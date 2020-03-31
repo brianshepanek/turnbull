@@ -73,6 +73,7 @@ const(
 	testOutputScaffoldDomainEntitySetterId = "SetBar"
 	testOutputScaffoldDomainEntityCallbackId = "BeforeAdd"
 	testOutputScaffoldDomainEntitySetAllSetterId = "SetAll"
+	testOutputScaffoldDomainEntityToPrimaryId = "ToPrimary"
 
 	testOutputScaffoldDomainEntityLenId = "Len"
 	testOutputScaffoldDomainEntityAppendId = "Append"
@@ -980,6 +981,23 @@ func TestOutputScaffoldDomainEntitySetAllSetterId(t *testing.T){
 		t.Errorf(`OutputScaffoldDomainEntitySetAllSetterId() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntitySetAllSetterId, id)
 	}
 }
+
+// Test Output Scaffold Domain Entity To Primary ID
+func TestOutputScaffoldDomainEntityToPrimaryId(t *testing.T){
+
+	// Build
+	id, err := testFormatter.OutputScaffoldDomainEntityToPrimaryId()
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputScaffoldDomainEntityToPrimaryId() failed with error %v`, err)
+	}
+
+	if id != testOutputScaffoldDomainEntityToPrimaryId {
+		t.Errorf(`OutputScaffoldDomainEntityToPrimaryId() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityToPrimaryId, id)
+	}
+}
+
 
 // Test Output Scaffold Domain Entity Len ID
 func TestOutputScaffoldDomainEntityLenId(t *testing.T){

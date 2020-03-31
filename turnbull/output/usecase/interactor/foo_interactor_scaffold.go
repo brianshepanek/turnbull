@@ -12,36 +12,36 @@ type fooInteractorStruct struct {
 	presenter  presenter.FooPresenter
 }
 type fooInteractorInterface interface {
-	Browse(ctx context.Context, query interface{}, req entity.Foos) (entity.Foos, error)
-	Read(ctx context.Context, query interface{}, req entity.Foo) (entity.Foo, error)
-	Edit(ctx context.Context, req entity.Foo) (entity.Foo, error)
+	Browse(ctx context.Context, req entity.Foos) (entity.Foos, error)
+	Read(ctx context.Context, id int64, req entity.Foo) (entity.Foo, error)
+	Edit(ctx context.Context, id int64, req entity.Foo) (entity.Foo, error)
 	Add(ctx context.Context, req entity.Foo) (entity.Foo, error)
-	Delete(ctx context.Context, req entity.Foo) (entity.Foo, error)
+	Delete(ctx context.Context, id int64, req entity.Foo) (entity.Foo, error)
 }
 
-func (i *fooInteractorStruct) Browse(ctx context.Context, query interface{}, req entity.Foos) (entity.Foos, error) {
+func (i *fooInteractorStruct) Browse(ctx context.Context, req entity.Foos) (entity.Foos, error) {
 	var err error
-	err = i.repository.Browse(ctx, query, req)
+	err = i.repository.Browse(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	return i.presenter.Browse(ctx, req)
 }
-func (i *fooInteractorStruct) Read(ctx context.Context, query interface{}, req entity.Foo) (entity.Foo, error) {
+func (i *fooInteractorStruct) Read(ctx context.Context, id int64, req entity.Foo) (entity.Foo, error) {
 	var err error
 	err = req.BeforeRead(ctx)
 	if err != nil {
 		return nil, err
 	}
-	err = i.repository.Read(ctx, query, req)
+	err = i.repository.Read(ctx, id, req)
 	if err != nil {
 		return nil, err
 	}
 	return i.presenter.Read(ctx, req)
 }
-func (i *fooInteractorStruct) Edit(ctx context.Context, req entity.Foo) (entity.Foo, error) {
+func (i *fooInteractorStruct) Edit(ctx context.Context, id int64, req entity.Foo) (entity.Foo, error) {
 	var err error
-	err = i.repository.Edit(ctx, req)
+	err = i.repository.Edit(ctx, id, req)
 	if err != nil {
 		return nil, err
 	}
@@ -59,9 +59,9 @@ func (i *fooInteractorStruct) Add(ctx context.Context, req entity.Foo) (entity.F
 	}
 	return i.presenter.Add(ctx, req)
 }
-func (i *fooInteractorStruct) Delete(ctx context.Context, req entity.Foo) (entity.Foo, error) {
+func (i *fooInteractorStruct) Delete(ctx context.Context, id int64, req entity.Foo) (entity.Foo, error) {
 	var err error
-	err = i.repository.Delete(ctx, req)
+	err = i.repository.Delete(ctx, id, req)
 	if err != nil {
 		return nil, err
 	}

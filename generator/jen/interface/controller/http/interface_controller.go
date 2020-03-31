@@ -122,7 +122,7 @@ func (controllerGenerator *controllerGenerator) ScaffoldFile(entity model.Entity
 			return nil, err
 		}
 		f.Add(&method)
-
+		f.Line()
 	}
 
 	return f, nil
@@ -543,13 +543,14 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerMetho
 	default:
 		
 	}
-
+	
 	resp.Block(block...)
 
 	return resp, nil
 }
 
 func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrowseMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	
 	var block []jen.Code
 
 	// ID
@@ -588,19 +589,27 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 		return nil, err
 	}
 
-	// Context
-	block = append(block,
+	// Line
+	block = append(block, jen.Line())
 
+	block = append(block, 
 		jen.Id("ctx").
 		Op(":=").
 		Qual("context", "Background").
 		Call(),
+	)
 
+	block = append(block, 
 		jen.Id("req").
 		Op(":=").
 		Qual(importPath, id).
 		Call(),
+	)
 
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
 		jen.List(
 			jen.Id("resp"),
 			jen.Err(),
@@ -612,24 +621,50 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 		Call(
 			jen.List(
 				jen.Id("ctx"),
-				jen.Nil(),
 				jen.Id("req"),
 			),
 		),
+	)
 
+	block = append(block, 
 		jen.If(
 			jen.Err().
 			Op("!=").
 			Nil().
-			Block(),
-		),
+			Block(
+				jen.Id("w").
+				Dot("WriteHeader").
+				Call(
+					jen.Qual("net/http", "StatusBadRequest"),
+				),
 
+				jen.Qual("encoding/json", "NewEncoder").
+				Call(
+					jen.Id("w"),
+				).
+				Dot("Encode").
+				Call(
+					jen.Err().
+					Dot("Error").
+					Call(),
+				),
+				jen.Return(),
+			),
+		),
+	)
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
 		jen.Var().
 		Id(jsonSliceId).
 		Index().
 		Op("*").
 		Id(jsonId),
+	)
 
+	block = append(block, 
 		jen.For(
 			jen.List(
 				jen.Id("_"),
@@ -653,7 +688,12 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 				),
 			),
 		),
+	)
 
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
 		jen.Id("w").
 		Dot("Header").
 		Call().
@@ -664,12 +704,17 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 				jen.Lit("application/json"),
 			),
 		),
+	)
 
+	block = append(block, 
 		jen.Id("w").
 		Dot("WriteHeader").
 		Call(
 			jen.Qual("net/http", "StatusOK"),
 		),
+	)
+
+	block = append(block, 
 		jen.Qual("encoding/json", "NewEncoder").
 		Call(
 			jen.Id("w"),
@@ -679,6 +724,9 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 			jen.Id(jsonSliceId),
 		),
 	)
+
+	// Line
+	block = append(block, jen.Line())
 
 	return block, nil
 }
@@ -699,6 +747,12 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 		return block, err
 	}
 
+	// ID
+	jsonId, err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
 
 	interactorPackageName , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorPackageName()
 	if err != nil {
@@ -711,35 +765,86 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 		return nil, err
 	}
 
-	// Context
-	block = append(block,
+	// Line
+	block = append(block, jen.Line())
 
+	block = append(block, 
 		jen.Id("ctx").
 		Op(":=").
 		Qual("context", "Background").
 		Call(),
+	)
 
-		jen.Id("req").
+	block = append(block,
+		jen.Id(jsonId).
 		Op(":=").
-		Qual(importPath, id).
-		Call(),
+		Op("&").
+		Id(jsonId).
+		Values(
+			jen.Qual(importPath, id).
+			Call(),
+		),
+	)
 
+	// Line
+	block = append(block, jen.Line())
+
+	// Mux Vars
+	block = append(block, 
+		jen.Var().
+		Id("stringId").
+		String(),
+	)
+
+	block = append(block, 
 		jen.List(
-			jen.Id("resp"),
+			jen.Id("vars"),
+		).
+		Op(":=").
+		Qual("github.com/gorilla/mux", "Vars").
+		Call(
+			jen.Id("r"),
+		),
+	)
+
+	block = append(block, 
+		jen.If(
+			jen.List(
+				jen.Id("val"),
+				jen.Id("ok"),
+			).
+			Op(":=").
+			Id("vars").
+			Index(
+				jen.Lit("id"),
+			),
+			jen.Id("ok"),
+		).
+		Block(
+			jen.Id("stringId").
+			Op("=").
+			Id("val"),
+		),
+	)
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.List(
+			jen.Id("id"),
 			jen.Err(),
 		).
 		Op(":=").
-		Id("c").
-		Dot(interactorPackageName).
-		Dot(repositoryMethodId).
-		Call(
-			jen.List(
-				jen.Id("ctx"),
-				jen.Nil(),
-				jen.Id("req"),
-			),
+		Id(jsonId).
+		Dot("ToPrimary").
+		Params(
+			jen.Id("ctx"),
+			jen.Id("stringId"),
 		),
+	)
 
+	block = append(block,
 		jen.If(
 			jen.Err().
 			Op("!=").
@@ -761,11 +866,63 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 					Dot("Error").
 					Call(),
 				),
+				jen.Return(),
 			),
 		),
+	)
 
-		
+	// Line
+	block = append(block, jen.Line())
 
+	block = append(block, 
+		jen.List(
+			jen.Id("resp"),
+			jen.Err(),
+		).
+		Op(":=").
+		Id("c").
+		Dot(interactorPackageName).
+		Dot(repositoryMethodId).
+		Call(
+			jen.List(
+				jen.Id("ctx"),
+				jen.Id("id"),
+				jen.Id(jsonId),
+			),
+		),
+	)
+
+	block = append(block,
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(
+				jen.Id("w").
+				Dot("WriteHeader").
+				Call(
+					jen.Qual("net/http", "StatusBadRequest"),
+				),
+
+				jen.Qual("encoding/json", "NewEncoder").
+				Call(
+					jen.Id("w"),
+				).
+				Dot("Encode").
+				Call(
+					jen.Err().
+					Dot("Error").
+					Call(),
+				),
+				jen.Return(),
+			),
+		),
+	)
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
 		jen.Id("w").
 		Dot("Header").
 		Call().
@@ -776,12 +933,17 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 				jen.Lit("application/json"),
 			),
 		),
+	)
 
+	block = append(block, 
 		jen.Id("w").
 		Dot("WriteHeader").
 		Call(
 			jen.Qual("net/http", "StatusOK"),
 		),
+	)
+
+	block = append(block, 
 		jen.Qual("encoding/json", "NewEncoder").
 		Call(
 			jen.Id("w"),
@@ -791,6 +953,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 			jen.Id("resp"),
 		),
 	)
+
 	return block, nil
 }
 
@@ -833,14 +996,17 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 		return nil, err
 	}
 
-	// Context
-	block = append(block,
+	// Line
+	block = append(block, jen.Line())
 
+	block = append(block,
 		jen.Id("ctx").
 		Op(":=").
 		Qual("context", "Background").
 		Call(),
+	)
 
+	block = append(block,
 		jen.Id(jsonId).
 		Op(":=").
 		Op("&").
@@ -849,7 +1015,12 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 			jen.Qual(importPath, id).
 			Call(),
 		),
+	)
 
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block,
 		jen.Err().
 		Op(":=").
 		Qual("encoding/json", "NewDecoder").
@@ -861,7 +1032,9 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 		Call(
 			jen.Id(jsonId),
 		),
+	)
 
+	block = append(block,
 		jen.If(
 			jen.Err().
 			Op("!=").
@@ -883,9 +1056,15 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 					Dot("Error").
 					Call(),
 				),
+				jen.Return(),
 			),
 		),
+	)
 
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block,
 		jen.List(
 			jen.Id("resp"),
 			jen.Err(),
@@ -900,7 +1079,9 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 				jen.Id(jsonId),
 			),
 		),
+	)
 
+	block = append(block,
 		jen.If(
 			jen.Err().
 			Op("!=").
@@ -922,9 +1103,15 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 					Dot("Error").
 					Call(),
 				),
+				jen.Return(),
 			),
 		),
+	)
 
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block,
 		jen.Id("w").
 		Dot("Header").
 		Call().
@@ -935,12 +1122,17 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 				jen.Lit("application/json"),
 			),
 		),
+	)
 
+	block = append(block,
 		jen.Id("w").
 		Dot("WriteHeader").
 		Call(
 			jen.Qual("net/http", "StatusOK"),
 		),
+	)
+
+	block = append(block,
 		jen.Qual("encoding/json", "NewEncoder").
 		Call(
 			jen.Id("w"),
@@ -950,6 +1142,10 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 			jen.Id("resp"),
 		),
 	)
+
+	// Line
+	block = append(block, jen.Line())
+
 	return block, nil
 }
 

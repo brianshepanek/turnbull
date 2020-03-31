@@ -34,6 +34,8 @@ type fooInterface interface {
 	SetModified(modified time.Time)
 	BeforeRead(ctx context.Context) error
 	BeforeAdd(ctx context.Context) error
+	SetAll(req fooInterface)
+	ToPrimary(ctx context.Context, req interface{}) (int64, error)
 }
 type foosInterface interface {
 	Len() int
@@ -117,4 +119,19 @@ func (m *fooStruct) BeforeRead(ctx context.Context) error {
 
 func (m *fooStruct) BeforeAdd(ctx context.Context) error {
 	return nil
+}
+
+func (m *fooStruct) SetAll(req fooInterface) {
+	m.SetId(req.Id())
+	m.SetTitle(req.Title())
+	m.SetSubtitle(req.Subtitle())
+	m.SetViews(req.Views())
+	m.SetTags(req.Tags())
+	m.SetCreated(req.Created())
+	m.SetModified(req.Modified())
+}
+
+func (m *fooStruct) ToPrimary(ctx context.Context, req interface{}) (int64, error) {
+	var resp int64
+	return resp, nil
 }

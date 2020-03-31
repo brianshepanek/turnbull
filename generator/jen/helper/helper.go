@@ -48,6 +48,7 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 
 			// Vars
 			var id string
+
 			// Import Path
 			importPath , err := generator.formatter.OutputScaffoldDomainEntityDirectoryImportPath()
 			if err != nil {
@@ -74,6 +75,15 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 
 			// Set
 			statement.Qual(importPath, id)
+
+		} else if (field.Type == "primary"){ 
+
+			for _, entityField := range entity.Fields {
+				if entityField.Primary {
+					statement.Qual(entityField.Package, entityField.Type)
+				}
+			}
+
 		} else {
 			statement.Qual(field.Package, field.Type)
 		}

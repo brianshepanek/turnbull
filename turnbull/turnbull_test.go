@@ -26,6 +26,7 @@ var (
 			model.Field{
 				Name : "id",
 				Type : "int64",
+				Primary : true,
 			},
 			model.Field{
 				Name : "title",

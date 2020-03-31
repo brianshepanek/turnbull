@@ -38,6 +38,7 @@ var (
 		JSON : true,
 		Fields : []model.Field{
 			model.Field{
+				Primary : true,
 				Name : "string",
 				Type : "string",
 			},
