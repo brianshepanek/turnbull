@@ -38,6 +38,10 @@ var(
 				Name : "browse",
 				Type : "browse",
 			},
+			model.Method{
+				Name : "delete",
+				Type : "delete",
+			},
 		},
 	}
 	testField  = model.Field{

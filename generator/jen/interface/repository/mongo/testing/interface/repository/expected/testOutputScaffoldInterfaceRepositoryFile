@@ -18,26 +18,30 @@ type foo struct {
 
 func (m *foo) MarshalBSON() ([]byte, error) {
 	type bsonStructPrivate struct {
-		String string `bson:"string"`
-		Int    int    `bson:"int"`
+		Identifier int64  `bson:"identifier"`
+		String     string `bson:"string"`
+		Int        int    `bson:"int"`
 	}
 	bsonStruct := bsonStructPrivate{
-		Int:    m.Int(),
-		String: m.String(),
+		Identifier: m.Identifier(),
+		Int:        m.Int(),
+		String:     m.String(),
 	}
 	return bson.Marshal(&bsonStruct)
 }
 
 func (m *foo) UnmarshalBSON(data []byte) error {
 	type bsonStructPrivate struct {
-		String string `bson:"string"`
-		Int    int    `bson:"int"`
+		Identifier int64  `bson:"identifier"`
+		String     string `bson:"string"`
+		Int        int    `bson:"int"`
 	}
 	bsonStruct := bsonStructPrivate{}
 	err := bson.Unmarshal(data, &bsonStruct)
 	if err != nil {
 		return err
 	}
+	m.SetIdentifier(bsonStruct.Identifier)
 	m.SetString(bsonStruct.String)
 	m.SetInt(bsonStruct.Int)
 	return nil
@@ -46,12 +50,16 @@ func (m *foo) UnmarshalBSON(data []byte) error {
 func (r *mongoFooRepositoryStruct) Count(ctx context.Context, req int) error {
 	return nil
 }
+
 func (r *mongoFooRepositoryStruct) Browse(ctx context.Context, req entity.Foos) error {
+
 	collection := r.client.Database(r.db).Collection(r.collection)
+
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		return err
 	}
+
 	for cursor.Next(ctx) {
 		elem := &foo{entity.NewFoo()}
 		err := cursor.Decode(&elem)
@@ -60,25 +68,58 @@ func (r *mongoFooRepositoryStruct) Browse(ctx context.Context, req entity.Foos) 
 		}
 		req.Append(elem)
 	}
+
 	return nil
+
 }
-func (r *mongoFooRepositoryStruct) Read(ctx context.Context, id string, req entity.Foo) error {
-	return nil
-}
-func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id string, req entity.Foo) error {
-	return nil
-}
-func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
+
+func (r *mongoFooRepositoryStruct) Read(ctx context.Context, id int64, req entity.Foo) error {
+
 	foo := &foo{req}
+
 	collection := r.client.Database(r.db).Collection(r.collection)
-	res, err := collection.InsertOne(ctx, foo)
+
+	filter := bson.M{"identifier": id}
+
+	err := collection.FindOne(ctx, filter).Decode(foo)
 	if err != nil {
 		return err
 	}
-	filter := bson.M{"_id": res.InsertedID}
-	err = collection.FindOne(ctx, filter).Decode(foo)
+
+	return nil
+
+}
+
+func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Foo) error {
 	return nil
 }
-func (r *mongoFooRepositoryStruct) Delete(ctx context.Context, id string, req entity.Foo) error {
+
+func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
+
+	foo := &foo{req}
+
+	collection := r.client.Database(r.db).Collection(r.collection)
+
+	_, err := collection.InsertOne(ctx, foo)
+	if err != nil {
+		return err
+	}
+
 	return nil
+
+}
+
+func (r *mongoFooRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Foo) error {
+
+	collection := r.client.Database(r.db).Collection(r.collection)
+
+	filter := bson.M{"identifier": id}
+
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

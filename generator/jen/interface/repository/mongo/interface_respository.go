@@ -96,6 +96,7 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 			return nil, err
 		}
 		f.Add(&method)
+		f.Line()
 
 	}
 
@@ -405,6 +406,9 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 		return nil, err
 	}	
 
+	// Line
+	block = append(block, jen.Line())
+
 	block = append(block, 
 		jen.Id("collection").
 		Op(":=").
@@ -421,6 +425,9 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 			Dot("collection"),
 		),
 	)	
+
+	// Line
+	block = append(block, jen.Line())
 
 	block = append(block, 
 		jen.List(
@@ -449,6 +456,9 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 			),
 		),
 	)	
+
+	// Line
+	block = append(block, jen.Line())
 
 	block = append(block,
 		jen.For(
@@ -494,23 +504,137 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 		),
 	)	
 
+	// Line
+	block = append(block, jen.Line())
+
 	block = append(block,
 		jen.Return(
 			jen.Nil(),
 		),
 	)	
 
+	// Line
+	block = append(block, jen.Line())
 
 	return block, nil
 }
 
 func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	
 	var block []jen.Code
+
+	// ID
+	id, err := repositoryGenerator.formatter.OutputDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Primary Field Name
+	var primaryFieldName string
+	for _, field := range entity.Fields {
+		if field.Primary {
+			primaryFieldName , err = repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.Id(id).
+		Op(":=").
+		Op("&").
+		Id(id).
+		Values(
+			jen.Id("req"),
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.Id("collection").
+		Op(":=").
+		Id("r").
+		Dot("client").
+		Dot("Database").
+		Params(
+			jen.Id("r").
+			Dot("db"),
+		).
+		Dot("Collection").
+		Params(
+			jen.Id("r").
+			Dot("collection"),
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.List(
+			jen.Id("filter"),
+		).
+		Op(":=").
+		Qual("go.mongodb.org/mongo-driver/bson", "M").
+		Values(
+			jen.Dict{
+				jen.Lit(primaryFieldName): jen.Id("id"),
+			},
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.List(
+			jen.Err(),
+		).
+		Op(":=").
+		Id("collection").
+		Dot("FindOne").
+		Params(
+			jen.Id("ctx"),
+			jen.Id("filter"),
+		).
+		Dot("Decode").
+		Params(
+			jen.Id(id),
+		),
+	)	
+
+	block = append(block,
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(
+				jen.Return(
+					jen.Err(),
+				),
+			),
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
+
 	block = append(block,
 		jen.Return(
 			jen.Nil(),
 		),
 	)
+
+	// Line
+	block = append(block, jen.Line())
+
 	return block, nil
 }
 
@@ -534,6 +658,9 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 		return nil, err
 	}
 
+	// Line
+	block = append(block, jen.Line())
+
 	block = append(block, 
 		jen.Id(id).
 		Op(":=").
@@ -543,6 +670,9 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 			jen.Id("req"),
 		),
 	)	
+
+	// Line
+	block = append(block, jen.Line())
 
 	block = append(block, 
 		jen.Id("collection").
@@ -560,9 +690,13 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 			Dot("collection"),
 		),
 	)	
+
+	// Line
+	block = append(block, jen.Line())
+
 	block = append(block, 
 		jen.List(
-			jen.Id("res"),
+			jen.Id("_"),
 			jen.Err(),
 		).
 		Op(":=").
@@ -587,6 +721,89 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 		),
 	)	
 
+	// Line
+	block = append(block, jen.Line())
+
+	// block = append(block, 
+	// 	jen.List(
+	// 		jen.Id("filter"),
+	// 	).
+	// 	Op(":=").
+	// 	Qual("go.mongodb.org/mongo-driver/bson", "M").
+	// 	Values(
+	// 		jen.Dict{
+	// 			jen.Lit("_id"): jen.Id("res").Dot("InsertedID"),
+	// 		},
+	// 	),
+	// )	
+
+	// block = append(block, 
+	// 	jen.List(
+	// 		jen.Err(),
+	// 	).
+	// 	Op("=").
+	// 	Id("collection").
+	// 	Dot("FindOne").
+	// 	Params(
+	// 		jen.Id("ctx"),
+	// 		jen.Id("filter"),
+	// 	).
+	// 	Dot("Decode").
+	// 	Params(
+	// 		jen.Id(id),
+	// 	),
+	// )	
+	
+	block = append(block,
+		jen.Return(
+			jen.Nil(),
+		),
+	)
+
+	// Line
+	block = append(block, jen.Line())
+
+	return block, nil
+}
+
+func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryDeleteMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	var block []jen.Code
+
+	// Primary Field Name
+	var primaryFieldName string
+	var err error
+	for _, field := range entity.Fields {
+		if field.Primary {
+			primaryFieldName , err = repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.Id("collection").
+		Op(":=").
+		Id("r").
+		Dot("client").
+		Dot("Database").
+		Params(
+			jen.Id("r").
+			Dot("db"),
+		).
+		Dot("Collection").
+		Params(
+			jen.Id("r").
+			Dot("collection"),
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
 	block = append(block, 
 		jen.List(
 			jen.Id("filter"),
@@ -595,44 +812,54 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 		Qual("go.mongodb.org/mongo-driver/bson", "M").
 		Values(
 			jen.Dict{
-				jen.Lit("_id"): jen.Id("res").Dot("InsertedID"),
+				jen.Lit(primaryFieldName): jen.Id("id"),
 			},
 		),
 	)	
 
+	// Line
+	block = append(block, jen.Line())
+
 	block = append(block, 
 		jen.List(
+			jen.Id("_"),
 			jen.Err(),
 		).
-		Op("=").
+		Op(":=").
 		Id("collection").
-		Dot("FindOne").
+		Dot("DeleteOne").
 		Params(
 			jen.Id("ctx"),
 			jen.Id("filter"),
-		).
-		Dot("Decode").
-		Params(
-			jen.Id(id),
 		),
 	)	
-	
+
+	block = append(block,
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(
+				jen.Return(
+					jen.Err(),
+				),
+			),
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
+
 	block = append(block,
 		jen.Return(
 			jen.Nil(),
 		),
 	)
 
-	return block, nil
-}
+	// Line
+	block = append(block, jen.Line())
 
-func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryDeleteMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
-	var block []jen.Code
-	block = append(block,
-		jen.Return(
-			jen.Nil(),
-		),
-	)	
 	return block, nil
 }
 

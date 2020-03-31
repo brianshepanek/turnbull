@@ -1,11 +1,14 @@
 func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
+
 	foo := &foo{req}
+
 	collection := r.client.Database(r.db).Collection(r.collection)
-	res, err := collection.InsertOne(ctx, foo)
+
+	_, err := collection.InsertOne(ctx, foo)
 	if err != nil {
 		return err
 	}
-	filter := bson.M{"_id": res.InsertedID}
-	err = collection.FindOne(ctx, filter).Decode(foo)
+
 	return nil
+
 }

@@ -39,6 +39,10 @@ var (
 		Fields : []model.Field{
 			model.Field{
 				Primary : true,
+				Name : "identifier",
+				Type : "int64",
+			},
+			model.Field{
 				Name : "string",
 				Type : "string",
 			},

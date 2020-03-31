@@ -1150,8 +1150,217 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 }
 
 func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerDeleteMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	
 	var block []jen.Code
 	
+	// Interface ID
+	id , err := controllerGenerator.formatter.OutputDomainEntityInterfaceConstructorFunctionId(entity)
+	if err != nil {
+		return block, err
+	}
+
+	// Import Path
+	importPath , err := controllerGenerator.formatter.OutputScaffoldDomainEntityDirectoryImportPath()
+	if err != nil {
+		return block, err
+	}
+
+	// ID
+	jsonId, err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+
+	interactorPackageName , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// Repository Method ID
+	repositoryMethodId , err := controllerGenerator.formatter.OutputScaffoldUsecaseRepositoryInterfaceMethodId(method)
+	if err != nil {
+		return nil, err
+	}
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.Id("ctx").
+		Op(":=").
+		Qual("context", "Background").
+		Call(),
+	)
+
+	block = append(block,
+		jen.Id(jsonId).
+		Op(":=").
+		Op("&").
+		Id(jsonId).
+		Values(
+			jen.Qual(importPath, id).
+			Call(),
+		),
+	)
+
+	// Line
+	block = append(block, jen.Line())
+
+	// Mux Vars
+	block = append(block, 
+		jen.Var().
+		Id("stringId").
+		String(),
+	)
+
+	block = append(block, 
+		jen.List(
+			jen.Id("vars"),
+		).
+		Op(":=").
+		Qual("github.com/gorilla/mux", "Vars").
+		Call(
+			jen.Id("r"),
+		),
+	)
+
+	block = append(block, 
+		jen.If(
+			jen.List(
+				jen.Id("val"),
+				jen.Id("ok"),
+			).
+			Op(":=").
+			Id("vars").
+			Index(
+				jen.Lit("id"),
+			),
+			jen.Id("ok"),
+		).
+		Block(
+			jen.Id("stringId").
+			Op("=").
+			Id("val"),
+		),
+	)
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.List(
+			jen.Id("id"),
+			jen.Err(),
+		).
+		Op(":=").
+		Id(jsonId).
+		Dot("ToPrimary").
+		Params(
+			jen.Id("ctx"),
+			jen.Id("stringId"),
+		),
+	)
+
+	block = append(block,
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(
+				jen.Id("w").
+				Dot("WriteHeader").
+				Call(
+					jen.Qual("net/http", "StatusBadRequest"),
+				),
+
+				jen.Qual("encoding/json", "NewEncoder").
+				Call(
+					jen.Id("w"),
+				).
+				Dot("Encode").
+				Call(
+					jen.Err().
+					Dot("Error").
+					Call(),
+				),
+				jen.Return(),
+			),
+		),
+	)
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.List(
+			jen.Id("_"),
+			jen.Err(),
+		).
+		Op("=").
+		Id("c").
+		Dot(interactorPackageName).
+		Dot(repositoryMethodId).
+		Call(
+			jen.List(
+				jen.Id("ctx"),
+				jen.Id("id"),
+				jen.Id(jsonId),
+			),
+		),
+	)
+
+	block = append(block,
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(
+				jen.Id("w").
+				Dot("WriteHeader").
+				Call(
+					jen.Qual("net/http", "StatusBadRequest"),
+				),
+
+				jen.Qual("encoding/json", "NewEncoder").
+				Call(
+					jen.Id("w"),
+				).
+				Dot("Encode").
+				Call(
+					jen.Err().
+					Dot("Error").
+					Call(),
+				),
+				jen.Return(),
+			),
+		),
+	)
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.Id("w").
+		Dot("Header").
+		Call().
+		Dot("Set").
+		Params(
+			jen.List(
+				jen.Lit("Content-Type"),
+				jen.Lit("application/json"),
+			),
+		),
+	)
+
+	block = append(block, 
+		jen.Id("w").
+		Dot("WriteHeader").
+		Call(
+			jen.Qual("net/http", "StatusOK"),
+		),
+	)
+
 	return block, nil
 }
 
