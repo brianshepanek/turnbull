@@ -620,6 +620,7 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceGetter(field mode
 	statement.Params()
 
 	// Field
+	field.Op = "*"
 	err = entityGenerator.helperGenerator.Field("", field, entity, &statement)
 	if err != nil {
 		return nil, err
@@ -649,6 +650,7 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetter(field mode
 	args.Id(fieldId)
 	
 	// Args
+	field.Op = "*"
 	err = entityGenerator.helperGenerator.Field("", field, entity, &args)
 	if err != nil {
 		return nil, err
@@ -826,6 +828,7 @@ func (entityGenerator *entityGenerator) scaffoldEntityStructField(field model.Fi
 	statement.Id(id)
 
 	// Field
+	field.Op = "*"
 	err = entityGenerator.helperGenerator.Field("", field, entity, &statement)
 	if err != nil {
 		return nil, err
@@ -1320,6 +1323,7 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetterFunction(fi
 
 	// Args
 	args.Id(fieldId)
+	field.Op = "*"
 	err = entityGenerator.helperGenerator.Field("", field, entity, &args)
 	if err != nil {
 		return nil, err
@@ -1791,6 +1795,7 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceGetterFunction(fi
 	statement.Params()
 
 	// Field
+	field.Op = "*"
 	err = entityGenerator.helperGenerator.Field("", field, entity, &statement)
 	if err != nil {
 		return nil, err

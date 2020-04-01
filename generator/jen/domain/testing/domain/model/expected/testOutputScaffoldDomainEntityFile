@@ -3,17 +3,17 @@ package entity
 import "context"
 
 type fooStruct struct {
-	string string
-	int    int
+	string *string
+	int    *int
 }
 
 type foosStruct []fooInterface
 
 type fooInterface interface {
-	String() string
-	Int() int
-	SetString(string string)
-	SetInt(int int)
+	String() *string
+	Int() *int
+	SetString(string *string)
+	SetInt(int *int)
 	BeforeAdd(ctx context.Context) error
 	SetAll(req fooInterface)
 	ToPrimary(ctx context.Context, req interface{}) (string, error)
@@ -38,19 +38,19 @@ func (m *foosStruct) Append(req fooInterface) {
 func (m *foosStruct) Elements() []fooInterface {
 	return *m
 }
-func (m *fooStruct) String() string {
+func (m *fooStruct) String() *string {
 	return m.string
 }
 
-func (m *fooStruct) Int() int {
+func (m *fooStruct) Int() *int {
 	return m.int
 }
 
-func (m *fooStruct) SetString(string string) {
+func (m *fooStruct) SetString(string *string) {
 	m.string = string
 }
 
-func (m *fooStruct) SetInt(int int) {
+func (m *fooStruct) SetInt(int *int) {
 	m.int = int
 }
 

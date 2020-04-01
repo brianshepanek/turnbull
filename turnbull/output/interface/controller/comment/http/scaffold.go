@@ -3,60 +3,74 @@ package controller
 import (
 	"context"
 	"encoding/json"
-	entity "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
-	interactor "github.com/brianshepanek/turnbull/_testing/output/usecase/interactor"
+	entity "github.com/brianshepanek/turnbull/turnbull/output/domain/entity"
+	interactor "github.com/brianshepanek/turnbull/turnbull/output/usecase/interactor"
 	mux "github.com/gorilla/mux"
 	"net/http"
+	"time"
 )
 
-type httpFooControllerStruct struct {
-	interactor interactor.FooInteractor
+type httpCommentControllerStruct struct {
+	interactor interactor.CommentInteractor
 }
-type httpFooControllerInterface interface {
-	Count(w http.ResponseWriter, r *http.Request)
+type httpCommentControllerInterface interface {
 	Browse(w http.ResponseWriter, r *http.Request)
 	Read(w http.ResponseWriter, r *http.Request)
 	Edit(w http.ResponseWriter, r *http.Request)
 	Add(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 }
-type foo struct {
-	entity.Foo
+type comment struct {
+	entity.Comment
 }
 
-func (m *foo) MarshalJSON() ([]byte, error) {
+func (m *comment) MarshalJSON() ([]byte, error) {
 	type jsonStructPrivate struct {
-		String *string `json:"string,omitempty"`
-		Int    *int    `json:"int,omitempty"`
+		Id       *int64     `json:"id,omitempty"`
+		PostId   *int64     `json:"post_id,omitempty"`
+		Title    *string    `json:"title,omitempty"`
+		Body     *string    `json:"body,omitempty"`
+		Created  *time.Time `json:"created,omitempty"`
+		Modified *time.Time `json:"modified,omitempty"`
 	}
 	jsonStruct := jsonStructPrivate{
-		Int:    m.Int(),
-		String: m.String(),
+		Body:     m.Body(),
+		Created:  m.Created(),
+		Id:       m.Id(),
+		Modified: m.Modified(),
+		PostId:   m.PostId(),
+		Title:    m.Title(),
 	}
 	return json.Marshal(&jsonStruct)
 }
 
-func (m *foo) UnmarshalJSON(data []byte) error {
+func (m *comment) UnmarshalJSON(data []byte) error {
 	type jsonStructPrivate struct {
-		String *string `json:"string,omitempty"`
-		Int    *int    `json:"int,omitempty"`
+		Id       *int64     `json:"id,omitempty"`
+		PostId   *int64     `json:"post_id,omitempty"`
+		Title    *string    `json:"title,omitempty"`
+		Body     *string    `json:"body,omitempty"`
+		Created  *time.Time `json:"created,omitempty"`
+		Modified *time.Time `json:"modified,omitempty"`
 	}
 	jsonStruct := jsonStructPrivate{}
 	err := json.Unmarshal(data, &jsonStruct)
 	if err != nil {
 		return err
 	}
-	m.SetString(jsonStruct.String)
-	m.SetInt(jsonStruct.Int)
+	m.SetId(jsonStruct.Id)
+	m.SetPostId(jsonStruct.PostId)
+	m.SetTitle(jsonStruct.Title)
+	m.SetBody(jsonStruct.Body)
+	m.SetCreated(jsonStruct.Created)
+	m.SetModified(jsonStruct.Modified)
 	return nil
 }
 
-func (c *httpFooControllerStruct) Count(w http.ResponseWriter, r *http.Request) {}
-
-func (c *httpFooControllerStruct) Browse(w http.ResponseWriter, r *http.Request) {
+func (c *httpCommentControllerStruct) Browse(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := entity.NewFoos()
+	req := entity.NewComments()
 
 	resp, err := c.interactor.Browse(ctx, req)
 	if err != nil {
@@ -65,21 +79,21 @@ func (c *httpFooControllerStruct) Browse(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var foos []*foo
+	var comments []*comment
 	for _, elem := range resp.Elements() {
-		foos = append(foos, &foo{elem})
+		comments = append(comments, &comment{elem})
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(foos)
+	json.NewEncoder(w).Encode(comments)
 
 }
 
-func (c *httpFooControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
+func (c *httpCommentControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	foo := &foo{entity.NewFoo()}
+	comment := &comment{entity.NewComment()}
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -87,14 +101,14 @@ func (c *httpFooControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 		stringId = val
 	}
 
-	id, err := foo.ToPrimary(ctx, stringId)
+	id, err := comment.ToPrimary(ctx, stringId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Read(ctx, id, foo)
+	resp, err := c.interactor.Read(ctx, id, comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -107,10 +121,10 @@ func (c *httpFooControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *httpFooControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
+func (c *httpCommentControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	foo := &foo{entity.NewFoo()}
+	comment := &comment{entity.NewComment()}
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -118,21 +132,21 @@ func (c *httpFooControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 		stringId = val
 	}
 
-	id, err := foo.ToPrimary(ctx, stringId)
+	id, err := comment.ToPrimary(ctx, stringId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	err = json.NewDecoder(r.Body).Decode(foo)
+	err = json.NewDecoder(r.Body).Decode(comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Edit(ctx, id, foo)
+	resp, err := c.interactor.Edit(ctx, id, comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -145,19 +159,19 @@ func (c *httpFooControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *httpFooControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
+func (c *httpCommentControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	foo := &foo{entity.NewFoo()}
+	comment := &comment{entity.NewComment()}
 
-	err := json.NewDecoder(r.Body).Decode(foo)
+	err := json.NewDecoder(r.Body).Decode(comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Add(ctx, foo)
+	resp, err := c.interactor.Add(ctx, comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -170,10 +184,10 @@ func (c *httpFooControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *httpFooControllerStruct) Delete(w http.ResponseWriter, r *http.Request) {
+func (c *httpCommentControllerStruct) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	foo := &foo{entity.NewFoo()}
+	comment := &comment{entity.NewComment()}
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -181,14 +195,14 @@ func (c *httpFooControllerStruct) Delete(w http.ResponseWriter, r *http.Request)
 		stringId = val
 	}
 
-	id, err := foo.ToPrimary(ctx, stringId)
+	id, err := comment.ToPrimary(ctx, stringId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	_, err = c.interactor.Delete(ctx, id, foo)
+	_, err = c.interactor.Delete(ctx, id, comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())

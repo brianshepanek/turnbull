@@ -1,3 +1,3 @@
-func (m *fooStruct) Bar() string {
+func (m *fooStruct) Bar() *string {
 	return m.bar
 }

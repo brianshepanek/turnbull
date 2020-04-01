@@ -26,8 +26,8 @@ type foo struct {
 
 func (m *foo) MarshalJSON() ([]byte, error) {
 	type jsonStructPrivate struct {
-		String string `json:"string,omitempty"`
-		Int    int    `json:"int,omitempty"`
+		String *string `json:"string,omitempty"`
+		Int    *int    `json:"int,omitempty"`
 	}
 	jsonStruct := jsonStructPrivate{
 		Int:    m.Int(),
@@ -38,8 +38,8 @@ func (m *foo) MarshalJSON() ([]byte, error) {
 
 func (m *foo) UnmarshalJSON(data []byte) error {
 	type jsonStructPrivate struct {
-		String string `json:"string,omitempty"`
-		Int    int    `json:"int,omitempty"`
+		String *string `json:"string,omitempty"`
+		Int    *int    `json:"int,omitempty"`
 	}
 	jsonStruct := jsonStructPrivate{}
 	err := json.Unmarshal(data, &jsonStruct)
@@ -104,9 +104,46 @@ func (c *httpFooControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
+
 }
 
-func (c *httpFooControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {}
+func (c *httpFooControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
+
+	ctx := context.Background()
+	foo := &foo{entity.NewFoo()}
+
+	var stringId string
+	vars := mux.Vars(r)
+	if val, ok := vars["id"]; ok {
+		stringId = val
+	}
+
+	id, err := foo.ToPrimary(ctx, stringId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(foo)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	resp, err := c.interactor.Edit(ctx, id, foo)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
+
+}
 
 func (c *httpFooControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
@@ -160,4 +197,5 @@ func (c *httpFooControllerStruct) Delete(w http.ResponseWriter, r *http.Request)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+
 }

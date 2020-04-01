@@ -639,12 +639,219 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 }
 
 func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
+	
 	var block []jen.Code
+
+	// Loca ID
+	localID, err := repositoryGenerator.formatter.OutputDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}	
+
+	// Interface ID
+	interfaceId, err := repositoryGenerator.formatter.OutputDomainEntityInterfaceConstructorFunctionId(entity)
+	if err != nil {
+		return block, err
+	}
+
+	// Import Path
+	importPath , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityDirectoryImportPath()
+	if err != nil {
+		return block, err
+	}
+
+	// Primary Field Name
+	var primaryFieldName string
+	for _, field := range entity.Fields {
+		if field.Primary {
+			primaryFieldName , err = repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.Id("current").
+		Op(":=").
+		Op("&").
+		Id(localID).
+		Values(
+			jen.Qual(importPath, interfaceId).
+			Call(),
+		),
+	)	
+
+	block = append(block, 
+		jen.Id(localID).
+		Op(":=").
+		Op("&").
+		Id(localID).
+		Values(
+			jen.Id("req"),
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.Id("collection").
+		Op(":=").
+		Id("r").
+		Dot("client").
+		Dot("Database").
+		Params(
+			jen.Id("r").
+			Dot("db"),
+		).
+		Dot("Collection").
+		Params(
+			jen.Id("r").
+			Dot("collection"),
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.List(
+			jen.Id("filter"),
+		).
+		Op(":=").
+		Qual("go.mongodb.org/mongo-driver/bson", "M").
+		Values(
+			jen.Dict{
+				jen.Lit(primaryFieldName): jen.Id("id"),
+			},
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.List(
+			jen.Err(),
+		).
+		Op(":=").
+		Id("collection").
+		Dot("FindOne").
+		Params(
+			jen.Id("ctx"),
+			jen.Id("filter"),
+		).
+		Dot("Decode").
+		Params(
+			jen.Op("&").
+			Id("current"),
+		),
+	)	
+
+	block = append(block,
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(
+				jen.Return(
+					jen.Err(),
+				),
+			),
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
+	// Fields
+	for _, field := range entity.Fields {
+		
+		// Getter
+		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+		if err != nil {
+			return block, err
+		}
+
+		// Setter
+		setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
+		if err != nil {
+			return block, err
+		}
+
+		// Check
+		block = append(block,
+			jen.If(
+				jen.Id(localID).
+				Dot(getterId).
+				Call().
+				Op("!=").
+				Nil().
+				Block(
+					jen.Id("current").
+					Dot(setterId).
+					Params(
+						jen.Id(localID).
+						Dot(getterId).
+						Call(),
+					),
+				),
+			),
+		)	
+
+		// Line
+		block = append(block, jen.Line())
+
+	}
+
+	block = append(block, 
+		jen.List(
+			jen.Err(),
+		).
+		Op("=").
+		Id("collection").
+		Dot("FindOneAndReplace").
+		Params(
+			jen.Id("ctx"),
+			jen.Id("filter"),
+			jen.Id("current"),
+		).
+		Dot("Decode").
+		Params(
+			jen.Op("&").
+			Id("current"),
+		),
+	)	
+
+	block = append(block,
+		jen.If(
+			jen.Err().
+			Op("!=").
+			Nil().
+			Block(
+				jen.Return(
+					jen.Err(),
+				),
+			),
+		),
+	)	
+
+	// Line
+	block = append(block, jen.Line())
+
 	block = append(block,
 		jen.Return(
 			jen.Nil(),
 		),
 	)
+
+	// Line
+	block = append(block, jen.Line())
+
 	return block, nil
 }
 
@@ -1096,6 +1303,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldEntityBSONStructField(fi
 	statement.Id(id)
 
 	// Field
+	field.Op = "*"
 	err = repositoryGenerator.helperGenerator.Field("", field, entity, &statement)
 	if err != nil {
 		return nil, err

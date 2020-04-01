@@ -18,9 +18,9 @@ type foo struct {
 
 func (m *foo) MarshalBSON() ([]byte, error) {
 	type bsonStructPrivate struct {
-		Identifier int64  `bson:"identifier"`
-		String     string `bson:"string"`
-		Int        int    `bson:"int"`
+		Identifier *int64  `bson:"identifier"`
+		String     *string `bson:"string"`
+		Int        *int    `bson:"int"`
 	}
 	bsonStruct := bsonStructPrivate{
 		Identifier: m.Identifier(),
@@ -32,9 +32,9 @@ func (m *foo) MarshalBSON() ([]byte, error) {
 
 func (m *foo) UnmarshalBSON(data []byte) error {
 	type bsonStructPrivate struct {
-		Identifier int64  `bson:"identifier"`
-		String     string `bson:"string"`
-		Int        int    `bson:"int"`
+		Identifier *int64  `bson:"identifier"`
+		String     *string `bson:"string"`
+		Int        *int    `bson:"int"`
 	}
 	bsonStruct := bsonStructPrivate{}
 	err := bson.Unmarshal(data, &bsonStruct)
@@ -91,7 +91,38 @@ func (r *mongoFooRepositoryStruct) Read(ctx context.Context, id int64, req entit
 }
 
 func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Foo) error {
+
+	current := &foo{entity.NewFoo()}
+	foo := &foo{req}
+
+	collection := r.client.Database(r.db).Collection(r.collection)
+
+	filter := bson.M{"identifier": id}
+
+	err := collection.FindOne(ctx, filter).Decode(&current)
+	if err != nil {
+		return err
+	}
+
+	if foo.Identifier() != nil {
+		current.SetIdentifier(foo.Identifier())
+	}
+
+	if foo.String() != nil {
+		current.SetString(foo.String())
+	}
+
+	if foo.Int() != nil {
+		current.SetInt(foo.Int())
+	}
+
+	err = collection.FindOneAndReplace(ctx, filter, current).Decode(&current)
+	if err != nil {
+		return err
+	}
+
 	return nil
+
 }
 
 func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
