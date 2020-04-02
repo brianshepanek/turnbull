@@ -50,29 +50,29 @@ func (r *mysqlFooRepositoryStruct) Browse(ctx context.Context, req entity.Foos) 
 		elem := entity.NewFoo()
 
 		if res.Identifier.Valid {
-			var val int64
-			err := res.Identifier.Scan(&val)
+			value, err := res.Identifier.Value()
 			if err != nil {
 				return err
 			}
+			val := value.(int64)
 			elem.SetIdentifier(&val)
 		}
 
 		if res.String.Valid {
-			var val string
-			err := res.String.Scan(&val)
+			value, err := res.String.Value()
 			if err != nil {
 				return err
 			}
+			val := value.(string)
 			elem.SetString(&val)
 		}
 
 		if res.Int.Valid {
-			var val int
-			err := res.Int.Scan(&val)
+			value, err := res.Int.Value()
 			if err != nil {
 				return err
 			}
+			val := value.(int)
 			elem.SetInt(&val)
 		}
 

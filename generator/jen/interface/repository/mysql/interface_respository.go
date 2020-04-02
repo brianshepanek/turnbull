@@ -139,12 +139,18 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEntit
 
 	for _, field := range entity.Fields {
 		
-		code, err := repositoryGenerator.scaffoldEntityStructField(field, entity)
-		if err != nil {
-			return nil, err
+		if !field.Slice {
+
+			code, err := repositoryGenerator.scaffoldEntityStructField(field, entity)
+			if err != nil {
+				return nil, err
+			}
+			
+			fields = append(fields, code)
+
 		}
+
 		
-		fields = append(fields, code)
 	}
 
 	// Struct
@@ -387,22 +393,26 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 	var scanFields []jen.Code
 	for _, field := range entity.Fields {
 
-		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
+		if !field.Slice {
 
-		tagId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
-		if err != nil {
-			return nil, err
-		}
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
 
-		fields = append(fields, tagId)
-		scanFields = append(scanFields, 
-			jen.Op("&").
-			Id("res").
-			Dot(getterId),
-		)
+			tagId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
+			if err != nil {
+				return nil, err
+			}
+
+			fields = append(fields, tagId)
+			scanFields = append(scanFields, 
+				jen.Op("&").
+				Id("res").
+				Dot(getterId),
+			)
+		
+		}
 
 	}
 
@@ -551,61 +561,70 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 
 	for _, field := range entity.Fields {
 
-		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
+		if !field.Slice {
 
-		setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
-		if err != nil {
-			return nil, err
-		}
-
-		nextBlock = append(nextBlock,
-			jen.If().
-			Id("res").
-			Dot(getterId).
-			Dot("Valid").
-			Block(
-
-				jen.Var().
-				Id("val").
-				Qual(field.Package, field.Type),
-
-				jen.Err().
-				Op(":=").
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
+	
+			setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
+			if err != nil {
+				return nil, err
+			}
+	
+			nextBlock = append(nextBlock,
+				jen.If().
 				Id("res").
 				Dot(getterId).
-				Dot("Scan").
-				Params(
-					jen.Op("&").
-					Id("val"),
-				),
+				Dot("Valid").
+				Block(
+					
+					jen.List(
+						jen.Id("value"),
+						jen.Err(),
+					).
+					Op(":=").
+					Id("res").
+					Dot(getterId).
+					Dot("Value").
+					Call(),
 
-				jen.If(
-					jen.Err().
-					Op("!=").
-					Nil().
-					Block(
-						jen.Return(
-							jen.Err(),
+					jen.If(
+						jen.Err().
+						Op("!=").
+						Nil().
+						Block(
+							jen.Return(
+								jen.Err(),
+							),
 						),
 					),
-				),
 
-				jen.Id("elem").
-				Dot(setterId).
-				Params(
-					jen.Op("&").
-					Id("val"),
+					jen.Id("val").
+					Op(":=").
+					Id("value").
+					Assert(
+						jen.Qual(field.Package, field.Type),
+					),
+					
+					jen.Id("elem").
+					Dot(setterId).
+					Params(
+						jen.Op("&").
+						Id("val"),
+					),
+					
 				),
-				
-			),
-		)	
+			)	
+	
+			nextBlock = append(nextBlock,
+				jen.Line(),
+			)
 
-		nextBlock = append(nextBlock,
-			jen.Line(),
-		)
+		}
+
+		
 	}
 
 	nextBlock = append(nextBlock,
@@ -671,22 +690,26 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 	var scanFields []jen.Code
 	for _, field := range entity.Fields {
 
-		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
+		if !field.Slice {
 
-		tagId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
-		if err != nil {
-			return nil, err
-		}
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
 
-		fields = append(fields, tagId)
-		scanFields = append(scanFields, 
-			jen.Op("&").
-			Id("res").
-			Dot(getterId),
-		)
+			tagId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
+			if err != nil {
+				return nil, err
+			}
+
+			fields = append(fields, tagId)
+			scanFields = append(scanFields, 
+				jen.Op("&").
+				Id("res").
+				Dot(getterId),
+			)
+
+		}	
 
 	}
 
@@ -821,61 +844,66 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 
 	for _, field := range entity.Fields {
 
-		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
+		if !field.Slice {
 
-		setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
-		if err != nil {
-			return nil, err
-		}
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
 
-		block = append(block,
-			jen.If().
-			Id("res").
-			Dot(getterId).
-			Dot("Valid").
-			Block(
+			setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
+			if err != nil {
+				return nil, err
+			}
 
-				jen.Var().
-				Id("val").
-				Qual(field.Package, field.Type),
-
-				jen.Err().
-				Op(":=").
+			block = append(block,
+				jen.If().
 				Id("res").
 				Dot(getterId).
-				Dot("Scan").
-				Params(
-					jen.Op("&").
-					Id("val"),
-				),
+				Dot("Valid").
+				Block(
 
-				jen.If(
+					jen.Var().
+					Id("val").
+					Qual(field.Package, field.Type),
+
 					jen.Err().
-					Op("!=").
-					Nil().
-					Block(
-						jen.Return(
-							jen.Err(),
+					Op(":=").
+					Id("res").
+					Dot(getterId).
+					Dot("Scan").
+					Params(
+						jen.Op("&").
+						Id("val"),
+					),
+
+					jen.If(
+						jen.Err().
+						Op("!=").
+						Nil().
+						Block(
+							jen.Return(
+								jen.Err(),
+							),
 						),
 					),
-				),
 
-				jen.Id("req").
-				Dot(setterId).
-				Params(
-					jen.Op("&").
-					Id("val"),
+					jen.Id("req").
+					Dot(setterId).
+					Params(
+						jen.Op("&").
+						Id("val"),
+					),
+					
 				),
-				
-			),
-		)	
+			)	
 
-		block = append(block,
-			jen.Line(),
-		)
+			block = append(block,
+				jen.Line(),
+			)
+
+		}
+		
 	}
 
 
@@ -935,48 +963,53 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 	)
 
 	for _, field := range entity.Fields {
+
+		if !field.Slice {
+
+			// Getter ID
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
+
+			tagId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
+			if err != nil {
+				return nil, err
+			}
+
+			block = append(block,
+				jen.If().
+				Id("req").
+				Dot(getterId).
+				Call().
+				Op("!=").
+				Nil().
+				Block(
+
+					jen.Id("set").
+					Op("=").
+					Append(
+						jen.Id("set"),
+						jen.Lit(tagId + ` = ?`),
+					),
+
+					jen.Id("vals").
+					Op("=").
+					Append(
+						jen.Id("vals"),
+						jen.Id("req").
+						Dot(getterId).
+						Call(),
+					),
+
+				),
+			)
+
+			// Line
+			block = append(block, jen.Line())
+
+		}
 		
-		// Getter ID
-		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
-
-		tagId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
-		if err != nil {
-			return nil, err
-		}
-
-		block = append(block,
-			jen.If().
-			Id("req").
-			Dot(getterId).
-			Call().
-			Op("!=").
-			Nil().
-			Block(
-
-				jen.Id("set").
-				Op("=").
-				Append(
-					jen.Id("set"),
-					jen.Lit(tagId + ` = ?`),
-				),
-
-				jen.Id("vals").
-				Op("=").
-				Append(
-					jen.Id("vals"),
-					jen.Id("req").
-					Dot(getterId).
-					Call(),
-				),
-
-			),
-		)
-
-		// Line
-		block = append(block, jen.Line())
 
 	}
 
@@ -1142,55 +1175,59 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 	)
 
 	for _, field := range entity.Fields {
+
+		if !field.Slice {
 		
-		// Getter ID
-		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
+			// Getter ID
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
 
-		tagId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
-		if err != nil {
-			return nil, err
-		}
+			tagId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
+			if err != nil {
+				return nil, err
+			}
 
-		block = append(block,
-			jen.If().
-			Id("req").
-			Dot(getterId).
-			Call().
-			Op("!=").
-			Nil().
-			Block(
+			block = append(block,
+				jen.If().
+				Id("req").
+				Dot(getterId).
+				Call().
+				Op("!=").
+				Nil().
+				Block(
 
-				jen.Id("set").
-				Op("=").
-				Append(
-					jen.Id("set"),
-					jen.Lit(tagId),
+					jen.Id("set").
+					Op("=").
+					Append(
+						jen.Id("set"),
+						jen.Lit(tagId),
+					),
+
+					jen.Id("vars").
+					Op("=").
+					Append(
+						jen.Id("vars"),
+						jen.Lit("?"),
+					),
+
+					jen.Id("vals").
+					Op("=").
+					Append(
+						jen.Id("vals"),
+						jen.Id("req").
+						Dot(getterId).
+						Call(),
+					),
+
 				),
+			)
 
-				jen.Id("vars").
-				Op("=").
-				Append(
-					jen.Id("vars"),
-					jen.Lit("?"),
-				),
+			// Line
+			block = append(block, jen.Line())
 
-				jen.Id("vals").
-				Op("=").
-				Append(
-					jen.Id("vals"),
-					jen.Id("req").
-					Dot(getterId).
-					Call(),
-				),
-
-			),
-		)
-
-		// Line
-		block = append(block, jen.Line())
+		}	
 
 	}
 
