@@ -20,10 +20,10 @@ type Generator struct{
 	usecaseRepositoryGenerator usecase.RepositoryGenerator
 	interfaceControllerGenerator generatorInterface.ControllerGenerator
 	interfacePresenterGenerator generatorInterface.PresenterGenerator
-	interfaceRepositoryGenerator generatorInterface.RepositoryGenerator
+	interfaceRepositoryGenerators map[string]generatorInterface.RepositoryGenerator
 }
 
-func New(config *config.Config, formatter formatter.Formatter, interfaceControllerGenerator generatorInterface.ControllerGenerator, interfacePresenterGenerator generatorInterface.PresenterGenerator, interfaceRepositoryGenerator generatorInterface.RepositoryGenerator) * Generator{
+func New(config *config.Config, formatter formatter.Formatter, interfaceControllerGenerator generatorInterface.ControllerGenerator, interfacePresenterGenerator generatorInterface.PresenterGenerator, interfaceRepositoryGenerators map[string]generatorInterface.RepositoryGenerator) * Generator{
 
 
 	helperGenerator := helper.New(formatter)
@@ -41,7 +41,7 @@ func New(config *config.Config, formatter formatter.Formatter, interfaceControll
 		usecaseRepositoryGenerator : usecaseRepositoryGenerator,
 		interfaceControllerGenerator : interfaceControllerGenerator,
 		interfacePresenterGenerator : interfacePresenterGenerator,
-		interfaceRepositoryGenerator : interfaceRepositoryGenerator,
+		interfaceRepositoryGenerators : interfaceRepositoryGenerators,
 	}
 }
 
@@ -157,10 +157,16 @@ func (generator *Generator) ScaffoldUsecaseInteractor(entity model.Entity, write
 	return nil
 }
 
-func (generator *Generator) InterfaceRepository(entity model.Entity, writer io.Writer) (error){
+func (generator *Generator) InterfaceRepository(driver string, entity model.Entity, writer io.Writer) (error){
+
+	// Vars
+	var interfaceRepositoryGenerator generatorInterface.RepositoryGenerator
+	if val, ok := generator.interfaceRepositoryGenerators[driver]; ok {
+		interfaceRepositoryGenerator = val
+	}
 
 	// File
-	file, err := generator.interfaceRepositoryGenerator.File(entity)
+	file, err := interfaceRepositoryGenerator.File(entity)
 	if err != nil {
 		return err
 	}
@@ -171,10 +177,16 @@ func (generator *Generator) InterfaceRepository(entity model.Entity, writer io.W
 	return nil
 }
 
-func (generator *Generator) ScaffoldInterfaceRepository(entity model.Entity, writer io.Writer) (error){
+func (generator *Generator) ScaffoldInterfaceRepository(driver string, entity model.Entity, writer io.Writer) (error){
+	
+	// Vars
+	var interfaceRepositoryGenerator generatorInterface.RepositoryGenerator
+	if val, ok := generator.interfaceRepositoryGenerators[driver]; ok {
+		interfaceRepositoryGenerator = val
+	}
 
 	// File
-	file, err := generator.interfaceRepositoryGenerator.ScaffoldFile(entity)
+	file, err := interfaceRepositoryGenerator.ScaffoldFile(entity)
 	if err != nil {
 		return err
 	}

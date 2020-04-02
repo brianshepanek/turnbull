@@ -1,0 +1,14 @@
+package repository
+
+import "database/sql"
+
+type mysqlFooRepository struct {
+	mysqlFooRepositoryStruct
+}
+
+func New(db *sql.DB, table string) *mysqlFooRepository {
+	return &mysqlFooRepository{mysqlFooRepositoryStruct{
+		db:    db,
+		table: table,
+	}}
+}

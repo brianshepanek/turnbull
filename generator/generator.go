@@ -27,8 +27,8 @@ type UsecaseGenerator interface {
 }
 
 type InterfaceGenerator interface {
-	InterfaceRepository(entity model.Entity, writer io.Writer) (error)
-	ScaffoldInterfaceRepository(entity model.Entity, writer io.Writer) (error)
+	InterfaceRepository(driver string, entity model.Entity, writer io.Writer) (error)
+	ScaffoldInterfaceRepository(driver string, entity model.Entity, writer io.Writer) (error)
 	InterfacePresenter(entity model.Entity, writer io.Writer) (error)
 	ScaffoldInterfacePresenter(entity model.Entity, writer io.Writer) (error)
 	InterfaceController(entity model.Entity, writer io.Writer) (error)

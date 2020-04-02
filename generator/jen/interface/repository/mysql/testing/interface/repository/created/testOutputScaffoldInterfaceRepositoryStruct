@@ -1,0 +1,4 @@
+type mysqlFooRepositoryStruct struct {
+	db    *sql.DB
+	table string
+}

@@ -1,0 +1,45 @@
+func (r *mysqlFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
+
+	var set, vars []string
+	var vals []interface{}
+	if req.Identifier() != nil {
+		set = append(set, "identifier")
+		vars = append(vars, "?")
+		vals = append(vals, req.Identifier())
+	}
+
+	if req.String() != nil {
+		set = append(set, "string")
+		vars = append(vars, "?")
+		vals = append(vals, req.String())
+	}
+
+	if req.Int() != nil {
+		set = append(set, "int")
+		vars = append(vars, "?")
+		vals = append(vals, req.Int())
+	}
+
+	var sqlStatement string
+	sqlStatement += "INSERT INTO " + r.table + " "
+	if len(set) > 0 {
+		sqlStatement += "(" + strings.Join(set, ", ") + ") "
+	}
+	if len(vars) > 0 {
+		sqlStatement += "VALUES(" + strings.Join(vars, ", ") + ") "
+	}
+
+	stmt, err := r.db.Prepare(sqlStatement)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(vals...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}

@@ -6,6 +6,7 @@ type Entity struct {
 	JSON bool
 	BSON bool
 	Methods []Method
+	Repositories []Repository
 }
 
 type Field struct {
@@ -25,5 +26,9 @@ type Method struct {
 
 type Callback struct {
 	Name string
+	Type string
+}
+
+type Repository struct {
 	Type string
 }

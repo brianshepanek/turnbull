@@ -11,6 +11,7 @@ import(
 	scribbleRepositoryGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/repository/scribble"
 	defaultPresenterGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/presenter/default"
 	httpControllerGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/controller/http"
+	generatorInterface "github.com/brianshepanek/turnbull/generator/jen/interface"
 )
 
 const(
@@ -67,10 +68,11 @@ func init(){
 	conf, _ := config.New(testConfigPath, testOutputPath)
 	formatter := formatter.New(conf)
 	testHelperGenerator := helper.New(formatter)
-	interfaceRepositoryGenerator := scribbleRepositoryGenerator.New(conf, formatter, testHelperGenerator)
 	interfacePresenterGenerator := defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
 	interfaceControllerGenerator := httpControllerGenerator.New(conf, formatter, testHelperGenerator)
-	testGenerator = New(conf, formatter, interfaceControllerGenerator, interfacePresenterGenerator, interfaceRepositoryGenerator)
+	interfaceRepositoryGenerators := make(map[string]generatorInterface.RepositoryGenerator)
+	interfaceRepositoryGenerators["scribble"] = scribbleRepositoryGenerator.New(conf, formatter, testHelperGenerator)
+	testGenerator = New(conf, formatter, interfaceControllerGenerator, interfacePresenterGenerator, interfaceRepositoryGenerators)
 }
 
 // Test Scaffold Interface Repository File

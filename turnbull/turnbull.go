@@ -297,7 +297,7 @@ func (turnbull *turnbull) buildInterfaceRepository(driver string, entity model.E
 
 	// Build
 	buf := &bytes.Buffer{}
-	err := turnbull.generator.InterfaceRepository(entity, buf)
+	err := turnbull.generator.InterfaceRepository(driver, entity, buf)
 	if err != nil {
 		return err
 	}
@@ -338,7 +338,7 @@ func (turnbull *turnbull) buildScaffoldInterfaceRepository(driver string, entity
 
 	// Build
 	buf := &bytes.Buffer{}
-	err := turnbull.generator.ScaffoldInterfaceRepository(entity, buf)
+	err := turnbull.generator.ScaffoldInterfaceRepository(driver, entity, buf)
 	if err != nil {
 		return err
 	}

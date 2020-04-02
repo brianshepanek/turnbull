@@ -1,0 +1,6 @@
+func New(db *sql.DB, table string) *mysqlFooRepository {
+	return &mysqlFooRepository{mysqlFooRepositoryStruct{
+		db:    db,
+		table: table,
+	}}
+}

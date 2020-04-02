@@ -8,6 +8,8 @@ import(
 	"github.com/brianshepanek/turnbull/structure"
 	"github.com/brianshepanek/turnbull/generator/jen"
 	"github.com/brianshepanek/turnbull/generator/jen/helper"
+	generatorInterface "github.com/brianshepanek/turnbull/generator/jen/interface"
+	mysqlRepositoryGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/repository/mysql"
 	mongoRepositoryGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/repository/mongo"
 	defaultPresenterGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/presenter/default"
 	httpControllerGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/controller/http"
@@ -89,6 +91,11 @@ var (
 					Type : "delete",
 				},
 			},
+			Repositories : []model.Repository {
+				model.Repository {
+					Type : "mongo",
+				},
+			},
 		},	
 		model.Entity{
 			Name : "comment",
@@ -153,6 +160,11 @@ var (
 					Type : "delete",
 				},
 			},
+			Repositories : []model.Repository {
+				model.Repository {
+					Type : "mysql",
+				},
+			},
 		},	
 	}
 )
@@ -163,10 +175,14 @@ func init(){
 	structure := structure.New(formatter)
 
 	testHelperGenerator := helper.New(formatter)
-	interfaceRepositoryGenerator := mongoRepositoryGenerator.New(conf, formatter, testHelperGenerator)
 	interfacePresenterGenerator := defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
 	interfaceControllerGenerator := httpControllerGenerator.New(conf, formatter, testHelperGenerator)
-	generator := generator.New(conf, formatter, interfaceControllerGenerator, interfacePresenterGenerator, interfaceRepositoryGenerator)
+
+	interfaceControllerGenerators := make(map[string]generatorInterface.RepositoryGenerator)
+	interfaceControllerGenerators["mongo"] = mongoRepositoryGenerator.New(conf, formatter, testHelperGenerator)
+	interfaceControllerGenerators["mysql"] = mysqlRepositoryGenerator.New(conf, formatter, testHelperGenerator)
+
+	generator := generator.New(conf, formatter, interfaceControllerGenerator, interfacePresenterGenerator, interfaceControllerGenerators)
 
 	testTurnbull = New(formatter, structure, generator)
 }
@@ -301,12 +317,18 @@ func TestBuildInterfaceRepository(t *testing.T){
 
 	// Build
 	for _, testEntity := range testEntities {
-		err := testTurnbull.buildInterfaceRepository("mongo", testEntity)
 
-		// Return
-		if err != nil {
-			t.Errorf(`buildInterfaceRepository() failed with error %v`, err)
+		for _, repository := range testEntity.Repositories {
+			
+			err := testTurnbull.buildInterfaceRepository(repository.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildInterfaceRepository() failed with error %v`, err)
+			}
+
 		}
+		
 	}	
 }
 
@@ -315,12 +337,18 @@ func TestBuildScaffoldInterfaceRepository(t *testing.T){
 
 	// Build
 	for _, testEntity := range testEntities {
-		err := testTurnbull.buildScaffoldInterfaceRepository("mongo", testEntity)
 
-		// Return
-		if err != nil {
-			t.Errorf(`buildScaffoldInterfaceRepository() failed with error %v`, err)
+		for _, repository := range testEntity.Repositories {
+
+			err := testTurnbull.buildScaffoldInterfaceRepository(repository.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildScaffoldInterfaceRepository() failed with error %v`, err)
+			}
+
 		}
+
 	}	
 }
 

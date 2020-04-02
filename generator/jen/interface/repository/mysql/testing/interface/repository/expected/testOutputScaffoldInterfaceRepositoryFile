@@ -1,0 +1,245 @@
+package repository
+
+import (
+	"context"
+	"database/sql"
+	entity "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
+	"strings"
+)
+
+type mysqlFooRepositoryStruct struct {
+	db    *sql.DB
+	table string
+}
+type foo struct {
+	Identifier sql.NullInt64
+	String     sql.NullString
+	Int        sql.NullInt32
+}
+
+func (r *mysqlFooRepositoryStruct) Count(ctx context.Context, req int) error {
+	return nil
+}
+
+func (r *mysqlFooRepositoryStruct) Browse(ctx context.Context, req entity.Foos) error {
+
+	var sqlStatement string
+	sqlStatement += "SELECT identifier, string, int FROM " + r.table
+
+	stmt, err := r.db.Prepare(sqlStatement)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var res foo
+
+		err := rows.Scan(&res.Identifier, &res.String, &res.Int)
+		if err != nil {
+			return err
+		}
+
+		elem := entity.NewFoo()
+
+		if res.Identifier.Valid {
+			var val int64
+			err := res.Identifier.Scan(&val)
+			if err != nil {
+				return err
+			}
+			elem.SetIdentifier(&val)
+		}
+
+		if res.String.Valid {
+			var val string
+			err := res.String.Scan(&val)
+			if err != nil {
+				return err
+			}
+			elem.SetString(&val)
+		}
+
+		if res.Int.Valid {
+			var val int
+			err := res.Int.Scan(&val)
+			if err != nil {
+				return err
+			}
+			elem.SetInt(&val)
+		}
+
+		req.Append(elem)
+
+	}
+
+	return nil
+
+}
+
+func (r *mysqlFooRepositoryStruct) Read(ctx context.Context, id int64, req entity.Foo) error {
+
+	var sqlStatement string
+	sqlStatement += "SELECT identifier, string, int FROM " + r.table + " WHERE identifier = ?"
+
+	stmt, err := r.db.Prepare(sqlStatement)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRow(id)
+	if err != nil {
+		return err
+	}
+
+	var res foo
+
+	err = row.Scan(&res.Identifier, &res.String, &res.Int)
+	if err != nil {
+		return err
+	}
+
+	if res.Identifier.Valid {
+		var val int64
+		err := res.Identifier.Scan(&val)
+		if err != nil {
+			return err
+		}
+		req.SetIdentifier(&val)
+	}
+
+	if res.String.Valid {
+		var val string
+		err := res.String.Scan(&val)
+		if err != nil {
+			return err
+		}
+		req.SetString(&val)
+	}
+
+	if res.Int.Valid {
+		var val int
+		err := res.Int.Scan(&val)
+		if err != nil {
+			return err
+		}
+		req.SetInt(&val)
+	}
+
+	return nil
+
+}
+
+func (r *mysqlFooRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Foo) error {
+
+	var set []string
+	var vals []interface{}
+	if req.Identifier() != nil {
+		set = append(set, "identifier = ?")
+		vals = append(vals, req.Identifier())
+	}
+
+	if req.String() != nil {
+		set = append(set, "string = ?")
+		vals = append(vals, req.String())
+	}
+
+	if req.Int() != nil {
+		set = append(set, "int = ?")
+		vals = append(vals, req.Int())
+	}
+
+	vals = append(vals, id)
+
+	var sqlStatement string
+	sqlStatement += "UPDATE " + r.table + " "
+	if len(set) > 0 {
+		sqlStatement += "SET " + strings.Join(set, ", ") + " "
+	}
+	sqlStatement += " WHERE identifier = ?"
+
+	stmt, err := r.db.Prepare(sqlStatement)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(vals...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *mysqlFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
+
+	var set, vars []string
+	var vals []interface{}
+	if req.Identifier() != nil {
+		set = append(set, "identifier")
+		vars = append(vars, "?")
+		vals = append(vals, req.Identifier())
+	}
+
+	if req.String() != nil {
+		set = append(set, "string")
+		vars = append(vars, "?")
+		vals = append(vals, req.String())
+	}
+
+	if req.Int() != nil {
+		set = append(set, "int")
+		vars = append(vars, "?")
+		vals = append(vals, req.Int())
+	}
+
+	var sqlStatement string
+	sqlStatement += "INSERT INTO " + r.table + " "
+	if len(set) > 0 {
+		sqlStatement += "(" + strings.Join(set, ", ") + ") "
+	}
+	if len(vars) > 0 {
+		sqlStatement += "VALUES(" + strings.Join(vars, ", ") + ") "
+	}
+
+	stmt, err := r.db.Prepare(sqlStatement)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(vals...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (r *mysqlFooRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Foo) error {
+	var sqlStatement string
+	sqlStatement += "DELETE FROM " + r.table + " WHERE identifier = ?"
+
+	stmt, err := r.db.Prepare(sqlStatement)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
