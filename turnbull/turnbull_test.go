@@ -181,14 +181,21 @@ func init(){
 	structure := structure.New(formatter)
 
 	testHelperGenerator := helper.New(formatter)
-	interfacePresenterGenerator := defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
-	interfaceControllerGenerator := httpControllerGenerator.New(conf, formatter, testHelperGenerator)
 
-	interfaceControllerGenerators := make(map[string]generatorInterface.RepositoryGenerator)
-	interfaceControllerGenerators["mongo"] = mongoRepositoryGenerator.New(conf, formatter, testHelperGenerator)
-	interfaceControllerGenerators["mysql"] = mysqlRepositoryGenerator.New(conf, formatter, testHelperGenerator)
+	// Controller
+	interfaceControllerGenerators := make(map[string]generatorInterface.ControllerGenerator)
+	interfaceControllerGenerators["http"] =  httpControllerGenerator.New(conf, formatter, testHelperGenerator)
 
-	generator := generator.New(conf, formatter, interfaceControllerGenerator, interfacePresenterGenerator, interfaceControllerGenerators)
+	// Presenter
+	interfacePresenterGenerators := make(map[string]generatorInterface.PresenterGenerator)
+	interfacePresenterGenerators["default"] =  defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
+
+	// Repository
+	interfaceRepositoryGenerators := make(map[string]generatorInterface.RepositoryGenerator)
+	interfaceRepositoryGenerators["mongo"] = mongoRepositoryGenerator.New(conf, formatter, testHelperGenerator)
+	interfaceRepositoryGenerators["mysql"] = mysqlRepositoryGenerator.New(conf, formatter, testHelperGenerator)
+
+	generator := generator.New(conf, formatter, interfaceControllerGenerators, interfacePresenterGenerators, interfaceRepositoryGenerators)
 
 	testTurnbull = New(formatter, structure, generator)
 }

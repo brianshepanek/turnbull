@@ -68,11 +68,20 @@ func init(){
 	conf, _ := config.New(testConfigPath, testOutputPath)
 	formatter := formatter.New(conf)
 	testHelperGenerator := helper.New(formatter)
-	interfacePresenterGenerator := defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
-	interfaceControllerGenerator := httpControllerGenerator.New(conf, formatter, testHelperGenerator)
+
+	// Controller
+	interfaceControllerGenerators := make(map[string]generatorInterface.ControllerGenerator)
+	interfaceControllerGenerators["http"] = httpControllerGenerator.New(conf, formatter, testHelperGenerator)
+
+	// Presenter
+	interfacePresenterGenerators := make(map[string]generatorInterface.PresenterGenerator)
+	interfacePresenterGenerators["default"] = defaultPresenterGenerator.New(conf, formatter, testHelperGenerator)
+
+	// Repository
 	interfaceRepositoryGenerators := make(map[string]generatorInterface.RepositoryGenerator)
 	interfaceRepositoryGenerators["scribble"] = scribbleRepositoryGenerator.New(conf, formatter, testHelperGenerator)
-	testGenerator = New(conf, formatter, interfaceControllerGenerator, interfacePresenterGenerator, interfaceRepositoryGenerators)
+	
+	testGenerator = New(conf, formatter, interfaceControllerGenerators, interfacePresenterGenerators, interfaceRepositoryGenerators)
 }
 
 // Test Scaffold Interface Repository File

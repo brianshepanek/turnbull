@@ -379,7 +379,7 @@ func (turnbull *turnbull) buildInterfacePresenter(driver string, entity model.En
 
 	// Build
 	buf := &bytes.Buffer{}
-	err := turnbull.generator.InterfacePresenter(entity, buf)
+	err := turnbull.generator.InterfacePresenter(driver, entity, buf)
 	if err != nil {
 		return err
 	}
@@ -420,7 +420,7 @@ func (turnbull *turnbull) buildScaffoldInterfacePresenter(driver string, entity 
 
 	// Build
 	buf := &bytes.Buffer{}
-	err := turnbull.generator.ScaffoldInterfacePresenter(entity, buf)
+	err := turnbull.generator.ScaffoldInterfacePresenter(driver, entity, buf)
 	if err != nil {
 		return err
 	}
@@ -461,7 +461,7 @@ func (turnbull *turnbull) buildInterfaceController(driver string, entity model.E
 
 	// Build
 	buf := &bytes.Buffer{}
-	err := turnbull.generator.InterfaceController(entity, buf)
+	err := turnbull.generator.InterfaceController(driver,entity, buf)
 	if err != nil {
 		return err
 	}
@@ -502,7 +502,7 @@ func (turnbull *turnbull) buildScaffoldInterfaceController(driver string, entity
 
 	// Build
 	buf := &bytes.Buffer{}
-	err := turnbull.generator.ScaffoldInterfaceController(entity, buf)
+	err := turnbull.generator.ScaffoldInterfaceController(driver, entity, buf)
 	if err != nil {
 		return err
 	}
