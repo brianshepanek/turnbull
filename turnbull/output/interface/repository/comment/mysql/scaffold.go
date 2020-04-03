@@ -135,56 +135,56 @@ func (r *mysqlCommentRepositoryStruct) Read(ctx context.Context, id int64, req e
 	}
 
 	if res.Id.Valid {
-		var val int64
-		err := res.Id.Scan(&val)
+		value, err := res.Id.Value()
 		if err != nil {
 			return err
 		}
+		val := value.(int64)
 		req.SetId(&val)
 	}
 
 	if res.PostId.Valid {
-		var val int64
-		err := res.PostId.Scan(&val)
+		value, err := res.PostId.Value()
 		if err != nil {
 			return err
 		}
+		val := value.(int64)
 		req.SetPostId(&val)
 	}
 
 	if res.Title.Valid {
-		var val string
-		err := res.Title.Scan(&val)
+		value, err := res.Title.Value()
 		if err != nil {
 			return err
 		}
+		val := value.(string)
 		req.SetTitle(&val)
 	}
 
 	if res.Body.Valid {
-		var val string
-		err := res.Body.Scan(&val)
+		value, err := res.Body.Value()
 		if err != nil {
 			return err
 		}
+		val := value.(string)
 		req.SetBody(&val)
 	}
 
 	if res.Created.Valid {
-		var val time.Time
-		err := res.Created.Scan(&val)
+		value, err := res.Created.Value()
 		if err != nil {
 			return err
 		}
+		val := value.(time.Time)
 		req.SetCreated(&val)
 	}
 
 	if res.Modified.Valid {
-		var val time.Time
-		err := res.Modified.Scan(&val)
+		value, err := res.Modified.Value()
 		if err != nil {
 			return err
 		}
+		val := value.(time.Time)
 		req.SetModified(&val)
 	}
 

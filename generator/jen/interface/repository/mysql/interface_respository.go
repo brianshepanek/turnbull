@@ -863,19 +863,15 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 				Dot("Valid").
 				Block(
 
-					jen.Var().
-					Id("val").
-					Qual(field.Package, field.Type),
-
-					jen.Err().
+					jen.List(
+						jen.Id("value"),
+						jen.Err(),
+					).
 					Op(":=").
 					Id("res").
 					Dot(getterId).
-					Dot("Scan").
-					Params(
-						jen.Op("&").
-						Id("val"),
-					),
+					Dot("Value").
+					Call(),
 
 					jen.If(
 						jen.Err().
@@ -888,6 +884,13 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 						),
 					),
 
+					jen.Id("val").
+					Op(":=").
+					Id("value").
+					Assert(
+						jen.Qual(field.Package, field.Type),
+					),
+					
 					jen.Id("req").
 					Dot(setterId).
 					Params(

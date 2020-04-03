@@ -108,29 +108,29 @@ func (r *mysqlFooRepositoryStruct) Read(ctx context.Context, id int64, req entit
 	}
 
 	if res.Identifier.Valid {
-		var val int64
-		err := res.Identifier.Scan(&val)
+		value, err := res.Identifier.Value()
 		if err != nil {
 			return err
 		}
+		val := value.(int64)
 		req.SetIdentifier(&val)
 	}
 
 	if res.String.Valid {
-		var val string
-		err := res.String.Scan(&val)
+		value, err := res.String.Value()
 		if err != nil {
 			return err
 		}
+		val := value.(string)
 		req.SetString(&val)
 	}
 
 	if res.Int.Valid {
-		var val int
-		err := res.Int.Scan(&val)
+		value, err := res.Int.Value()
 		if err != nil {
 			return err
 		}
+		val := value.(int)
 		req.SetInt(&val)
 	}
 
