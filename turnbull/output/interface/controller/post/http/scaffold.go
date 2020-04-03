@@ -20,11 +20,11 @@ type httpPostControllerInterface interface {
 	Add(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 }
-type post struct {
-	entity.Post
+type postLocal struct {
+	*entity.Post
 }
 
-func (m *post) MarshalJSON() ([]byte, error) {
+func (m *postLocal) MarshalJSON() ([]byte, error) {
 	type jsonStructPrivate struct {
 		Id       *int64     `json:"id,omitempty"`
 		Title    *string    `json:"title,omitempty"`
@@ -35,18 +35,18 @@ func (m *post) MarshalJSON() ([]byte, error) {
 		Modified *time.Time `json:"modified,omitempty"`
 	}
 	jsonStruct := jsonStructPrivate{
-		Created:  m.Created(),
-		Id:       m.Id(),
-		Modified: m.Modified(),
-		Subtitle: m.Subtitle(),
-		Tags:     m.Tags(),
-		Title:    m.Title(),
-		Views:    m.Views(),
+		Created:  m.Created,
+		Id:       m.Id,
+		Modified: m.Modified,
+		Subtitle: m.Subtitle,
+		Tags:     m.Tags,
+		Title:    m.Title,
+		Views:    m.Views,
 	}
 	return json.Marshal(&jsonStruct)
 }
 
-func (m *post) UnmarshalJSON(data []byte) error {
+func (m *postLocal) UnmarshalJSON(data []byte) error {
 	type jsonStructPrivate struct {
 		Id       *int64     `json:"id,omitempty"`
 		Title    *string    `json:"title,omitempty"`
@@ -61,13 +61,13 @@ func (m *post) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	m.SetId(jsonStruct.Id)
-	m.SetTitle(jsonStruct.Title)
-	m.SetSubtitle(jsonStruct.Subtitle)
-	m.SetViews(jsonStruct.Views)
-	m.SetTags(jsonStruct.Tags)
-	m.SetCreated(jsonStruct.Created)
-	m.SetModified(jsonStruct.Modified)
+	m.Id = jsonStruct.Id
+	m.Title = jsonStruct.Title
+	m.Subtitle = jsonStruct.Subtitle
+	m.Views = jsonStruct.Views
+	m.Tags = jsonStruct.Tags
+	m.Created = jsonStruct.Created
+	m.Modified = jsonStruct.Modified
 	return nil
 }
 
@@ -83,9 +83,10 @@ func (c *httpPostControllerStruct) Browse(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var posts []*post
-	for _, elem := range resp.Elements() {
-		posts = append(posts, &post{elem})
+	var posts []*postLocal
+	for _, elem := range *resp {
+		newElem := elem
+		posts = append(posts, &postLocal{&newElem})
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -97,7 +98,7 @@ func (c *httpPostControllerStruct) Browse(w http.ResponseWriter, r *http.Request
 func (c *httpPostControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	post := &post{entity.NewPost()}
+	req := &postLocal{entity.NewPost()}
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -105,14 +106,14 @@ func (c *httpPostControllerStruct) Read(w http.ResponseWriter, r *http.Request) 
 		stringId = val
 	}
 
-	id, err := post.ToPrimary(ctx, stringId)
+	id, err := req.ToPrimary(ctx, stringId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Read(ctx, id, post)
+	resp, err := c.interactor.Read(ctx, id, req.Post)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -121,14 +122,14 @@ func (c *httpPostControllerStruct) Read(w http.ResponseWriter, r *http.Request) 
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	json.NewEncoder(w).Encode(&postLocal{resp})
 
 }
 
 func (c *httpPostControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	post := &post{entity.NewPost()}
+	req := &postLocal{entity.NewPost()}
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -136,21 +137,21 @@ func (c *httpPostControllerStruct) Edit(w http.ResponseWriter, r *http.Request) 
 		stringId = val
 	}
 
-	id, err := post.ToPrimary(ctx, stringId)
+	id, err := req.ToPrimary(ctx, stringId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	err = json.NewDecoder(r.Body).Decode(post)
+	err = json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Edit(ctx, id, post)
+	resp, err := c.interactor.Edit(ctx, id, req.Post)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -159,23 +160,23 @@ func (c *httpPostControllerStruct) Edit(w http.ResponseWriter, r *http.Request) 
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	json.NewEncoder(w).Encode(&postLocal{resp})
 
 }
 
 func (c *httpPostControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	post := &post{entity.NewPost()}
+	req := &postLocal{entity.NewPost()}
 
-	err := json.NewDecoder(r.Body).Decode(post)
+	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Add(ctx, post)
+	resp, err := c.interactor.Add(ctx, req.Post)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -184,14 +185,14 @@ func (c *httpPostControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	json.NewEncoder(w).Encode(&postLocal{resp})
 
 }
 
 func (c *httpPostControllerStruct) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	post := &post{entity.NewPost()}
+	req := &postLocal{entity.NewPost()}
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -199,14 +200,14 @@ func (c *httpPostControllerStruct) Delete(w http.ResponseWriter, r *http.Request
 		stringId = val
 	}
 
-	id, err := post.ToPrimary(ctx, stringId)
+	id, err := req.ToPrimary(ctx, stringId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	_, err = c.interactor.Delete(ctx, id, post)
+	_, err = c.interactor.Delete(ctx, id, req.Post)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())

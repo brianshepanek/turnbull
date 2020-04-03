@@ -35,7 +35,7 @@ var (
 
 	testEntity  = model.Entity{
 		Name : "foo",
-		JSON : true,
+		Interface : true,
 		Fields : []model.Field{
 			model.Field{
 				Primary : true,

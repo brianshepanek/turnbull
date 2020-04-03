@@ -1,16 +1,16 @@
 func (c *httpFooControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	foo := &foo{entity.NewFoo()}
+	req := &fooLocal{entity.NewFoo()}
 
-	err := json.NewDecoder(r.Body).Decode(foo)
+	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Add(ctx, foo)
+	resp, err := c.interactor.Add(ctx, req.Foo)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -19,6 +19,6 @@ func (c *httpFooControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	json.NewEncoder(w).Encode(&fooLocal{resp})
 
 }

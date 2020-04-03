@@ -39,8 +39,6 @@ type EntityGenerator interface{
 	scaffoldEntityInterfaceGetter(field model.Field, entity model.Entity) (jen.Code, error)
 	scaffoldEntityInterfaceSetter(field model.Field, entity model.Entity) (jen.Code, error)
 	scaffoldEntityInterfaceSetAllSetter(entity model.Entity) (jen.Code, error)
-	scaffoldEntityInterfaceMarshalJSON() (jen.Code, error)
-	scaffoldEntityInterfaceUnmarshalJSON() (jen.Code, error)
 
 	// Scaffold Entity Slice Interface
 	scaffoldEntitySliceInterface(entity model.Entity) (jen.Statement, error)
@@ -59,9 +57,6 @@ type EntityGenerator interface{
 	scaffoldEntityInterfaceSetterFunction(field model.Field, entity model.Entity) (jen.Statement, error)
 	scaffoldEntityInterfaceGetterFunction(field model.Field, entity model.Entity) (jen.Statement, error)
 	scaffoldEntityInterfaceSetAllSetterFunction(entity model.Entity) (jen.Statement, error)
-	scaffoldEntityInterfaceMarshalJSONFunction(entity model.Entity) (jen.Statement, error)
-	scaffoldEntityInterfaceUnmarshalJSONFunction(entity model.Entity) (jen.Statement, error)
-	scaffoldEntityJSONStructField(field model.Field, entity model.Entity) (jen.Code, error)
 
 }
 
@@ -90,27 +85,31 @@ func (entityGenerator *entityGenerator) File(entity model.Entity) (*jen.File, er
 	f.Add(&entityStruct)
 	f.Line()
 
-	// Slice Struct
-	entitySliceStruct, err := entityGenerator.entitySliceStruct(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&entitySliceStruct)
-	f.Line()
-
 	// Interface
-	entityInterface, err := entityGenerator.entityInterface(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&entityInterface)
+	if entity.Interface {
+		
+		// Slice Struct
+		entitySliceStruct, err := entityGenerator.entitySliceStruct(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&entitySliceStruct)
+		f.Line()
 
-	// Slice Interface
-	entitySliceInterface, err := entityGenerator.entitySliceInterface(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&entitySliceInterface)
+		// Interface
+		entityInterface, err := entityGenerator.entityInterface(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&entityInterface)
+
+		// Slice Interface
+		entitySliceInterface, err := entityGenerator.entitySliceInterface(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&entitySliceInterface)
+	}	
 
 	// Interface Constructor Function
 	interfaceConstructorFunction, err := entityGenerator.entityInterfaceConstructorFunction(entity)
@@ -150,76 +149,80 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 	f.Add(&entityStruct)
 	f.Line()
 
-	// Slice Struct
-	entitySliceStruct, err := entityGenerator.scaffoldEntitySliceStruct(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&entitySliceStruct)
-	f.Line()
-
 	// Interface
-	entityInterface, err := entityGenerator.scaffoldEntityInterface(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&entityInterface)
+	if entity.Interface {
 
-	// Slice Interface
-	entitySliceInterface, err := entityGenerator.scaffoldEntitySliceInterface(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&entitySliceInterface)
-
-	// Len
-	lenFunction, err := entityGenerator.scaffoldEntitySliceInterfaceLenFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&lenFunction)
-
-	// Append
-	appendFunction, err := entityGenerator.scaffoldEntitySliceInterfaceAppendFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&appendFunction)
-
-	// Elements
-	elementsFunction, err := entityGenerator.scaffoldEntitySliceInterfaceElementsFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&elementsFunction)
-
-	// Getters
-	for _, field := range entity.Fields {
-		entityGetter, err := entityGenerator.scaffoldEntityInterfaceGetterFunction(field, entity)
+		// Slice Struct
+		entitySliceStruct, err := entityGenerator.scaffoldEntitySliceStruct(entity)
 		if err != nil {
 			return nil, err
 		}
-		f.Add(&entityGetter)
+		f.Add(&entitySliceStruct)
 		f.Line()
 
-		// if field.Primary {
-		// 	entityGetter, err := fieldToPrimaryGetter(entity, field)
-		// 	if err != nil {
-		// 		return nil, err
-		// 	}
-		// 	f.Add(entityGetter)
-		// 	f.Line()
-		// }
-	}
-	
-	// Setters
-	for _, field := range entity.Fields {
-		entitySetter, err := entityGenerator.scaffoldEntityInterfaceSetterFunction(field, entity)
+		// Interface
+		entityInterface, err := entityGenerator.scaffoldEntityInterface(entity)
 		if err != nil {
 			return nil, err
 		}
-		f.Add(&entitySetter)
+		f.Add(&entityInterface)
+
+		// Slice Interface
+		entitySliceInterface, err := entityGenerator.scaffoldEntitySliceInterface(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&entitySliceInterface)
+
+		// Len
+		lenFunction, err := entityGenerator.scaffoldEntitySliceInterfaceLenFunction(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&lenFunction)
+
+		// Append
+		appendFunction, err := entityGenerator.scaffoldEntitySliceInterfaceAppendFunction(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&appendFunction)
+
+		// Elements
+		elementsFunction, err := entityGenerator.scaffoldEntitySliceInterfaceElementsFunction(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&elementsFunction)
+
+		// Getters
+		for _, field := range entity.Fields {
+			entityGetter, err := entityGenerator.scaffoldEntityInterfaceGetterFunction(field, entity)
+			if err != nil {
+				return nil, err
+			}
+			f.Add(&entityGetter)
+			f.Line()
+		}
+		
+		// Setters
+		for _, field := range entity.Fields {
+			entitySetter, err := entityGenerator.scaffoldEntityInterfaceSetterFunction(field, entity)
+			if err != nil {
+				return nil, err
+			}
+			f.Add(&entitySetter)
+			f.Line()
+		}
+
+		// Set All Setter
+		setAllSetter, err := entityGenerator.scaffoldEntityInterfaceSetAllSetterFunction(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&setAllSetter)
 		f.Line()
+
 	}
 
 	// Callbacks
@@ -234,14 +237,6 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 		}
 	}
 
-	// Set All Setter
-	setAllSetter, err := entityGenerator.scaffoldEntityInterfaceSetAllSetterFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&setAllSetter)
-	f.Line()
-
 	// To Primary
 	toPrimary, err := entityGenerator.scaffoldEntityInterfaceToPrimaryFunction(entity)
 	if err != nil {
@@ -250,24 +245,6 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 	f.Add(&toPrimary)
 	f.Line()
 
-	// // JSON
-	// if entity.JSON {
-
-	// 	entityMarshalJSON, err := entityGenerator.scaffoldEntityInterfaceMarshalJSONFunction(entity)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	f.Add(&entityMarshalJSON)
-	// 	f.Line()
-
-	// 	entityUnmarshalJSON, err := entityGenerator.scaffoldEntityInterfaceUnmarshalJSONFunction(entity)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	f.Add(&entityUnmarshalJSON)
-	// 	f.Line()
-	// }
-	
 	
 	return f, nil
 }
@@ -527,28 +504,6 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterface(entity model.Ent
 	}
 	fields = append(fields, toPrimaryCode)
 
-	// // JSON
-	// if entity.JSON {
-
-	// 	code, err := entityGenerator.scaffoldEntityInterfaceMarshalJSON()
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	fields = append(fields, code)
-
-	// }
-
-	// // JSON
-	// if entity.JSON {
-
-	// 	code, err := entityGenerator.scaffoldEntityInterfaceUnmarshalJSON()
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	fields = append(fields, code)
-
-	// }
-
 
 	// Interface
 	resp.Interface(fields...)
@@ -767,53 +722,7 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetAllSetter(enti
 	return &statement, nil
 }
 
-func (entityGenerator *entityGenerator) scaffoldEntityInterfaceMarshalJSON() (jen.Code, error){
-	
-	// ID
-	var statement jen.Statement
 
-	// Set
-	statement.Id("MarshalJSON")
-
-	// Params
-	statement.Params()
-
-	// Parens
-	statement.Parens(
-		jen.List(
-			jen.Index().
-			Byte(),
-			jen.Error(),
-		),
-	)
-	
-	return &statement, nil
-}
-
-func (entityGenerator *entityGenerator) scaffoldEntityInterfaceUnmarshalJSON() (jen.Code, error){
-	
-	// ID
-	var statement jen.Statement
-
-	// Set
-	statement.Id("UnmarshalJSON")
-
-	// Params
-	statement.Params(
-		jen.Id("data").
-		Index().
-		Byte(),
-	)
-
-	// Parens
-	statement.Parens(
-		jen.List(
-			jen.Error(),
-		),
-	)
-	
-	return &statement, nil
-}
 
 func (entityGenerator *entityGenerator) scaffoldEntityStructField(field model.Field, entity model.Entity) (jen.Code, error){
 	
@@ -951,8 +860,14 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceConstructorFuncti
 	statement.Params()
 
 	// List
+	var list []jen.Code
+	if entity.Interface {
+		list = append(list, jen.Id(interfaceId))
+	} else {
+		list = append(list, jen.Op("*").Id(interfaceId))
+	}
 	statement.List(
-		jen.Id(interfaceId),
+		list...,
 	)
 
 	// Block
@@ -999,8 +914,14 @@ func (entityGenerator *entityGenerator) entityInterfaceConstructorFunction(entit
 	statement.Params()
 
 	// List
+	var list []jen.Code
+	if entity.Interface {
+		list = append(list, jen.Id(interfaceId))
+	} else {
+		list = append(list, jen.Op("*").Id(interfaceId))
+	}
 	statement.List(
-		jen.Id(interfaceId),
+		list...,
 	)
 
 	// Block
@@ -1026,10 +947,18 @@ func (entityGenerator *entityGenerator) entitySliceInterfaceConstructorFunction(
 	}
 	
 	// Interface ID
-	interfaceId , err := entityGenerator.formatter.OutputDomainEntitySliceInterfaceId(entity)
-	if err != nil {
-		return nil, err
-	}
+	var interfaceId string
+	if entity.Interface {
+		interfaceId , err = entityGenerator.formatter.OutputDomainEntitySliceInterfaceId(entity)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		interfaceId , err = entityGenerator.formatter.OutputDomainEntityInterfaceId(entity)
+		if err != nil {
+			return nil, err
+		}
+	}	
 
 	// Slice Struct ID
 	sliceStructId , err := entityGenerator.formatter.OutputDomainEntitySliceStructId(entity)
@@ -1047,16 +976,36 @@ func (entityGenerator *entityGenerator) entitySliceInterfaceConstructorFunction(
 	statement.Params()
 
 	// List
+	var list []jen.Code
+	if entity.Interface {
+		list = append(list, jen.Id(interfaceId))
+	} else {
+		list = append(list, jen.Op("*").Index().Id(interfaceId))
+	}
 	statement.List(
-		jen.Id(interfaceId),
+		list...,
 	)
 
-	// Block
-	statement.Block(
-		jen.Return(
+	// Return
+	var returnValues []jen.Code
+	if entity.Interface {
+		returnValues = append(returnValues, 
 			jen.Op("&").
 			Id(sliceStructId).
 			Values(),
+		)
+	} else {
+		returnValues = append(returnValues, 
+			jen.Op("&").
+			Index().
+			Id(interfaceId).
+			Values(),
+		)
+	}
+	// Block
+	statement.Block(
+		jen.Return(
+			returnValues...
 		),
 	)
 	
@@ -1552,210 +1501,6 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceToPrimaryFunction
 	return statement, nil
 }
 
-func (entityGenerator *entityGenerator) scaffoldEntityInterfaceMarshalJSONFunction(entity model.Entity) (jen.Statement, error){
-	
-	// ID
-	var statement jen.Statement
-
-	// Struct ID
-	structId , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
-	if err != nil {
-		return nil, err
-	}
-
-	// Func
-	statement.Func()
-
-	// Params
-	statement.Params(
-		jen.Id("m").
-		Op("*").
-		Qual("", structId),
-	)
-
-	// ID
-	statement.Id("MarshalJSON")
-
-	// Params
-	statement.Params()
-
-	// Parens
-	statement.Parens(
-		jen.List(
-			jen.Index().
-			Byte(),
-			jen.Error(),
-		),
-	)	
-
-	var jsonStruct []jen.Code
-	jsonStructDict := make(jen.Dict)
-	for _, field := range entity.Fields {
-
-		// Getter ID
-		getterId , err := entityGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
-		
-		code, err := entityGenerator.scaffoldEntityJSONStructField(field, entity)
-		if err != nil {
-			return nil, err
-		}
-		
-		jsonStruct = append(jsonStruct, code)
-		jsonStructDict[jen.Id(getterId)] = jen.Id("m").Dot(getterId).Call()
-		
-	}
-
-	// Block
-	statement.Block(
-
-		jen.Type().Id("jsonStructPrivate").Struct(jsonStruct...),
-
-		jen.Id("jsonStruct").
-		Op(":=").
-		Qual("", "jsonStructPrivate").
-		Values(jsonStructDict),
-
-		jen.Return().
-		Qual("encoding/json", "Marshal").
-		Call(
-			jen.Op("&").
-			Id("jsonStruct"),
-		),
-	)
-	
-	
-	return statement, nil
-}
-
-func (entityGenerator *entityGenerator) scaffoldEntityInterfaceUnmarshalJSONFunction(entity model.Entity) (jen.Statement, error){
-	
-	// ID
-	var statement jen.Statement
-
-	// Struct ID
-	structId , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
-	if err != nil {
-		return nil, err
-	}
-
-	// Func
-	statement.Func()
-
-	// Params
-	statement.Params(
-		jen.Id("m").
-		Op("*").
-		Qual("", structId),
-	)
-
-	// ID
-	statement.Id("UnmarshalJSON")
-
-	// Params
-	statement.Params(
-		jen.Id("data").
-		Index().
-		Byte(),
-	)
-
-	// Parens
-	statement.Parens(
-		jen.List(
-			jen.Error(),
-		),
-	)	
-
-	var jsonStruct []jen.Code
-	var jsonSetterFunctions []jen.Code
-	for _, field := range entity.Fields {
-
-		// Getter ID
-		getterId , err := entityGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
-
-		// Setter ID
-		setterId , err := entityGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
-		if err != nil {
-			return nil, err
-		}
-		
-		code, err := entityGenerator.scaffoldEntityJSONStructField(field, entity)
-		if err != nil {
-			return nil, err
-		}
-
-		jsonStruct = append(jsonStruct, code)
-
-		jsonSetterFunctions = append(jsonSetterFunctions, jen.Id("m").
-			Dot(setterId).
-			Call(
-				jen.Id("jsonStruct").
-				Dot(getterId),
-			),
-		)
-		
-	}
-
-	// Block
-	var block []jen.Code
-
-
-	block = append(block, 
-		jen.Type().
-		Id("jsonStructPrivate").
-		Struct(jsonStruct...),
-	)
-	block = append(block, 
-		jen.Id("jsonStruct").
-		Op(":=").
-		Qual("", "jsonStructPrivate").
-		Values(),
-	)
-	block = append(block, 
-		jen.Err().
-		Op(":=").
-		Qual("encoding/json", "Unmarshal").
-		Call(
-			jen.Id("data"),
-			jen.Op("&").
-			Id("jsonStruct"),
-		),
-	)
-	block = append(block, 
-		jen.If(
-			jen.Err().
-			Op("!=").
-			Nil(),
-		).
-		Block(
-			jen.Return(
-				jen.List(
-					jen.Err(),
-				),
-			),
-		),
-	)
-	for _, jsonSetterFunction := range jsonSetterFunctions {
-		block = append(block, jsonSetterFunction)
-	}
-	block = append(block, jen.Return(
-		jen.List(
-			jen.Nil(),
-		),
-	),)
-
-	statement.Block(
-		block...,
-	)
-	
-	
-	return statement, nil
-}
 
 func (entityGenerator *entityGenerator) scaffoldEntityInterfaceGetterFunction(field model.Field, entity model.Entity) (jen.Statement, error){
 	
@@ -1814,30 +1559,3 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceGetterFunction(fi
 
 
 
-func (entityGenerator *entityGenerator) scaffoldEntityJSONStructField(field model.Field, entity model.Entity) (jen.Code, error){
-	
-	// ID
-	var statement jen.Statement
-	id , err := entityGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-	if err != nil {
-		return nil, err
-	}
-	tagId , err := entityGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
-	if err != nil {
-		return nil, err
-	}
-
-	// Set
-	statement.Id(id)
-
-	// Field
-	err = entityGenerator.helperGenerator.Field("", field, entity, &statement)
-	if err != nil {
-		return nil, err
-	}
-
-	// Tag
-	statement.Tag(map[string]string{"json": tagId})
-
-	return &statement, nil
-}

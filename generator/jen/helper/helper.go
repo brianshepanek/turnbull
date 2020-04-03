@@ -34,13 +34,23 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 	if field.Op != "" {
 		statement.Op(field.Op)
 	}
+	if !entity.Interface && field.Type == "self" {
+		statement.Op("*")
+	}
 
 	// Slice
-	if field.Type != "self" {
+	if entity.Interface {
+		if field.Type != "self" {
+			if field.Slice {
+				statement.Index()
+			}
+		}
+	} else {
 		if field.Slice {
 			statement.Index()
 		}
 	}
+	
 
 	// Qual
 	if field.Type != "" {
@@ -55,7 +65,7 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 				return nil
 			}
 
-			if field.Slice {
+			if field.Slice && entity.Interface {
 
 				// Slice Interface ID
 				id, err = generator.formatter.OutputDomainEntitySliceInterfaceId(entity)

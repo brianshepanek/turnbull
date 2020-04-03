@@ -22,16 +22,18 @@ var(
 	// Test Entity
 	testEntity  = model.Entity{
 		Name : "foo",
-		JSON : true,
+		Interface : true,
 		Fields : []model.Field{
 			model.Field{
 				Primary : true,
-				Name : "string",
-				Type : "string",
+				Private : true,
+				Name : "id",
+				Type : "int64",
 			},
 			model.Field{
-				Name : "int",
-				Type : "int",
+				Private : true,
+				Name : "title",
+				Type : "string",
 			},
 		},
 		Methods : []model.Method {
@@ -57,6 +59,7 @@ var(
 	testField  = model.Field{
 		Name : "bar",
 		Type : "string",
+		Private : true,
 	}
 	testMethod  = model.Method{
 		Name : "add",
@@ -561,61 +564,61 @@ func TestScaffoldEntityInterfaceSetAllSetterFunction(t *testing.T){
 	
 }
 
-// Test Scaffold Entity Interface Marshal JSON Function
-func TestScaffoldEntityInterfaceMarshalJSONFunction(t *testing.T){
+// // Test Scaffold Entity Interface Marshal JSON Function
+// func TestScaffoldEntityInterfaceMarshalJSONFunction(t *testing.T){
 
-	// Build
-	statement, err := testEntityGenerator.scaffoldEntityInterfaceMarshalJSONFunction(testEntity)
+// 	// Build
+// 	statement, err := testEntityGenerator.scaffoldEntityInterfaceMarshalJSONFunction(testEntity)
 
-	// Return
-	if err != nil {
-		t.Errorf(`scaffoldEntityInterfaceMarshalJSONFunction() failed with error %v`, err)
-	}
+// 	// Return
+// 	if err != nil {
+// 		t.Errorf(`scaffoldEntityInterfaceMarshalJSONFunction() failed with error %v`, err)
+// 	}
 
-	f, err := os.Create("./testing/domain/model/created/" + testOutputScaffoldDomainEntityInterfaceMarshalJSONFunctionName)
-	if err != nil {
-		t.Errorf(`scaffoldEntityInterfaceMarshalJSONFunction() failed with error %v`, err)
-	}
-	buf := &bytes.Buffer{}
-	err = statement.Render(buf)
-	if err != nil {
-		t.Errorf(`scaffoldEntityInterfaceMarshalJSONFunction() failed with error %v`, err)
-	}
-	_, err = f.Write(buf.Bytes())
+// 	f, err := os.Create("./testing/domain/model/created/" + testOutputScaffoldDomainEntityInterfaceMarshalJSONFunctionName)
+// 	if err != nil {
+// 		t.Errorf(`scaffoldEntityInterfaceMarshalJSONFunction() failed with error %v`, err)
+// 	}
+// 	buf := &bytes.Buffer{}
+// 	err = statement.Render(buf)
+// 	if err != nil {
+// 		t.Errorf(`scaffoldEntityInterfaceMarshalJSONFunction() failed with error %v`, err)
+// 	}
+// 	_, err = f.Write(buf.Bytes())
 
-	if buf.String() != testOutputScaffoldDomainEntityInterfaceMarshalJSONFunction {
-		t.Errorf(`scaffoldEntityInterfaceMarshalJSONFunction() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityInterfaceMarshalJSONFunction, buf.String())
-	}
+// 	if buf.String() != testOutputScaffoldDomainEntityInterfaceMarshalJSONFunction {
+// 		t.Errorf(`scaffoldEntityInterfaceMarshalJSONFunction() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityInterfaceMarshalJSONFunction, buf.String())
+// 	}
 	
-}
+// }
 
-// Test Scaffold Entity Interface Unmarshal JSON Function
-func TestScaffoldEntityInterfaceUnmarshalJSONFunction(t *testing.T){
+// // Test Scaffold Entity Interface Unmarshal JSON Function
+// func TestScaffoldEntityInterfaceUnmarshalJSONFunction(t *testing.T){
 
-	// Build
-	statement, err := testEntityGenerator.scaffoldEntityInterfaceUnmarshalJSONFunction(testEntity)
+// 	// Build
+// 	statement, err := testEntityGenerator.scaffoldEntityInterfaceUnmarshalJSONFunction(testEntity)
 
-	// Return
-	if err != nil {
-		t.Errorf(`scaffoldEntityInterfaceUnmarshalJSONFunction() failed with error %v`, err)
-	}
+// 	// Return
+// 	if err != nil {
+// 		t.Errorf(`scaffoldEntityInterfaceUnmarshalJSONFunction() failed with error %v`, err)
+// 	}
 
-	f, err := os.Create("./testing/domain/model/created/" + testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunctionName)
-	if err != nil {
-		t.Errorf(`scaffoldEntityInterfaceUnmarshalJSONFunction() failed with error %v`, err)
-	}
-	buf := &bytes.Buffer{}
-	err = statement.Render(buf)
-	if err != nil {
-		t.Errorf(`scaffoldEntityInterfaceUnmarshalJSONFunction() failed with error %v`, err)
-	}
-	_, err = f.Write(buf.Bytes())
+// 	f, err := os.Create("./testing/domain/model/created/" + testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunctionName)
+// 	if err != nil {
+// 		t.Errorf(`scaffoldEntityInterfaceUnmarshalJSONFunction() failed with error %v`, err)
+// 	}
+// 	buf := &bytes.Buffer{}
+// 	err = statement.Render(buf)
+// 	if err != nil {
+// 		t.Errorf(`scaffoldEntityInterfaceUnmarshalJSONFunction() failed with error %v`, err)
+// 	}
+// 	_, err = f.Write(buf.Bytes())
 
-	if buf.String() != testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunction {
-		t.Errorf(`scaffoldEntityInterfaceUnmarshalJSONFunction() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunction, buf.String())
-	}
+// 	if buf.String() != testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunction {
+// 		t.Errorf(`scaffoldEntityInterfaceUnmarshalJSONFunction() failed; want "%s", got "%s"`, testOutputScaffoldDomainEntityInterfaceUnmarshalJSONFunction, buf.String())
+// 	}
 	
-}
+// }
 
 // Test Scaffold Entity Struct Field
 func TestScaffoldEntityStructField(t *testing.T){

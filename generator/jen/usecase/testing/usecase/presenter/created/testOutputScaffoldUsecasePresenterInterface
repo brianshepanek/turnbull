@@ -1,6 +1,6 @@
 type fooPresenter interface {
-	Add(ctx context.Context, req entity.Foo) (entity.Foo, error)
-	Read(ctx context.Context, req entity.Foo) (entity.Foo, error)
-	Browse(ctx context.Context, req entity.Foos) (entity.Foos, error)
-	Delete(ctx context.Context, req entity.Foo) (entity.Foo, error)
+	Add(ctx context.Context, req *entity.Foo) (*entity.Foo, error)
+	Read(ctx context.Context, req *entity.Foo) (*entity.Foo, error)
+	Browse(ctx context.Context, req *[]entity.Foo) (*[]entity.Foo, error)
+	Delete(ctx context.Context, req *entity.Foo) (*entity.Foo, error)
 }

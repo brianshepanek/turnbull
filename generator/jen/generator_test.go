@@ -27,7 +27,6 @@ var(
 	// Test Entity
 	testEntity  = model.Entity{
 		Name : "foo",
-		JSON : true,
 		Fields : []model.Field{
 			model.Field{
 				Name : "string",

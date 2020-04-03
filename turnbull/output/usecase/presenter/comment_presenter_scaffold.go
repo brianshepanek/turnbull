@@ -6,9 +6,9 @@ import (
 )
 
 type commentPresenter interface {
-	Browse(ctx context.Context, req entity.Comments) (entity.Comments, error)
-	Read(ctx context.Context, req entity.Comment) (entity.Comment, error)
-	Edit(ctx context.Context, req entity.Comment) (entity.Comment, error)
-	Add(ctx context.Context, req entity.Comment) (entity.Comment, error)
-	Delete(ctx context.Context, req entity.Comment) (entity.Comment, error)
+	Browse(ctx context.Context, req *[]entity.Comment) (*[]entity.Comment, error)
+	Read(ctx context.Context, req *entity.Comment) (*entity.Comment, error)
+	Edit(ctx context.Context, req *entity.Comment) (*entity.Comment, error)
+	Add(ctx context.Context, req *entity.Comment) (*entity.Comment, error)
+	Delete(ctx context.Context, req *entity.Comment) (*entity.Comment, error)
 }

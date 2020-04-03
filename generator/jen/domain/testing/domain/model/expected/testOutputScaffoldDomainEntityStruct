@@ -1,4 +1,4 @@
 type fooStruct struct {
-	string *string
-	int    *int
+	id    *int64
+	title *string
 }

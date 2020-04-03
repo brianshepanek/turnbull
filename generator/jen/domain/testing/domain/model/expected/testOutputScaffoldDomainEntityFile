@@ -3,20 +3,20 @@ package entity
 import "context"
 
 type fooStruct struct {
-	string *string
-	int    *int
+	id    *int64
+	title *string
 }
 
 type foosStruct []fooInterface
 
 type fooInterface interface {
-	String() *string
-	Int() *int
-	SetString(string *string)
-	SetInt(int *int)
+	Id() *int64
+	Title() *string
+	SetId(id *int64)
+	SetTitle(title *string)
 	BeforeAdd(ctx context.Context) error
 	SetAll(req fooInterface)
-	ToPrimary(ctx context.Context, req interface{}) (string, error)
+	ToPrimary(ctx context.Context, req interface{}) (int64, error)
 }
 type foosInterface interface {
 	Len() int
@@ -38,32 +38,32 @@ func (m *foosStruct) Append(req fooInterface) {
 func (m *foosStruct) Elements() []fooInterface {
 	return *m
 }
-func (m *fooStruct) String() *string {
-	return m.string
+func (m *fooStruct) Id() *int64 {
+	return m.id
 }
 
-func (m *fooStruct) Int() *int {
-	return m.int
+func (m *fooStruct) Title() *string {
+	return m.title
 }
 
-func (m *fooStruct) SetString(string *string) {
-	m.string = string
+func (m *fooStruct) SetId(id *int64) {
+	m.id = id
 }
 
-func (m *fooStruct) SetInt(int *int) {
-	m.int = int
+func (m *fooStruct) SetTitle(title *string) {
+	m.title = title
+}
+
+func (m *fooStruct) SetAll(req fooInterface) {
+	m.SetId(req.Id())
+	m.SetTitle(req.Title())
 }
 
 func (m *fooStruct) BeforeAdd(ctx context.Context) error {
 	return nil
 }
 
-func (m *fooStruct) SetAll(req fooInterface) {
-	m.SetString(req.String())
-	m.SetInt(req.Int())
-}
-
-func (m *fooStruct) ToPrimary(ctx context.Context, req interface{}) (string, error) {
-	var resp string
+func (m *fooStruct) ToPrimary(ctx context.Context, req interface{}) (int64, error) {
+	var resp int64
 	return resp, nil
 }

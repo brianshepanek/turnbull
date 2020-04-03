@@ -20,11 +20,11 @@ type httpCommentControllerInterface interface {
 	Add(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 }
-type comment struct {
-	entity.Comment
+type commentLocal struct {
+	*entity.Comment
 }
 
-func (m *comment) MarshalJSON() ([]byte, error) {
+func (m *commentLocal) MarshalJSON() ([]byte, error) {
 	type jsonStructPrivate struct {
 		Id       *int64     `json:"id,omitempty"`
 		PostId   *int64     `json:"post_id,omitempty"`
@@ -34,17 +34,17 @@ func (m *comment) MarshalJSON() ([]byte, error) {
 		Modified *time.Time `json:"modified,omitempty"`
 	}
 	jsonStruct := jsonStructPrivate{
-		Body:     m.Body(),
-		Created:  m.Created(),
-		Id:       m.Id(),
-		Modified: m.Modified(),
-		PostId:   m.PostId(),
-		Title:    m.Title(),
+		Body:     m.Body,
+		Created:  m.Created,
+		Id:       m.Id,
+		Modified: m.Modified,
+		PostId:   m.PostId,
+		Title:    m.Title,
 	}
 	return json.Marshal(&jsonStruct)
 }
 
-func (m *comment) UnmarshalJSON(data []byte) error {
+func (m *commentLocal) UnmarshalJSON(data []byte) error {
 	type jsonStructPrivate struct {
 		Id       *int64     `json:"id,omitempty"`
 		PostId   *int64     `json:"post_id,omitempty"`
@@ -58,12 +58,12 @@ func (m *comment) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	m.SetId(jsonStruct.Id)
-	m.SetPostId(jsonStruct.PostId)
-	m.SetTitle(jsonStruct.Title)
-	m.SetBody(jsonStruct.Body)
-	m.SetCreated(jsonStruct.Created)
-	m.SetModified(jsonStruct.Modified)
+	m.Id = jsonStruct.Id
+	m.PostId = jsonStruct.PostId
+	m.Title = jsonStruct.Title
+	m.Body = jsonStruct.Body
+	m.Created = jsonStruct.Created
+	m.Modified = jsonStruct.Modified
 	return nil
 }
 
@@ -79,9 +79,10 @@ func (c *httpCommentControllerStruct) Browse(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	var comments []*comment
-	for _, elem := range resp.Elements() {
-		comments = append(comments, &comment{elem})
+	var comments []*commentLocal
+	for _, elem := range *resp {
+		newElem := elem
+		comments = append(comments, &commentLocal{&newElem})
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -93,7 +94,7 @@ func (c *httpCommentControllerStruct) Browse(w http.ResponseWriter, r *http.Requ
 func (c *httpCommentControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	comment := &comment{entity.NewComment()}
+	req := &commentLocal{entity.NewComment()}
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -101,14 +102,14 @@ func (c *httpCommentControllerStruct) Read(w http.ResponseWriter, r *http.Reques
 		stringId = val
 	}
 
-	id, err := comment.ToPrimary(ctx, stringId)
+	id, err := req.ToPrimary(ctx, stringId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Read(ctx, id, comment)
+	resp, err := c.interactor.Read(ctx, id, req.Comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -117,14 +118,14 @@ func (c *httpCommentControllerStruct) Read(w http.ResponseWriter, r *http.Reques
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	json.NewEncoder(w).Encode(&commentLocal{resp})
 
 }
 
 func (c *httpCommentControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	comment := &comment{entity.NewComment()}
+	req := &commentLocal{entity.NewComment()}
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -132,21 +133,21 @@ func (c *httpCommentControllerStruct) Edit(w http.ResponseWriter, r *http.Reques
 		stringId = val
 	}
 
-	id, err := comment.ToPrimary(ctx, stringId)
+	id, err := req.ToPrimary(ctx, stringId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	err = json.NewDecoder(r.Body).Decode(comment)
+	err = json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Edit(ctx, id, comment)
+	resp, err := c.interactor.Edit(ctx, id, req.Comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -155,23 +156,23 @@ func (c *httpCommentControllerStruct) Edit(w http.ResponseWriter, r *http.Reques
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	json.NewEncoder(w).Encode(&commentLocal{resp})
 
 }
 
 func (c *httpCommentControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	comment := &comment{entity.NewComment()}
+	req := &commentLocal{entity.NewComment()}
 
-	err := json.NewDecoder(r.Body).Decode(comment)
+	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	resp, err := c.interactor.Add(ctx, comment)
+	resp, err := c.interactor.Add(ctx, req.Comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -180,14 +181,14 @@ func (c *httpCommentControllerStruct) Add(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	json.NewEncoder(w).Encode(&commentLocal{resp})
 
 }
 
 func (c *httpCommentControllerStruct) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	comment := &comment{entity.NewComment()}
+	req := &commentLocal{entity.NewComment()}
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -195,14 +196,14 @@ func (c *httpCommentControllerStruct) Delete(w http.ResponseWriter, r *http.Requ
 		stringId = val
 	}
 
-	id, err := comment.ToPrimary(ctx, stringId)
+	id, err := req.ToPrimary(ctx, stringId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
-	_, err = c.interactor.Delete(ctx, id, comment)
+	_, err = c.interactor.Delete(ctx, id, req.Comment)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())

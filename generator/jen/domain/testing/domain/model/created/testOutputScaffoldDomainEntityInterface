@@ -1,9 +1,9 @@
 type fooInterface interface {
-	String() *string
-	Int() *int
-	SetString(string *string)
-	SetInt(int *int)
+	Id() *int64
+	Title() *string
+	SetId(id *int64)
+	SetTitle(title *string)
 	BeforeAdd(ctx context.Context) error
 	SetAll(req fooInterface)
-	ToPrimary(ctx context.Context, req interface{}) (string, error)
+	ToPrimary(ctx context.Context, req interface{}) (int64, error)
 }

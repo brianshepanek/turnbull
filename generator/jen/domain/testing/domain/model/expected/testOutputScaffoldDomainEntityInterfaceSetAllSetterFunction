@@ -1,4 +1,4 @@
 func (m *fooStruct) SetAll(req fooInterface) {
-	m.SetString(req.String())
-	m.SetInt(req.Int())
+	m.SetId(req.Id())
+	m.SetTitle(req.Title())
 }

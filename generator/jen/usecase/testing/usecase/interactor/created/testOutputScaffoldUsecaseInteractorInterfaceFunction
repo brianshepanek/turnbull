@@ -1,4 +1,4 @@
-func (i *fooInteractorStruct) Add(ctx context.Context, req entity.Foo) (entity.Foo, error) {
+func (i *fooInteractorStruct) Add(ctx context.Context, req *entity.Foo) (*entity.Foo, error) {
 	var err error
 	err = i.repository.Add(ctx, req)
 	if err != nil {

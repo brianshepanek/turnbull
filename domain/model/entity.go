@@ -2,9 +2,8 @@ package model
 
 type Entity struct {
 	Name string
+	Interface bool
 	Fields []Field
-	JSON bool
-	BSON bool
 	Methods []Method
 	Repositories []Repository
 }
@@ -16,6 +15,7 @@ type Field struct {
 	Package string
 	Type string
 	Slice bool
+	Private bool
 }
 
 type Method struct {

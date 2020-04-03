@@ -1,10 +1,10 @@
-func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req entity.Foo) error {
+func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req *entity.Foo) error {
 
-	foo := &foo{req}
+	fooLocal := &fooLocal{req}
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
-	_, err := collection.InsertOne(ctx, foo)
+	_, err := collection.InsertOne(ctx, fooLocal)
 	if err != nil {
 		return err
 	}

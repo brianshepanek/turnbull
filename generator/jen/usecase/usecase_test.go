@@ -13,16 +13,15 @@ var(
 	// Test Entity
 	testEntity  = model.Entity{
 		Name : "foo",
-		JSON : true,
 		Fields : []model.Field{
 			model.Field{
 				Primary : true,
-				Name : "string",
-				Type : "string",
+				Name : "id",
+				Type : "int64",
 			},
 			model.Field{
-				Name : "int",
-				Type : "int",
+				Name : "title",
+				Type : "string",
 			},
 		},
 		Methods : []model.Method {

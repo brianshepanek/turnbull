@@ -6,9 +6,9 @@ import (
 )
 
 type postPresenter interface {
-	Browse(ctx context.Context, req entity.Posts) (entity.Posts, error)
-	Read(ctx context.Context, req entity.Post) (entity.Post, error)
-	Edit(ctx context.Context, req entity.Post) (entity.Post, error)
-	Add(ctx context.Context, req entity.Post) (entity.Post, error)
-	Delete(ctx context.Context, req entity.Post) (entity.Post, error)
+	Browse(ctx context.Context, req *[]entity.Post) (*[]entity.Post, error)
+	Read(ctx context.Context, req *entity.Post) (*entity.Post, error)
+	Edit(ctx context.Context, req *entity.Post) (*entity.Post, error)
+	Add(ctx context.Context, req *entity.Post) (*entity.Post, error)
+	Delete(ctx context.Context, req *entity.Post) (*entity.Post, error)
 }

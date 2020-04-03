@@ -12,14 +12,14 @@ type postInteractorStruct struct {
 	presenter  presenter.PostPresenter
 }
 type postInteractorInterface interface {
-	Browse(ctx context.Context, req entity.Posts) (entity.Posts, error)
-	Read(ctx context.Context, id int64, req entity.Post) (entity.Post, error)
-	Edit(ctx context.Context, id int64, req entity.Post) (entity.Post, error)
-	Add(ctx context.Context, req entity.Post) (entity.Post, error)
-	Delete(ctx context.Context, id int64, req entity.Post) (entity.Post, error)
+	Browse(ctx context.Context, req *[]entity.Post) (*[]entity.Post, error)
+	Read(ctx context.Context, id int64, req *entity.Post) (*entity.Post, error)
+	Edit(ctx context.Context, id int64, req *entity.Post) (*entity.Post, error)
+	Add(ctx context.Context, req *entity.Post) (*entity.Post, error)
+	Delete(ctx context.Context, id int64, req *entity.Post) (*entity.Post, error)
 }
 
-func (i *postInteractorStruct) Browse(ctx context.Context, req entity.Posts) (entity.Posts, error) {
+func (i *postInteractorStruct) Browse(ctx context.Context, req *[]entity.Post) (*[]entity.Post, error) {
 	var err error
 	err = i.repository.Browse(ctx, req)
 	if err != nil {
@@ -27,7 +27,7 @@ func (i *postInteractorStruct) Browse(ctx context.Context, req entity.Posts) (en
 	}
 	return i.presenter.Browse(ctx, req)
 }
-func (i *postInteractorStruct) Read(ctx context.Context, id int64, req entity.Post) (entity.Post, error) {
+func (i *postInteractorStruct) Read(ctx context.Context, id int64, req *entity.Post) (*entity.Post, error) {
 	var err error
 	err = req.BeforeRead(ctx)
 	if err != nil {
@@ -39,7 +39,7 @@ func (i *postInteractorStruct) Read(ctx context.Context, id int64, req entity.Po
 	}
 	return i.presenter.Read(ctx, req)
 }
-func (i *postInteractorStruct) Edit(ctx context.Context, id int64, req entity.Post) (entity.Post, error) {
+func (i *postInteractorStruct) Edit(ctx context.Context, id int64, req *entity.Post) (*entity.Post, error) {
 	var err error
 	err = i.repository.Edit(ctx, id, req)
 	if err != nil {
@@ -47,7 +47,7 @@ func (i *postInteractorStruct) Edit(ctx context.Context, id int64, req entity.Po
 	}
 	return i.presenter.Edit(ctx, req)
 }
-func (i *postInteractorStruct) Add(ctx context.Context, req entity.Post) (entity.Post, error) {
+func (i *postInteractorStruct) Add(ctx context.Context, req *entity.Post) (*entity.Post, error) {
 	var err error
 	err = req.BeforeAdd(ctx)
 	if err != nil {
@@ -59,7 +59,7 @@ func (i *postInteractorStruct) Add(ctx context.Context, req entity.Post) (entity
 	}
 	return i.presenter.Add(ctx, req)
 }
-func (i *postInteractorStruct) Delete(ctx context.Context, id int64, req entity.Post) (entity.Post, error) {
+func (i *postInteractorStruct) Delete(ctx context.Context, id int64, req *entity.Post) (*entity.Post, error) {
 	var err error
 	err = i.repository.Delete(ctx, id, req)
 	if err != nil {

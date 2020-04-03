@@ -95,9 +95,9 @@ var (
 				model.Repository {
 					Type : "mongo",
 				},
-				model.Repository {
-					Type : "mysql",
-				},
+				// model.Repository {
+				// 	Type : "mysql",
+				// },
 			},
 		},	
 		model.Entity{
@@ -167,9 +167,9 @@ var (
 				model.Repository {
 					Type : "mongo",
 				},
-				model.Repository {
-					Type : "mysql",
-				},
+				// model.Repository {
+				// 	Type : "mysql",
+				// },
 			},
 		},	
 	}

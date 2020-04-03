@@ -125,9 +125,11 @@ const(
 var (
 	testFormatter Formatter
 	testEntity  = model.Entity{
+		Interface : true,
 		Name : "foo",
 	}
 	testField  = model.Field{
+		Private : true,
 		Name : "bar",
 		Type : "string",
 	}

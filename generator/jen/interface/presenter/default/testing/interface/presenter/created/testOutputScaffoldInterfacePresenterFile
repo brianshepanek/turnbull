@@ -10,18 +10,18 @@ type defaultFooPresenterStruct struct{}
 func (r *defaultFooPresenterStruct) Count(ctx context.Context, req int) (int, error) {
 	return req, nil
 }
-func (r *defaultFooPresenterStruct) Browse(ctx context.Context, req entity.Foos) (entity.Foos, error) {
+func (r *defaultFooPresenterStruct) Browse(ctx context.Context, req *[]entity.Foo) (*[]entity.Foo, error) {
 	return req, nil
 }
-func (r *defaultFooPresenterStruct) Read(ctx context.Context, req entity.Foo) (entity.Foo, error) {
+func (r *defaultFooPresenterStruct) Read(ctx context.Context, req *entity.Foo) (*entity.Foo, error) {
 	return req, nil
 }
-func (r *defaultFooPresenterStruct) Edit(ctx context.Context, req entity.Foo) (entity.Foo, error) {
+func (r *defaultFooPresenterStruct) Edit(ctx context.Context, req *entity.Foo) (*entity.Foo, error) {
 	return req, nil
 }
-func (r *defaultFooPresenterStruct) Add(ctx context.Context, req entity.Foo) (entity.Foo, error) {
+func (r *defaultFooPresenterStruct) Add(ctx context.Context, req *entity.Foo) (*entity.Foo, error) {
 	return req, nil
 }
-func (r *defaultFooPresenterStruct) Delete(ctx context.Context, req entity.Foo) (entity.Foo, error) {
+func (r *defaultFooPresenterStruct) Delete(ctx context.Context, req *entity.Foo) (*entity.Foo, error) {
 	return req, nil
 }

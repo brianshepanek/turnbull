@@ -1,24 +1,13 @@
 package entity
 
-type post struct {
+type Post struct {
 	postStruct
 }
 
-type posts struct {
-	postsStruct
+func NewPost() *Post {
+	return &Post{}
 }
 
-type Post interface {
-	postInterface
-}
-type Posts interface {
-	postsInterface
-}
-
-func NewPost() Post {
-	return &post{}
-}
-
-func NewPosts() Posts {
-	return &posts{}
+func NewPosts() *[]Post {
+	return &[]Post{}
 }

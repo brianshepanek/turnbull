@@ -299,7 +299,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEntit
 	resp.Type()
 
 	// ID
-	id , err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	id , err := controllerGenerator.formatter.OutputDomainEntityLocalStructId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -318,9 +318,15 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEntit
 	}
 
 	// Struct
-	resp.Struct(
-		jen.Qual(importPath, interfaceId),
-	)
+	if entity.Interface{
+		resp.Struct(
+			jen.Qual(importPath, interfaceId),
+		)
+	} else {
+		resp.Struct(
+			jen.Op("*").Qual(importPath, interfaceId),
+		)
+	}
 
 	
 	return resp, nil
@@ -554,7 +560,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 	var block []jen.Code
 
 	// ID
-	jsonId, err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	jsonId, err := controllerGenerator.formatter.OutputDomainEntityLocalStructId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -664,31 +670,66 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 		Id(jsonId),
 	)
 
-	block = append(block, 
-		jen.For(
-			jen.List(
-				jen.Id("_"),
-				jen.Id("elem"),
-			).
-			Op(":=").
-			Range().
-			Id("resp").
-			Dot("Elements").
-			Call().
-			Block(
-				jen.Id(jsonSliceId).
-				Op("=").
-				Append(
-					jen.Id(jsonSliceId),
-					jen.Op("&").
-					Id(jsonId).
-					Values(
-						jen.Id("elem"),
+	if entity.Interface {
+		block = append(block, 
+			jen.For(
+				jen.List(
+					jen.Id("_"),
+					jen.Id("elem"),
+				).
+				Op(":=").
+				Range().
+				Id("resp").
+				Dot("Elements").
+				Call().
+				Block(
+					jen.Id(jsonSliceId).
+					Op("=").
+					Append(
+						jen.Id(jsonSliceId),
+						jen.Op("&").
+						Id(jsonId).
+						Values(
+							jen.Id("elem"),
+						),
 					),
 				),
 			),
-		),
-	)
+		)
+	} else {
+
+		block = append(block, 
+			jen.For(
+				jen.List(
+					jen.Id("_"),
+					jen.Id("elem"),
+				).
+				Op(":=").
+				Range().
+				Op("*").
+				Id("resp").
+				Block(
+
+					jen.Id("newElem").
+					Op(":=").
+					Id("elem"),
+
+					jen.Id(jsonSliceId).
+					Op("=").
+					Append(
+						jen.Id(jsonSliceId),
+						jen.Op("&").
+						Id(jsonId).
+						Values(
+							jen.Op("&").
+							Id("newElem"),
+						),
+					),
+				),
+			),
+		)
+	}
+	
 
 	// Line
 	block = append(block, jen.Line())
@@ -748,7 +789,13 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 	}
 
 	// ID
-	jsonId, err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	jsonId, err := controllerGenerator.formatter.OutputDomainEntityLocalStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Interface ID
+	interfaceId , err := controllerGenerator.formatter.OutputDomainEntityInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -776,7 +823,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 	)
 
 	block = append(block,
-		jen.Id(jsonId).
+		jen.Id("req").
 		Op(":=").
 		Op("&").
 		Id(jsonId).
@@ -836,7 +883,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 			jen.Err(),
 		).
 		Op(":=").
-		Id(jsonId).
+		Id("req").
 		Dot("ToPrimary").
 		Params(
 			jen.Id("ctx"),
@@ -874,6 +921,21 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 	// Line
 	block = append(block, jen.Line())
 
+	var callList []jen.Code
+	if entity.Interface {
+		callList = append(callList, 
+			jen.Id("ctx"),
+			jen.Id("id"),
+			jen.Id("req"),
+		)
+	} else {
+		callList = append(callList, 
+			jen.Id("ctx"),
+			jen.Id("id"),
+			jen.Id("req").
+			Dot(interfaceId),
+		)
+	}
 	block = append(block, 
 		jen.List(
 			jen.Id("resp"),
@@ -885,9 +947,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 		Dot(repositoryMethodId).
 		Call(
 			jen.List(
-				jen.Id("ctx"),
-				jen.Id("id"),
-				jen.Id(jsonId),
+				callList...,
 			),
 		),
 	)
@@ -950,7 +1010,11 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerReadM
 		).
 		Dot("Encode").
 		Call(
-			jen.Id("resp"),
+			jen.Op("&").
+			Id(jsonId).
+			Values(
+				jen.Id("resp"),
+			),
 		),
 	)
 
@@ -976,7 +1040,13 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEditM
 	}
 
 	// ID
-	jsonId, err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	jsonId, err := controllerGenerator.formatter.OutputDomainEntityLocalStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Interface ID
+	interfaceId , err := controllerGenerator.formatter.OutputDomainEntityInterfaceId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -1004,7 +1074,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEditM
 	)
 
 	block = append(block,
-		jen.Id(jsonId).
+		jen.Id("req").
 		Op(":=").
 		Op("&").
 		Id(jsonId).
@@ -1064,7 +1134,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEditM
 			jen.Err(),
 		).
 		Op(":=").
-		Id(jsonId).
+		Id("req").
 		Dot("ToPrimary").
 		Params(
 			jen.Id("ctx"),
@@ -1112,7 +1182,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEditM
 		).
 		Dot("Decode").
 		Call(
-			jen.Id(jsonId),
+			jen.Id("req"),
 		),
 	)
 
@@ -1146,6 +1216,22 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEditM
 	// Line
 	block = append(block, jen.Line())
 
+	var callList []jen.Code
+	if entity.Interface {
+		callList = append(callList, 
+			jen.Id("ctx"),
+			jen.Id("id"),
+			jen.Id("req"),
+		)
+	} else {
+		callList = append(callList, 
+			jen.Id("ctx"),
+			jen.Id("id"),
+			jen.Id("req").
+			Dot(interfaceId),
+		)
+	}
+
 	block = append(block, 
 		jen.List(
 			jen.Id("resp"),
@@ -1157,9 +1243,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEditM
 		Dot(repositoryMethodId).
 		Call(
 			jen.List(
-				jen.Id("ctx"),
-				jen.Id("id"),
-				jen.Id(jsonId),
+				callList...,
 			),
 		),
 	)
@@ -1222,7 +1306,11 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerEditM
 		).
 		Dot("Encode").
 		Call(
-			jen.Id("resp"),
+			jen.Op("&").
+			Id(jsonId).
+			Values(
+				jen.Id("resp"),
+			),
 		),
 	)
 
@@ -1236,7 +1324,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 	var block []jen.Code
 	
 	// ID
-	jsonId, err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	jsonId, err := controllerGenerator.formatter.OutputDomainEntityLocalStructId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -1253,6 +1341,11 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 		return block, err
 	}
 
+	// Interface ID
+	interfaceId , err := controllerGenerator.formatter.OutputDomainEntityInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
 
 	interactorPackageName , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorPackageName()
 	if err != nil {
@@ -1276,7 +1369,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 	)
 
 	block = append(block,
-		jen.Id(jsonId).
+		jen.Id("req").
 		Op(":=").
 		Op("&").
 		Id(jsonId).
@@ -1299,7 +1392,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 		).
 		Dot("Decode").
 		Call(
-			jen.Id(jsonId),
+			jen.Id("req"),
 		),
 	)
 
@@ -1333,6 +1426,20 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 	// Line
 	block = append(block, jen.Line())
 
+	var callList []jen.Code
+	if entity.Interface {
+		callList = append(callList, 
+			jen.Id("ctx"),
+			jen.Id("req"),
+		)
+	} else {
+		callList = append(callList, 
+			jen.Id("ctx"),
+			jen.Id("req").
+			Dot(interfaceId),
+		)
+	}
+
 	block = append(block,
 		jen.List(
 			jen.Id("resp"),
@@ -1344,8 +1451,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 		Dot(repositoryMethodId).
 		Call(
 			jen.List(
-				jen.Id("ctx"),
-				jen.Id(jsonId),
+				callList...,
 			),
 		),
 	)
@@ -1408,7 +1514,11 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 		).
 		Dot("Encode").
 		Call(
-			jen.Id("resp"),
+			jen.Op("&").
+			Id(jsonId).
+			Values(
+				jen.Id("resp"),
+			),
 		),
 	)
 
@@ -1421,7 +1531,13 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerAddMe
 func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerDeleteMethodBlock(method model.Method, entity model.Entity) ([]jen.Code, error){
 	
 	var block []jen.Code
-	
+
+	// Interface ID
+	interfaceId , err := controllerGenerator.formatter.OutputDomainEntityInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
 	// Interface ID
 	id , err := controllerGenerator.formatter.OutputDomainEntityInterfaceConstructorFunctionId(entity)
 	if err != nil {
@@ -1435,7 +1551,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerDelet
 	}
 
 	// ID
-	jsonId, err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	jsonId, err := controllerGenerator.formatter.OutputDomainEntityLocalStructId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -1463,7 +1579,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerDelet
 	)
 
 	block = append(block,
-		jen.Id(jsonId).
+		jen.Id("req").
 		Op(":=").
 		Op("&").
 		Id(jsonId).
@@ -1523,7 +1639,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerDelet
 			jen.Err(),
 		).
 		Op(":=").
-		Id(jsonId).
+		Id("req").
 		Dot("ToPrimary").
 		Params(
 			jen.Id("ctx"),
@@ -1561,6 +1677,22 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerDelet
 	// Line
 	block = append(block, jen.Line())
 
+	var callList []jen.Code
+	if entity.Interface {
+		callList = append(callList, 
+			jen.Id("ctx"),
+			jen.Id("id"),
+			jen.Id("req"),
+		)
+	} else {
+		callList = append(callList, 
+			jen.Id("ctx"),
+			jen.Id("id"),
+			jen.Id("req").
+			Dot(interfaceId),
+		)
+	}
+
 	block = append(block, 
 		jen.List(
 			jen.Id("_"),
@@ -1572,9 +1704,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerDelet
 		Dot(repositoryMethodId).
 		Call(
 			jen.List(
-				jen.Id("ctx"),
-				jen.Id("id"),
-				jen.Id(jsonId),
+				callList...,
 			),
 		),
 	)
@@ -1648,7 +1778,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerMarsh
 	var statement jen.Statement
 
 	// Struct ID
-	structId , err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	structId , err := controllerGenerator.formatter.OutputDomainEntityLocalStructId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -1694,7 +1824,11 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerMarsh
 		}
 		
 		jsonStruct = append(jsonStruct, code)
-		jsonStructDict[jen.Id(getterId)] = jen.Id("m").Dot(getterId).Call()
+		if entity.Interface {
+			jsonStructDict[jen.Id(getterId)] = jen.Id("m").Dot(getterId).Call()
+		} else {
+			jsonStructDict[jen.Id(getterId)] = jen.Id("m").Dot(getterId)
+		}
 		
 	}
 
@@ -1726,7 +1860,7 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerUnmar
 	var statement jen.Statement
 
 	// Struct ID
-	structId , err := controllerGenerator.formatter.OutputDomainEntityStructId(entity)
+	structId , err := controllerGenerator.formatter.OutputDomainEntityLocalStructId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -1781,13 +1915,25 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerUnmar
 
 		jsonStruct = append(jsonStruct, code)
 
-		jsonSetterFunctions = append(jsonSetterFunctions, jen.Id("m").
-			Dot(setterId).
-			Call(
-				jen.Id("jsonStruct").
+		if entity.Interface {
+			jsonSetterFunctions = append(jsonSetterFunctions, 
+				jen.Id("m").
+				Dot(setterId).
+				Call(
+					jen.Id("jsonStruct").
+					Dot(getterId),
+				),
+			)
+		} else {
+			jsonSetterFunctions = append(jsonSetterFunctions, 
+				jen.Id("m").
+				Dot(getterId).
+				Op("=").
+				Id("jsonStruct").
 				Dot(getterId),
-			),
-		)
+			)
+		}	
+		
 		
 	}
 

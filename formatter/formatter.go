@@ -57,6 +57,7 @@ type Formatter interface{
 
 	OutputScaffoldDomainEntityPackageName() (string, error)
 	OutputDomainEntityStructId(entity model.Entity) (string, error)
+	OutputDomainEntityLocalStructId(entity model.Entity) (string, error)
 	OutputDomainEntitySliceStructId(entity model.Entity) (string, error)
 	OutputDomainEntityInterfaceId(entity model.Entity) (string, error)
 	OutputDomainEntitySliceInterfaceId(entity model.Entity) (string, error)
@@ -389,7 +390,21 @@ func (formatter *formatter) OutputScaffoldDomainEntityPackageName() (string, err
 }
 
 func (formatter *formatter) OutputDomainEntityStructId(entity model.Entity) (string, error) {
-	return strcase.ToLowerCamel(strings.Join([]string{entity.Name}, formatter.config.StringSeparator)), nil
+
+	var resp string
+	if entity.Interface {
+		resp = strcase.ToLowerCamel(strings.Join([]string{entity.Name}, formatter.config.StringSeparator))
+	} else {
+		resp =strcase.ToCamel(strings.Join([]string{entity.Name}, formatter.config.StringSeparator))
+	}
+	return resp, nil
+
+}
+
+func (formatter *formatter) OutputDomainEntityLocalStructId(entity model.Entity) (string, error) {
+
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, "local"}, formatter.config.StringSeparator)), nil
+
 }
 
 func (formatter *formatter) OutputDomainEntitySliceStructId(entity model.Entity) (string, error) {
@@ -457,7 +472,13 @@ func (formatter *formatter) OutputScaffoldDomainEntityElementsId() (string, erro
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntityFieldId(field model.Field) (string, error) {
-	return strcase.ToLowerCamel(field.Name), nil
+	var resp string
+	if field.Private {
+		resp = strcase.ToLowerCamel(field.Name)
+	} else {
+		resp = strcase.ToCamel(field.Name)
+	}
+	return resp, nil
 }
 
 func (formatter *formatter) OutputDomainEntityInterfaceConstructorFunctionId(entity model.Entity) (string, error) {

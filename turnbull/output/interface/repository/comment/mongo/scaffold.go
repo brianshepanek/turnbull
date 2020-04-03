@@ -13,11 +13,11 @@ type mongoCommentRepositoryStruct struct {
 	db         string
 	collection string
 }
-type comment struct {
-	entity.Comment
+type commentLocal struct {
+	*entity.Comment
 }
 
-func (m *comment) MarshalBSON() ([]byte, error) {
+func (m *commentLocal) MarshalBSON() ([]byte, error) {
 	type bsonStructPrivate struct {
 		Id       *int64     `bson:"id"`
 		PostId   *int64     `bson:"post_id"`
@@ -27,17 +27,17 @@ func (m *comment) MarshalBSON() ([]byte, error) {
 		Modified *time.Time `bson:"modified"`
 	}
 	bsonStruct := bsonStructPrivate{
-		Body:     m.Body(),
-		Created:  m.Created(),
-		Id:       m.Id(),
-		Modified: m.Modified(),
-		PostId:   m.PostId(),
-		Title:    m.Title(),
+		Body:     m.Body,
+		Created:  m.Created,
+		Id:       m.Id,
+		Modified: m.Modified,
+		PostId:   m.PostId,
+		Title:    m.Title,
 	}
 	return bson.Marshal(&bsonStruct)
 }
 
-func (m *comment) UnmarshalBSON(data []byte) error {
+func (m *commentLocal) UnmarshalBSON(data []byte) error {
 	type bsonStructPrivate struct {
 		Id       *int64     `bson:"id"`
 		PostId   *int64     `bson:"post_id"`
@@ -51,16 +51,16 @@ func (m *comment) UnmarshalBSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	m.SetId(bsonStruct.Id)
-	m.SetPostId(bsonStruct.PostId)
-	m.SetTitle(bsonStruct.Title)
-	m.SetBody(bsonStruct.Body)
-	m.SetCreated(bsonStruct.Created)
-	m.SetModified(bsonStruct.Modified)
+	m.Id = bsonStruct.Id
+	m.PostId = bsonStruct.PostId
+	m.Title = bsonStruct.Title
+	m.Body = bsonStruct.Body
+	m.Created = bsonStruct.Created
+	m.Modified = bsonStruct.Modified
 	return nil
 }
 
-func (r *mongoCommentRepositoryStruct) Browse(ctx context.Context, req entity.Comments) error {
+func (r *mongoCommentRepositoryStruct) Browse(ctx context.Context, req *[]entity.Comment) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -70,27 +70,27 @@ func (r *mongoCommentRepositoryStruct) Browse(ctx context.Context, req entity.Co
 	}
 
 	for cursor.Next(ctx) {
-		elem := &comment{entity.NewComment()}
+		elem := &commentLocal{entity.NewComment()}
 		err := cursor.Decode(&elem)
 		if err != nil {
 			return err
 		}
-		req.Append(elem)
+		*req = append(*req, *elem.Comment)
 	}
 
 	return nil
 
 }
 
-func (r *mongoCommentRepositoryStruct) Read(ctx context.Context, id int64, req entity.Comment) error {
+func (r *mongoCommentRepositoryStruct) Read(ctx context.Context, id int64, req *entity.Comment) error {
 
-	comment := &comment{req}
+	commentLocal := &commentLocal{req}
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
 	filter := bson.M{"id": id}
 
-	err := collection.FindOne(ctx, filter).Decode(comment)
+	err := collection.FindOne(ctx, filter).Decode(commentLocal)
 	if err != nil {
 		return err
 	}
@@ -99,10 +99,10 @@ func (r *mongoCommentRepositoryStruct) Read(ctx context.Context, id int64, req e
 
 }
 
-func (r *mongoCommentRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Comment) error {
+func (r *mongoCommentRepositoryStruct) Edit(ctx context.Context, id int64, req *entity.Comment) error {
 
-	current := &comment{entity.NewComment()}
-	comment := &comment{req}
+	current := &commentLocal{entity.NewComment()}
+	commentLocal := &commentLocal{req}
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -113,28 +113,28 @@ func (r *mongoCommentRepositoryStruct) Edit(ctx context.Context, id int64, req e
 		return err
 	}
 
-	if comment.Id() != nil {
-		current.SetId(comment.Id())
+	if commentLocal.Id != nil {
+		current.Id = commentLocal.Id
 	}
 
-	if comment.PostId() != nil {
-		current.SetPostId(comment.PostId())
+	if commentLocal.PostId != nil {
+		current.PostId = commentLocal.PostId
 	}
 
-	if comment.Title() != nil {
-		current.SetTitle(comment.Title())
+	if commentLocal.Title != nil {
+		current.Title = commentLocal.Title
 	}
 
-	if comment.Body() != nil {
-		current.SetBody(comment.Body())
+	if commentLocal.Body != nil {
+		current.Body = commentLocal.Body
 	}
 
-	if comment.Created() != nil {
-		current.SetCreated(comment.Created())
+	if commentLocal.Created != nil {
+		current.Created = commentLocal.Created
 	}
 
-	if comment.Modified() != nil {
-		current.SetModified(comment.Modified())
+	if commentLocal.Modified != nil {
+		current.Modified = commentLocal.Modified
 	}
 
 	err = collection.FindOneAndReplace(ctx, filter, current).Decode(&current)
@@ -146,13 +146,13 @@ func (r *mongoCommentRepositoryStruct) Edit(ctx context.Context, id int64, req e
 
 }
 
-func (r *mongoCommentRepositoryStruct) Add(ctx context.Context, req entity.Comment) error {
+func (r *mongoCommentRepositoryStruct) Add(ctx context.Context, req *entity.Comment) error {
 
-	comment := &comment{req}
+	commentLocal := &commentLocal{req}
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
-	_, err := collection.InsertOne(ctx, comment)
+	_, err := collection.InsertOne(ctx, commentLocal)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (r *mongoCommentRepositoryStruct) Add(ctx context.Context, req entity.Comme
 
 }
 
-func (r *mongoCommentRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Comment) error {
+func (r *mongoCommentRepositoryStruct) Delete(ctx context.Context, id int64, req *entity.Comment) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
