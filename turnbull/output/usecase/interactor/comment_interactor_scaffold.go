@@ -12,14 +12,14 @@ type commentInteractorStruct struct {
 	presenter  presenter.CommentPresenter
 }
 type commentInteractorInterface interface {
-	Browse(ctx context.Context, req *[]entity.Comment) (*[]entity.Comment, error)
-	Read(ctx context.Context, id int64, req *entity.Comment) (*entity.Comment, error)
-	Edit(ctx context.Context, id int64, req *entity.Comment) (*entity.Comment, error)
-	Add(ctx context.Context, req *entity.Comment) (*entity.Comment, error)
-	Delete(ctx context.Context, id int64, req *entity.Comment) (*entity.Comment, error)
+	Browse(ctx context.Context, req entity.Comments) (entity.Comments, error)
+	Read(ctx context.Context, id int64, req entity.Comment) (entity.Comment, error)
+	Edit(ctx context.Context, id int64, req entity.Comment) (entity.Comment, error)
+	Add(ctx context.Context, req entity.Comment) (entity.Comment, error)
+	Delete(ctx context.Context, id int64, req entity.Comment) (entity.Comment, error)
 }
 
-func (i *commentInteractorStruct) Browse(ctx context.Context, req *[]entity.Comment) (*[]entity.Comment, error) {
+func (i *commentInteractorStruct) Browse(ctx context.Context, req entity.Comments) (entity.Comments, error) {
 	var err error
 	err = i.repository.Browse(ctx, req)
 	if err != nil {
@@ -27,7 +27,7 @@ func (i *commentInteractorStruct) Browse(ctx context.Context, req *[]entity.Comm
 	}
 	return i.presenter.Browse(ctx, req)
 }
-func (i *commentInteractorStruct) Read(ctx context.Context, id int64, req *entity.Comment) (*entity.Comment, error) {
+func (i *commentInteractorStruct) Read(ctx context.Context, id int64, req entity.Comment) (entity.Comment, error) {
 	var err error
 	err = req.BeforeRead(ctx)
 	if err != nil {
@@ -39,7 +39,7 @@ func (i *commentInteractorStruct) Read(ctx context.Context, id int64, req *entit
 	}
 	return i.presenter.Read(ctx, req)
 }
-func (i *commentInteractorStruct) Edit(ctx context.Context, id int64, req *entity.Comment) (*entity.Comment, error) {
+func (i *commentInteractorStruct) Edit(ctx context.Context, id int64, req entity.Comment) (entity.Comment, error) {
 	var err error
 	err = i.repository.Edit(ctx, id, req)
 	if err != nil {
@@ -47,7 +47,7 @@ func (i *commentInteractorStruct) Edit(ctx context.Context, id int64, req *entit
 	}
 	return i.presenter.Edit(ctx, req)
 }
-func (i *commentInteractorStruct) Add(ctx context.Context, req *entity.Comment) (*entity.Comment, error) {
+func (i *commentInteractorStruct) Add(ctx context.Context, req entity.Comment) (entity.Comment, error) {
 	var err error
 	err = req.BeforeAdd(ctx)
 	if err != nil {
@@ -59,7 +59,7 @@ func (i *commentInteractorStruct) Add(ctx context.Context, req *entity.Comment) 
 	}
 	return i.presenter.Add(ctx, req)
 }
-func (i *commentInteractorStruct) Delete(ctx context.Context, id int64, req *entity.Comment) (*entity.Comment, error) {
+func (i *commentInteractorStruct) Delete(ctx context.Context, id int64, req entity.Comment) (entity.Comment, error) {
 	var err error
 	err = i.repository.Delete(ctx, id, req)
 	if err != nil {

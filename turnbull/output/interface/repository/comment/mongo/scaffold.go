@@ -14,7 +14,7 @@ type mongoCommentRepositoryStruct struct {
 	collection string
 }
 type commentLocal struct {
-	*entity.Comment
+	entity.Comment
 }
 
 func (m *commentLocal) MarshalBSON() ([]byte, error) {
@@ -27,12 +27,12 @@ func (m *commentLocal) MarshalBSON() ([]byte, error) {
 		Modified *time.Time `bson:"modified"`
 	}
 	bsonStruct := bsonStructPrivate{
-		Body:     m.Body,
-		Created:  m.Created,
-		Id:       m.Id,
-		Modified: m.Modified,
-		PostId:   m.PostId,
-		Title:    m.Title,
+		Body:     m.Body(),
+		Created:  m.Created(),
+		Id:       m.Id(),
+		Modified: m.Modified(),
+		PostId:   m.PostId(),
+		Title:    m.Title(),
 	}
 	return bson.Marshal(&bsonStruct)
 }
@@ -51,16 +51,16 @@ func (m *commentLocal) UnmarshalBSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	m.Id = bsonStruct.Id
-	m.PostId = bsonStruct.PostId
-	m.Title = bsonStruct.Title
-	m.Body = bsonStruct.Body
-	m.Created = bsonStruct.Created
-	m.Modified = bsonStruct.Modified
+	m.SetId(bsonStruct.Id)
+	m.SetPostId(bsonStruct.PostId)
+	m.SetTitle(bsonStruct.Title)
+	m.SetBody(bsonStruct.Body)
+	m.SetCreated(bsonStruct.Created)
+	m.SetModified(bsonStruct.Modified)
 	return nil
 }
 
-func (r *mongoCommentRepositoryStruct) Browse(ctx context.Context, req *[]entity.Comment) error {
+func (r *mongoCommentRepositoryStruct) Browse(ctx context.Context, req entity.Comments) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -75,14 +75,14 @@ func (r *mongoCommentRepositoryStruct) Browse(ctx context.Context, req *[]entity
 		if err != nil {
 			return err
 		}
-		*req = append(*req, *elem.Comment)
+		req.Append(elem)
 	}
 
 	return nil
 
 }
 
-func (r *mongoCommentRepositoryStruct) Read(ctx context.Context, id int64, req *entity.Comment) error {
+func (r *mongoCommentRepositoryStruct) Read(ctx context.Context, id int64, req entity.Comment) error {
 
 	commentLocal := &commentLocal{req}
 
@@ -99,7 +99,7 @@ func (r *mongoCommentRepositoryStruct) Read(ctx context.Context, id int64, req *
 
 }
 
-func (r *mongoCommentRepositoryStruct) Edit(ctx context.Context, id int64, req *entity.Comment) error {
+func (r *mongoCommentRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Comment) error {
 
 	current := &commentLocal{entity.NewComment()}
 	commentLocal := &commentLocal{req}
@@ -113,28 +113,28 @@ func (r *mongoCommentRepositoryStruct) Edit(ctx context.Context, id int64, req *
 		return err
 	}
 
-	if commentLocal.Id != nil {
-		current.Id = commentLocal.Id
+	if commentLocal.Id() != nil {
+		current.SetId(commentLocal.Id())
 	}
 
-	if commentLocal.PostId != nil {
-		current.PostId = commentLocal.PostId
+	if commentLocal.PostId() != nil {
+		current.SetPostId(commentLocal.PostId())
 	}
 
-	if commentLocal.Title != nil {
-		current.Title = commentLocal.Title
+	if commentLocal.Title() != nil {
+		current.SetTitle(commentLocal.Title())
 	}
 
-	if commentLocal.Body != nil {
-		current.Body = commentLocal.Body
+	if commentLocal.Body() != nil {
+		current.SetBody(commentLocal.Body())
 	}
 
-	if commentLocal.Created != nil {
-		current.Created = commentLocal.Created
+	if commentLocal.Created() != nil {
+		current.SetCreated(commentLocal.Created())
 	}
 
-	if commentLocal.Modified != nil {
-		current.Modified = commentLocal.Modified
+	if commentLocal.Modified() != nil {
+		current.SetModified(commentLocal.Modified())
 	}
 
 	err = collection.FindOneAndReplace(ctx, filter, current).Decode(&current)
@@ -146,7 +146,7 @@ func (r *mongoCommentRepositoryStruct) Edit(ctx context.Context, id int64, req *
 
 }
 
-func (r *mongoCommentRepositoryStruct) Add(ctx context.Context, req *entity.Comment) error {
+func (r *mongoCommentRepositoryStruct) Add(ctx context.Context, req entity.Comment) error {
 
 	commentLocal := &commentLocal{req}
 
@@ -161,7 +161,7 @@ func (r *mongoCommentRepositoryStruct) Add(ctx context.Context, req *entity.Comm
 
 }
 
-func (r *mongoCommentRepositoryStruct) Delete(ctx context.Context, id int64, req *entity.Comment) error {
+func (r *mongoCommentRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Comment) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 

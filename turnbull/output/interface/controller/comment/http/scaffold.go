@@ -21,7 +21,7 @@ type httpCommentControllerInterface interface {
 	Delete(w http.ResponseWriter, r *http.Request)
 }
 type commentLocal struct {
-	*entity.Comment
+	entity.Comment
 }
 
 func (m *commentLocal) MarshalJSON() ([]byte, error) {
@@ -34,12 +34,12 @@ func (m *commentLocal) MarshalJSON() ([]byte, error) {
 		Modified *time.Time `json:"modified,omitempty"`
 	}
 	jsonStruct := jsonStructPrivate{
-		Body:     m.Body,
-		Created:  m.Created,
-		Id:       m.Id,
-		Modified: m.Modified,
-		PostId:   m.PostId,
-		Title:    m.Title,
+		Body:     m.Body(),
+		Created:  m.Created(),
+		Id:       m.Id(),
+		Modified: m.Modified(),
+		PostId:   m.PostId(),
+		Title:    m.Title(),
 	}
 	return json.Marshal(&jsonStruct)
 }
@@ -58,12 +58,12 @@ func (m *commentLocal) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	m.Id = jsonStruct.Id
-	m.PostId = jsonStruct.PostId
-	m.Title = jsonStruct.Title
-	m.Body = jsonStruct.Body
-	m.Created = jsonStruct.Created
-	m.Modified = jsonStruct.Modified
+	m.SetId(jsonStruct.Id)
+	m.SetPostId(jsonStruct.PostId)
+	m.SetTitle(jsonStruct.Title)
+	m.SetBody(jsonStruct.Body)
+	m.SetCreated(jsonStruct.Created)
+	m.SetModified(jsonStruct.Modified)
 	return nil
 }
 
@@ -80,9 +80,8 @@ func (c *httpCommentControllerStruct) Browse(w http.ResponseWriter, r *http.Requ
 	}
 
 	var comments []*commentLocal
-	for _, elem := range *resp {
-		newElem := elem
-		comments = append(comments, &commentLocal{&newElem})
+	for _, elem := range resp.Elements() {
+		comments = append(comments, &commentLocal{elem})
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -109,7 +108,7 @@ func (c *httpCommentControllerStruct) Read(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	resp, err := c.interactor.Read(ctx, id, req.Comment)
+	resp, err := c.interactor.Read(ctx, id, req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -147,7 +146,7 @@ func (c *httpCommentControllerStruct) Edit(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	resp, err := c.interactor.Edit(ctx, id, req.Comment)
+	resp, err := c.interactor.Edit(ctx, id, req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -172,7 +171,7 @@ func (c *httpCommentControllerStruct) Add(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	resp, err := c.interactor.Add(ctx, req.Comment)
+	resp, err := c.interactor.Add(ctx, req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -203,7 +202,7 @@ func (c *httpCommentControllerStruct) Delete(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	_, err = c.interactor.Delete(ctx, id, req.Comment)
+	_, err = c.interactor.Delete(ctx, id, req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())

@@ -102,33 +102,40 @@ var (
 		},	
 		model.Entity{
 			Name : "comment",
+			Interface : true,
 			Fields : []model.Field{
 				model.Field{
 					Name : "id",
 					Type : "int64",
 					Primary : true,
+					Private : true,
 				},
 				model.Field{
 					Name : "post_id",
 					Type : "int64",
+					Private : true,
 				},
 				model.Field{
 					Name : "title",
 					Type : "string",
+					Private : true,
 				},
 				model.Field{
 					Name : "body",
 					Type : "string",
+					Private : true,
 				},
 				model.Field{
 					Name : "created",
 					Package : "time",
 					Type : "Time",
+					Private : true,
 				},
 				model.Field{
 					Name : "modified",
 					Package : "time",
 					Type : "Time",
+					Private : true,
 				},
 			},
 			Methods : []model.Method {

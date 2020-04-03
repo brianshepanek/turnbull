@@ -1,13 +1,24 @@
 package entity
 
-type Comment struct {
+type comment struct {
 	commentStruct
 }
 
-func NewComment() *Comment {
-	return &Comment{}
+type comments struct {
+	commentsStruct
 }
 
-func NewComments() *[]Comment {
-	return &[]Comment{}
+type Comment interface {
+	commentInterface
+}
+type Comments interface {
+	commentsInterface
+}
+
+func NewComment() Comment {
+	return &comment{}
+}
+
+func NewComments() Comments {
+	return &comments{}
 }
