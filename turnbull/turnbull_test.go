@@ -171,12 +171,12 @@ var (
 				},
 			},
 			Repositories : []model.Repository {
-				model.Repository {
-					Type : "mongo",
-				},
 				// model.Repository {
-				// 	Type : "mysql",
+				// 	Type : "mongo",
 				// },
+				model.Repository {
+					Type : "mysql",
+				},
 			},
 		},	
 	}
