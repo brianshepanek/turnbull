@@ -88,6 +88,18 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 	return f, nil
 }	
 
+func (repositoryGenerator *repositoryGenerator) EntityFile(entity model.Entity) (*jen.File, error){
+
+	// File
+	packageName , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+
+	return f , nil
+}
+
 func (repositoryGenerator *repositoryGenerator) interfaceRepositoryStruct(entity model.Entity) (jen.Statement, error){
 
 	// Vars

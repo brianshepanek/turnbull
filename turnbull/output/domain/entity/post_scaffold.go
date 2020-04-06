@@ -7,6 +7,7 @@ import (
 
 type postStruct struct {
 	Id       *int64
+	UserId   *int64
 	Title    *string
 	Subtitle *string
 	Views    *int

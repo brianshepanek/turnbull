@@ -15,6 +15,7 @@ type mysqlCommentRepositoryStruct struct {
 type comment struct {
 	Id       sql.NullInt64
 	PostId   sql.NullInt64
+	UserId   sql.NullInt64
 	Title    sql.NullString
 	Body     sql.NullString
 	Created  sql.NullTime
@@ -24,7 +25,7 @@ type comment struct {
 func (r *mysqlCommentRepositoryStruct) Browse(ctx context.Context, req entity.Comments) error {
 
 	var sqlStatement string
-	sqlStatement += "SELECT id, post_id, title, body, created, modified FROM " + r.table
+	sqlStatement += "SELECT id, post_id, user_id, title, body, created, modified FROM " + r.table
 
 	stmt, err := r.db.Prepare(sqlStatement)
 	if err != nil {
@@ -42,7 +43,7 @@ func (r *mysqlCommentRepositoryStruct) Browse(ctx context.Context, req entity.Co
 
 		var res comment
 
-		err := rows.Scan(&res.Id, &res.PostId, &res.Title, &res.Body, &res.Created, &res.Modified)
+		err := rows.Scan(&res.Id, &res.PostId, &res.UserId, &res.Title, &res.Body, &res.Created, &res.Modified)
 		if err != nil {
 			return err
 		}
@@ -65,6 +66,15 @@ func (r *mysqlCommentRepositoryStruct) Browse(ctx context.Context, req entity.Co
 			}
 			val := value.(int64)
 			elem.SetPostId(&val)
+		}
+
+		if res.UserId.Valid {
+			value, err := res.UserId.Value()
+			if err != nil {
+				return err
+			}
+			val := value.(int64)
+			elem.SetUserId(&val)
 		}
 
 		if res.Title.Valid {
@@ -114,7 +124,7 @@ func (r *mysqlCommentRepositoryStruct) Browse(ctx context.Context, req entity.Co
 func (r *mysqlCommentRepositoryStruct) Read(ctx context.Context, id int64, req entity.Comment) error {
 
 	var sqlStatement string
-	sqlStatement += "SELECT id, post_id, title, body, created, modified FROM " + r.table + " WHERE id = ?"
+	sqlStatement += "SELECT id, post_id, user_id, title, body, created, modified FROM " + r.table + " WHERE id = ?"
 
 	stmt, err := r.db.Prepare(sqlStatement)
 	if err != nil {
@@ -129,7 +139,7 @@ func (r *mysqlCommentRepositoryStruct) Read(ctx context.Context, id int64, req e
 
 	var res comment
 
-	err = row.Scan(&res.Id, &res.PostId, &res.Title, &res.Body, &res.Created, &res.Modified)
+	err = row.Scan(&res.Id, &res.PostId, &res.UserId, &res.Title, &res.Body, &res.Created, &res.Modified)
 	if err != nil {
 		return err
 	}
@@ -150,6 +160,15 @@ func (r *mysqlCommentRepositoryStruct) Read(ctx context.Context, id int64, req e
 		}
 		val := value.(int64)
 		req.SetPostId(&val)
+	}
+
+	if res.UserId.Valid {
+		value, err := res.UserId.Value()
+		if err != nil {
+			return err
+		}
+		val := value.(int64)
+		req.SetUserId(&val)
 	}
 
 	if res.Title.Valid {
@@ -204,6 +223,11 @@ func (r *mysqlCommentRepositoryStruct) Edit(ctx context.Context, id int64, req e
 	if req.PostId() != nil {
 		set = append(set, "post_id = ?")
 		vals = append(vals, req.PostId())
+	}
+
+	if req.UserId() != nil {
+		set = append(set, "user_id = ?")
+		vals = append(vals, req.UserId())
 	}
 
 	if req.Title() != nil {
@@ -262,6 +286,12 @@ func (r *mysqlCommentRepositoryStruct) Add(ctx context.Context, req entity.Comme
 		set = append(set, "post_id")
 		vars = append(vars, "?")
 		vals = append(vals, req.PostId())
+	}
+
+	if req.UserId() != nil {
+		set = append(set, "user_id")
+		vars = append(vars, "?")
+		vals = append(vals, req.UserId())
 	}
 
 	if req.Title() != nil {

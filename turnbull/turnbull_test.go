@@ -32,6 +32,10 @@ var (
 					Primary : true,
 				},
 				model.Field{
+					Name : "user_id",
+					Type : "int64",
+				},
+				model.Field{
 					Name : "title",
 					Type : "string",
 				},
@@ -112,6 +116,11 @@ var (
 				},
 				model.Field{
 					Name : "post_id",
+					Type : "int64",
+					Private : true,
+				},
+				model.Field{
+					Name : "user_id",
 					Type : "int64",
 					Private : true,
 				},
@@ -372,6 +381,26 @@ func TestBuildScaffoldInterfaceRepository(t *testing.T){
 	}	
 }
 
+// Test Build Interface Repository Entity
+func TestBuildInterfaceRepositoryEntity(t *testing.T){
+
+	// Build
+	for _, testEntity := range testEntities {
+
+		for _, repository := range testEntity.Repositories {
+
+			err := testTurnbull.buildEntityInterfaceRepository(repository.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildEntityInterfaceRepository() failed with error %v`, err)
+			}
+
+		}
+
+	}	
+}
+
 // Test Build Interface Presenter
 func TestBuildInterfacePresenter(t *testing.T){
 
@@ -420,6 +449,20 @@ func TestBuildScaffoldInterfaceController(t *testing.T){
 	// Build
 	for _, testEntity := range testEntities {
 		err := testTurnbull.buildScaffoldInterfaceController("http", testEntity)
+
+		// Return
+		if err != nil {
+			t.Errorf(`buildScaffoldInterfaceController() failed with error %v`, err)
+		}
+	}	
+}
+
+// Test Build Interface Controller Entity
+func TestBuildInterfaceControllerEntity(t *testing.T){
+
+	// Build
+	for _, testEntity := range testEntities {
+		err := testTurnbull.buildInterfaceControllerEntity("http", testEntity)
 
 		// Return
 		if err != nil {

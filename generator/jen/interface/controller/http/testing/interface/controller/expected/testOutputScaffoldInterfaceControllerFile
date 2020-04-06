@@ -20,36 +20,6 @@ type httpFooControllerInterface interface {
 	Add(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 }
-type fooLocal struct {
-	*entity.Foo
-}
-
-func (m *fooLocal) MarshalJSON() ([]byte, error) {
-	type jsonStructPrivate struct {
-		String *string `json:"string,omitempty"`
-		Int    *int    `json:"int,omitempty"`
-	}
-	jsonStruct := jsonStructPrivate{
-		Int:    m.Int,
-		String: m.String,
-	}
-	return json.Marshal(&jsonStruct)
-}
-
-func (m *fooLocal) UnmarshalJSON(data []byte) error {
-	type jsonStructPrivate struct {
-		String *string `json:"string,omitempty"`
-		Int    *int    `json:"int,omitempty"`
-	}
-	jsonStruct := jsonStructPrivate{}
-	err := json.Unmarshal(data, &jsonStruct)
-	if err != nil {
-		return err
-	}
-	m.String = jsonStruct.String
-	m.Int = jsonStruct.Int
-	return nil
-}
 
 func (c *httpFooControllerStruct) Count(w http.ResponseWriter, r *http.Request) {}
 
@@ -65,22 +35,16 @@ func (c *httpFooControllerStruct) Browse(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var foos []*fooLocal
-	for _, elem := range *resp {
-		newElem := elem
-		foos = append(foos, &fooLocal{&newElem})
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(foos)
+	json.NewEncoder(w).Encode(resp)
 
 }
 
 func (c *httpFooControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := &fooLocal{entity.NewFoo()}
+	req := entity.NewFoo()
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -95,7 +59,7 @@ func (c *httpFooControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := c.interactor.Read(ctx, id, req.Foo)
+	resp, err := c.interactor.Read(ctx, id, req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -104,14 +68,14 @@ func (c *httpFooControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&fooLocal{resp})
+	json.NewEncoder(w).Encode(&resp)
 
 }
 
 func (c *httpFooControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := &fooLocal{entity.NewFoo()}
+	req := entity.NewFoo()
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -133,7 +97,7 @@ func (c *httpFooControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := c.interactor.Edit(ctx, id, req.Foo)
+	resp, err := c.interactor.Edit(ctx, id, req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -142,14 +106,14 @@ func (c *httpFooControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&fooLocal{resp})
+	json.NewEncoder(w).Encode(&resp)
 
 }
 
 func (c *httpFooControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := &fooLocal{entity.NewFoo()}
+	req := entity.NewFoo()
 
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
@@ -158,7 +122,7 @@ func (c *httpFooControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := c.interactor.Add(ctx, req.Foo)
+	resp, err := c.interactor.Add(ctx, req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())
@@ -167,14 +131,14 @@ func (c *httpFooControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&fooLocal{resp})
+	json.NewEncoder(w).Encode(&resp)
 
 }
 
 func (c *httpFooControllerStruct) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := &fooLocal{entity.NewFoo()}
+	req := entity.NewFoo()
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -189,7 +153,7 @@ func (c *httpFooControllerStruct) Delete(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	_, err = c.interactor.Delete(ctx, id, req.Foo)
+	_, err = c.interactor.Delete(ctx, id, req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(err.Error())

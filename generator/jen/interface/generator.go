@@ -9,6 +9,7 @@ import(
 type RepositoryGenerator interface{
 	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
+	EntityFile(entity model.Entity) (*jen.File, error)
 }
 
 type PresenterGenerator interface{
@@ -19,4 +20,5 @@ type PresenterGenerator interface{
 type ControllerGenerator interface{
 	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
+	EntityFile(entity model.Entity) (*jen.File, error)
 }

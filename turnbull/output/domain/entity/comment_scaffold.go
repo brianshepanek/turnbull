@@ -8,6 +8,7 @@ import (
 type commentStruct struct {
 	id       *int64
 	postId   *int64
+	userId   *int64
 	title    *string
 	body     *string
 	created  *time.Time
@@ -19,12 +20,14 @@ type commentsStruct []commentInterface
 type commentInterface interface {
 	Id() *int64
 	PostId() *int64
+	UserId() *int64
 	Title() *string
 	Body() *string
 	Created() *time.Time
 	Modified() *time.Time
 	SetId(id *int64)
 	SetPostId(postId *int64)
+	SetUserId(userId *int64)
 	SetTitle(title *string)
 	SetBody(body *string)
 	SetCreated(created *time.Time)
@@ -62,6 +65,10 @@ func (m *commentStruct) PostId() *int64 {
 	return m.postId
 }
 
+func (m *commentStruct) UserId() *int64 {
+	return m.userId
+}
+
 func (m *commentStruct) Title() *string {
 	return m.title
 }
@@ -86,6 +93,10 @@ func (m *commentStruct) SetPostId(postId *int64) {
 	m.postId = postId
 }
 
+func (m *commentStruct) SetUserId(userId *int64) {
+	m.userId = userId
+}
+
 func (m *commentStruct) SetTitle(title *string) {
 	m.title = title
 }
@@ -105,6 +116,7 @@ func (m *commentStruct) SetModified(modified *time.Time) {
 func (m *commentStruct) SetAll(req commentInterface) {
 	m.SetId(req.Id())
 	m.SetPostId(req.PostId())
+	m.SetUserId(req.UserId())
 	m.SetTitle(req.Title())
 	m.SetBody(req.Body())
 	m.SetCreated(req.Created())

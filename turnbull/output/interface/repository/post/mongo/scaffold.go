@@ -5,63 +5,12 @@ import (
 	entity "github.com/brianshepanek/turnbull/turnbull/output/domain/entity"
 	bson "go.mongodb.org/mongo-driver/bson"
 	mongo "go.mongodb.org/mongo-driver/mongo"
-	"time"
 )
 
 type mongoPostRepositoryStruct struct {
 	client     *mongo.Client
 	db         string
 	collection string
-}
-type postLocal struct {
-	*entity.Post
-}
-
-func (m *postLocal) MarshalBSON() ([]byte, error) {
-	type bsonStructPrivate struct {
-		Id       *int64     `bson:"id"`
-		Title    *string    `bson:"title"`
-		Subtitle *string    `bson:"subtitle"`
-		Views    *int       `bson:"views"`
-		Tags     *[]string  `bson:"tags"`
-		Created  *time.Time `bson:"created"`
-		Modified *time.Time `bson:"modified"`
-	}
-	bsonStruct := bsonStructPrivate{
-		Created:  m.Created,
-		Id:       m.Id,
-		Modified: m.Modified,
-		Subtitle: m.Subtitle,
-		Tags:     m.Tags,
-		Title:    m.Title,
-		Views:    m.Views,
-	}
-	return bson.Marshal(&bsonStruct)
-}
-
-func (m *postLocal) UnmarshalBSON(data []byte) error {
-	type bsonStructPrivate struct {
-		Id       *int64     `bson:"id"`
-		Title    *string    `bson:"title"`
-		Subtitle *string    `bson:"subtitle"`
-		Views    *int       `bson:"views"`
-		Tags     *[]string  `bson:"tags"`
-		Created  *time.Time `bson:"created"`
-		Modified *time.Time `bson:"modified"`
-	}
-	bsonStruct := bsonStructPrivate{}
-	err := bson.Unmarshal(data, &bsonStruct)
-	if err != nil {
-		return err
-	}
-	m.Id = bsonStruct.Id
-	m.Title = bsonStruct.Title
-	m.Subtitle = bsonStruct.Subtitle
-	m.Views = bsonStruct.Views
-	m.Tags = bsonStruct.Tags
-	m.Created = bsonStruct.Created
-	m.Modified = bsonStruct.Modified
-	return nil
 }
 
 func (r *mongoPostRepositoryStruct) Browse(ctx context.Context, req *[]entity.Post) error {
@@ -74,12 +23,12 @@ func (r *mongoPostRepositoryStruct) Browse(ctx context.Context, req *[]entity.Po
 	}
 
 	for cursor.Next(ctx) {
-		elem := &postLocal{entity.NewPost()}
+		elem := entity.NewPost()
 		err := cursor.Decode(&elem)
 		if err != nil {
 			return err
 		}
-		*req = append(*req, *elem.Post)
+		*req = append(*req, *elem)
 	}
 
 	return nil
@@ -88,13 +37,11 @@ func (r *mongoPostRepositoryStruct) Browse(ctx context.Context, req *[]entity.Po
 
 func (r *mongoPostRepositoryStruct) Read(ctx context.Context, id int64, req *entity.Post) error {
 
-	postLocal := &postLocal{req}
-
 	collection := r.client.Database(r.db).Collection(r.collection)
 
 	filter := bson.M{"id": id}
 
-	err := collection.FindOne(ctx, filter).Decode(postLocal)
+	err := collection.FindOne(ctx, filter).Decode(req)
 	if err != nil {
 		return err
 	}
@@ -105,8 +52,7 @@ func (r *mongoPostRepositoryStruct) Read(ctx context.Context, id int64, req *ent
 
 func (r *mongoPostRepositoryStruct) Edit(ctx context.Context, id int64, req *entity.Post) error {
 
-	current := &postLocal{entity.NewPost()}
-	postLocal := &postLocal{req}
+	current := entity.NewPost()
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -117,32 +63,36 @@ func (r *mongoPostRepositoryStruct) Edit(ctx context.Context, id int64, req *ent
 		return err
 	}
 
-	if postLocal.Id != nil {
-		current.Id = postLocal.Id
+	if req.Id != nil {
+		current.Id = req.Id
 	}
 
-	if postLocal.Title != nil {
-		current.Title = postLocal.Title
+	if req.UserId != nil {
+		current.UserId = req.UserId
 	}
 
-	if postLocal.Subtitle != nil {
-		current.Subtitle = postLocal.Subtitle
+	if req.Title != nil {
+		current.Title = req.Title
 	}
 
-	if postLocal.Views != nil {
-		current.Views = postLocal.Views
+	if req.Subtitle != nil {
+		current.Subtitle = req.Subtitle
 	}
 
-	if postLocal.Tags != nil {
-		current.Tags = postLocal.Tags
+	if req.Views != nil {
+		current.Views = req.Views
 	}
 
-	if postLocal.Created != nil {
-		current.Created = postLocal.Created
+	if req.Tags != nil {
+		current.Tags = req.Tags
 	}
 
-	if postLocal.Modified != nil {
-		current.Modified = postLocal.Modified
+	if req.Created != nil {
+		current.Created = req.Created
+	}
+
+	if req.Modified != nil {
+		current.Modified = req.Modified
 	}
 
 	err = collection.FindOneAndReplace(ctx, filter, current).Decode(&current)
@@ -156,11 +106,9 @@ func (r *mongoPostRepositoryStruct) Edit(ctx context.Context, id int64, req *ent
 
 func (r *mongoPostRepositoryStruct) Add(ctx context.Context, req *entity.Post) error {
 
-	postLocal := &postLocal{req}
-
 	collection := r.client.Database(r.db).Collection(r.collection)
 
-	_, err := collection.InsertOne(ctx, postLocal)
+	_, err := collection.InsertOne(ctx, req)
 	if err != nil {
 		return err
 	}

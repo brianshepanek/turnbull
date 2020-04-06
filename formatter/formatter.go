@@ -47,10 +47,12 @@ type Formatter interface{
 	OutputScaffoldInterfaceDirectory() (string, error)
 	OutputScaffoldInterfaceControllerDirectory() (string, error)
 	OutputInterfaceControllerFile(driver string, entity model.Entity) (string, error)
+	OutputInterfaceControllerEntityFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceControllerFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryDirectory() (string, error)
 	OutputInterfaceRepositoryFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryFile(driver string, entity model.Entity) (string, error)
+	OutputInterfaceRepositoryEntityFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfacePresenterDirectory() (string, error)
 	OutputInterfacePresenterFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfacePresenterFile(driver string, entity model.Entity) (string, error)
@@ -336,6 +338,17 @@ func (formatter *formatter) OutputScaffoldInterfaceControllerFile(driver string,
 	return strings.Join([]string{path, entity.Name, driver, file}, formatter.config.PathSeparator), nil
 }
 
+func (formatter *formatter) OutputInterfaceControllerEntityFile(driver string, entity model.Entity) (string, error) {
+	
+	path, err  := formatter.OutputScaffoldDomainEntityDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
+
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryDirectory() (string, error) {
 	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.PathSeparator), nil
 }
@@ -357,6 +370,17 @@ func (formatter *formatter) OutputScaffoldInterfaceRepositoryFile(driver string,
 	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, entity.Name, driver, file}, formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputInterfaceRepositoryEntityFile(driver string, entity model.Entity) (string, error) {
+	
+	path, err  := formatter.OutputScaffoldDomainEntityDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterDirectory() (string, error) {

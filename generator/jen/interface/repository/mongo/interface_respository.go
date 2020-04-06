@@ -64,12 +64,31 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 	}
 	f.Add(&interfaceRepositoryStruct)
 
-	// Entity Struct
-	interfaceRepositoryEntityStruct, err := repositoryGenerator.scaffoldInterfaceRepositoryEntityStruct(entity)
+	// Methods
+	for _, entityMethod := range entity.Methods {
+
+		// Function
+		method, err := repositoryGenerator.scaffoldInterfaceRepositoryMethod(entityMethod, entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&method)
+		f.Line()
+
+	}
+
+	return f, nil
+}	
+
+func (repositoryGenerator *repositoryGenerator) EntityFile(entity model.Entity) (*jen.File, error){
+
+	// File
+	packageName , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityPackageName()
 	if err != nil {
 		return nil, err
 	}
-	f.Add(&interfaceRepositoryEntityStruct)
+	f := jen.NewFile(packageName)
+
 
 	// Marshal
 	marshalBSON, err := repositoryGenerator.scaffoldInterfaceRepositoryMarshalBSONFunction(entity)
@@ -87,21 +106,8 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 	f.Add(&unmarshalBSON)
 	f.Line()
 
-	// Methods
-	for _, entityMethod := range entity.Methods {
-
-		// Function
-		method, err := repositoryGenerator.scaffoldInterfaceRepositoryMethod(entityMethod, entity)
-		if err != nil {
-			return nil, err
-		}
-		f.Add(&method)
-		f.Line()
-
-	}
-
 	return f, nil
-}	
+}
 
 func (repositoryGenerator *repositoryGenerator) interfaceRepositoryStruct(entity model.Entity) (jen.Statement, error){
 
@@ -401,23 +407,12 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 		return block, err
 	}
 
-	// Interface ID
-	interfaceId , err := repositoryGenerator.formatter.OutputDomainEntityInterfaceId(entity)
-	if err != nil {
-		return nil, err
-	}
-
 	// Import Path
 	importPath , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityDirectoryImportPath()
 	if err != nil {
 		return block, err
 	}
 
-	// Loca ID
-	localID, err := repositoryGenerator.formatter.OutputDomainEntityLocalStructId(entity)
-	if err != nil {
-		return nil, err
-	}	
 
 	// Line
 	block = append(block, jen.Line())
@@ -478,12 +473,8 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 	nextBlock = append(nextBlock,
 		jen.Id("elem").
 		Op(":=").
-		Op("&").
-		Id(localID).
-		Values(
-			jen.Qual(importPath, id).
-			Call(),
-		),
+		Qual(importPath, id).
+		Call(),
 	)
 
 	nextBlock = append(nextBlock,
@@ -524,8 +515,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 			Op("=").
 			Append(
 				jen.Id("*req"),
-				jen.Id("*elem").
-				Dot(interfaceId),
+				jen.Id("*elem"),
 			),
 		)
 	}
@@ -563,13 +553,8 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 	
 	var block []jen.Code
 
-	// ID
-	id, err := repositoryGenerator.formatter.OutputDomainEntityLocalStructId(entity)
-	if err != nil {
-		return nil, err
-	}
-
 	// Primary Field Name
+	var err error
 	var primaryFieldName string
 	for _, field := range entity.Fields {
 		if field.Primary {
@@ -583,18 +568,6 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 	// Line
 	block = append(block, jen.Line())
 
-	block = append(block, 
-		jen.Id(id).
-		Op(":=").
-		Op("&").
-		Id(id).
-		Values(
-			jen.Id("req"),
-		),
-	)	
-
-	// Line
-	block = append(block, jen.Line())
 
 	block = append(block, 
 		jen.Id("collection").
@@ -645,7 +618,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 		).
 		Dot("Decode").
 		Params(
-			jen.Id(id),
+			jen.Id("req"),
 		),
 	)	
 
@@ -682,12 +655,6 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 	
 	var block []jen.Code
 
-	// Loca ID
-	localID, err := repositoryGenerator.formatter.OutputDomainEntityLocalStructId(entity)
-	if err != nil {
-		return nil, err
-	}	
-
 	// Interface ID
 	interfaceId, err := repositoryGenerator.formatter.OutputDomainEntityInterfaceConstructorFunctionId(entity)
 	if err != nil {
@@ -717,22 +684,8 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 	block = append(block, 
 		jen.Id("current").
 		Op(":=").
-		Op("&").
-		Id(localID).
-		Values(
-			jen.Qual(importPath, interfaceId).
-			Call(),
-		),
-	)	
-
-	block = append(block, 
-		jen.Id(localID).
-		Op(":=").
-		Op("&").
-		Id(localID).
-		Values(
-			jen.Id("req"),
-		),
+		Qual(importPath, interfaceId).
+		Call(),
 	)	
 
 	// Line
@@ -827,7 +780,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 		if entity.Interface {
 			block = append(block,
 				jen.If(
-					jen.Id(localID).
+					jen.Id("req").
 					Dot(getterId).
 					Call().
 					Op("!=").
@@ -836,7 +789,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 						jen.Id("current").
 						Dot(setterId).
 						Params(
-							jen.Id(localID).
+							jen.Id("req").
 							Dot(getterId).
 							Call(),
 						),
@@ -846,7 +799,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 		} else {
 			block = append(block,
 				jen.If(
-					jen.Id(localID).
+					jen.Id("req").
 					Dot(getterId).
 					Op("!=").
 					Nil().
@@ -854,7 +807,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 						jen.Id("current").
 						Dot(getterId).
 						Op("=").
-						Id(localID).
+						Id("req").
 						Dot(getterId),
 					),
 				),
@@ -918,25 +871,6 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 	
 	var block []jen.Code
 
-	// ID
-	id, err := repositoryGenerator.formatter.OutputDomainEntityLocalStructId(entity)
-	if err != nil {
-		return nil, err
-	}
-
-	// Line
-	block = append(block, jen.Line())
-
-	block = append(block, 
-		jen.Id(id).
-		Op(":=").
-		Op("&").
-		Id(id).
-		Values(
-			jen.Id("req"),
-		),
-	)	
-
 	// Line
 	block = append(block, jen.Line())
 
@@ -970,7 +904,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 		Dot("InsertOne").
 		Params(
 			jen.Id("ctx"),
-			jen.Id(id),
+			jen.Id("req"),
 		),
 	)	
 	
@@ -990,35 +924,6 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 	// Line
 	block = append(block, jen.Line())
 
-	// block = append(block, 
-	// 	jen.List(
-	// 		jen.Id("filter"),
-	// 	).
-	// 	Op(":=").
-	// 	Qual("go.mongodb.org/mongo-driver/bson", "M").
-	// 	Values(
-	// 		jen.Dict{
-	// 			jen.Lit("_id"): jen.Id("res").Dot("InsertedID"),
-	// 		},
-	// 	),
-	// )	
-
-	// block = append(block, 
-	// 	jen.List(
-	// 		jen.Err(),
-	// 	).
-	// 	Op("=").
-	// 	Id("collection").
-	// 	Dot("FindOne").
-	// 	Params(
-	// 		jen.Id("ctx"),
-	// 		jen.Id("filter"),
-	// 	).
-	// 	Dot("Decode").
-	// 	Params(
-	// 		jen.Id(id),
-	// 	),
-	// )	
 	
 	block = append(block,
 		jen.Return(
@@ -1146,7 +1051,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryMarsh
 	var statement jen.Statement
 
 	// Struct ID
-	structId , err := repositoryGenerator.formatter.OutputDomainEntityLocalStructId(entity)
+	structId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -1229,7 +1134,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryUnmar
 	var statement jen.Statement
 
 	// Struct ID
-	structId , err := repositoryGenerator.formatter.OutputDomainEntityLocalStructId(entity)
+	structId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -1387,4 +1292,5 @@ func (repositoryGenerator *repositoryGenerator) scaffoldEntityBSONStructField(fi
 	statement.Tag(map[string]string{"bson": tagId})
 
 	return &statement, nil
+	
 }

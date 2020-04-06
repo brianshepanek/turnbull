@@ -7,7 +7,6 @@ import (
 	interactor "github.com/brianshepanek/turnbull/turnbull/output/usecase/interactor"
 	mux "github.com/gorilla/mux"
 	"net/http"
-	"time"
 )
 
 type httpCommentControllerStruct struct {
@@ -19,52 +18,6 @@ type httpCommentControllerInterface interface {
 	Edit(w http.ResponseWriter, r *http.Request)
 	Add(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
-}
-type commentLocal struct {
-	entity.Comment
-}
-
-func (m *commentLocal) MarshalJSON() ([]byte, error) {
-	type jsonStructPrivate struct {
-		Id       *int64     `json:"id,omitempty"`
-		PostId   *int64     `json:"post_id,omitempty"`
-		Title    *string    `json:"title,omitempty"`
-		Body     *string    `json:"body,omitempty"`
-		Created  *time.Time `json:"created,omitempty"`
-		Modified *time.Time `json:"modified,omitempty"`
-	}
-	jsonStruct := jsonStructPrivate{
-		Body:     m.Body(),
-		Created:  m.Created(),
-		Id:       m.Id(),
-		Modified: m.Modified(),
-		PostId:   m.PostId(),
-		Title:    m.Title(),
-	}
-	return json.Marshal(&jsonStruct)
-}
-
-func (m *commentLocal) UnmarshalJSON(data []byte) error {
-	type jsonStructPrivate struct {
-		Id       *int64     `json:"id,omitempty"`
-		PostId   *int64     `json:"post_id,omitempty"`
-		Title    *string    `json:"title,omitempty"`
-		Body     *string    `json:"body,omitempty"`
-		Created  *time.Time `json:"created,omitempty"`
-		Modified *time.Time `json:"modified,omitempty"`
-	}
-	jsonStruct := jsonStructPrivate{}
-	err := json.Unmarshal(data, &jsonStruct)
-	if err != nil {
-		return err
-	}
-	m.SetId(jsonStruct.Id)
-	m.SetPostId(jsonStruct.PostId)
-	m.SetTitle(jsonStruct.Title)
-	m.SetBody(jsonStruct.Body)
-	m.SetCreated(jsonStruct.Created)
-	m.SetModified(jsonStruct.Modified)
-	return nil
 }
 
 func (c *httpCommentControllerStruct) Browse(w http.ResponseWriter, r *http.Request) {
@@ -79,21 +32,16 @@ func (c *httpCommentControllerStruct) Browse(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	var comments []*commentLocal
-	for _, elem := range resp.Elements() {
-		comments = append(comments, &commentLocal{elem})
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(comments)
+	json.NewEncoder(w).Encode(resp.Elements())
 
 }
 
 func (c *httpCommentControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := &commentLocal{entity.NewComment()}
+	req := entity.NewComment()
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -117,14 +65,14 @@ func (c *httpCommentControllerStruct) Read(w http.ResponseWriter, r *http.Reques
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&commentLocal{resp})
+	json.NewEncoder(w).Encode(&resp)
 
 }
 
 func (c *httpCommentControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := &commentLocal{entity.NewComment()}
+	req := entity.NewComment()
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -155,14 +103,14 @@ func (c *httpCommentControllerStruct) Edit(w http.ResponseWriter, r *http.Reques
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&commentLocal{resp})
+	json.NewEncoder(w).Encode(&resp)
 
 }
 
 func (c *httpCommentControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := &commentLocal{entity.NewComment()}
+	req := entity.NewComment()
 
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
@@ -180,14 +128,14 @@ func (c *httpCommentControllerStruct) Add(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&commentLocal{resp})
+	json.NewEncoder(w).Encode(&resp)
 
 }
 
 func (c *httpCommentControllerStruct) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := &commentLocal{entity.NewComment()}
+	req := entity.NewComment()
 
 	var stringId string
 	vars := mux.Vars(r)
