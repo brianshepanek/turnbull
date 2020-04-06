@@ -1,0 +1,6 @@
+func New(client *v7.Client, namespace string) *redisFooRepository {
+	return &redisFooRepository{redisFooRepositoryStruct{
+		client:    client,
+		namespace: namespace,
+	}}
+}

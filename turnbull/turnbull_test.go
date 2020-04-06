@@ -11,6 +11,7 @@ import(
 	generatorInterface "github.com/brianshepanek/turnbull/generator/jen/interface"
 	mysqlRepositoryGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/repository/mysql"
 	mongoRepositoryGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/repository/mongo"
+	redisRepositoryGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/repository/redis"
 	defaultPresenterGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/presenter/default"
 	httpControllerGenerator "github.com/brianshepanek/turnbull/generator/jen/interface/controller/http"
 )
@@ -99,9 +100,12 @@ var (
 				model.Repository {
 					Type : "mongo",
 				},
-				// model.Repository {
-				// 	Type : "mysql",
-				// },
+				model.Repository {
+					Type : "mysql",
+				},
+				model.Repository {
+					Type : "redis",
+				},
 			},
 		},	
 		model.Entity{
@@ -180,11 +184,14 @@ var (
 				},
 			},
 			Repositories : []model.Repository {
-				// model.Repository {
-				// 	Type : "mongo",
-				// },
+				model.Repository {
+					Type : "mongo",
+				},
 				model.Repository {
 					Type : "mysql",
+				},
+				model.Repository {
+					Type : "redis",
 				},
 			},
 		},	
@@ -210,6 +217,7 @@ func init(){
 	interfaceRepositoryGenerators := make(map[string]generatorInterface.RepositoryGenerator)
 	interfaceRepositoryGenerators["mongo"] = mongoRepositoryGenerator.New(conf, formatter, testHelperGenerator)
 	interfaceRepositoryGenerators["mysql"] = mysqlRepositoryGenerator.New(conf, formatter, testHelperGenerator)
+	interfaceRepositoryGenerators["redis"] = redisRepositoryGenerator.New(conf, formatter, testHelperGenerator)
 
 	generator := generator.New(conf, formatter, interfaceControllerGenerators, interfacePresenterGenerators, interfaceRepositoryGenerators)
 

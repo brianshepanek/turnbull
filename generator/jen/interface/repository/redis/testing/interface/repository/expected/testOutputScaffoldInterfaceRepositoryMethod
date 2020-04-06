@@ -1,0 +1,16 @@
+func (r *redisFooRepositoryStruct) Add(ctx context.Context, req *entity.Foo) error {
+
+	key := r.namespace + ":" + cast.ToString(req.Identifier)
+	val, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	err = r.client.Set(key, val, 0).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}

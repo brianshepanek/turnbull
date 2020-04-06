@@ -54,7 +54,9 @@ func (generator *Generator) Entity(entity model.Entity, writer io.Writer) (error
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -68,7 +70,9 @@ func (generator *Generator) ScaffoldEntity(entity model.Entity, writer io.Writer
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -82,7 +86,9 @@ func (generator *Generator) UsecaseRepository(entity model.Entity, writer io.Wri
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -96,7 +102,9 @@ func (generator *Generator) ScaffoldUsecaseRepository(entity model.Entity, write
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -110,7 +118,9 @@ func (generator *Generator) UsecasePresenter(entity model.Entity, writer io.Writ
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -124,7 +134,9 @@ func (generator *Generator) ScaffoldUsecasePresenter(entity model.Entity, writer
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -138,7 +150,9 @@ func (generator *Generator) UsecaseInteractor(entity model.Entity, writer io.Wri
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -152,7 +166,9 @@ func (generator *Generator) ScaffoldUsecaseInteractor(entity model.Entity, write
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -172,7 +188,9 @@ func (generator *Generator) InterfaceRepository(driver string, entity model.Enti
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -192,7 +210,9 @@ func (generator *Generator) ScaffoldInterfaceRepository(driver string, entity mo
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -212,7 +232,9 @@ func (generator *Generator) InterfaceRepositoryEntity(driver string, entity mode
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -232,7 +254,9 @@ func (generator *Generator) InterfacePresenter(driver string, entity model.Entit
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -252,7 +276,9 @@ func (generator *Generator) ScaffoldInterfacePresenter(driver string, entity mod
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -272,7 +298,9 @@ func (generator *Generator) InterfaceController(driver string, entity model.Enti
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -292,7 +320,9 @@ func (generator *Generator) ScaffoldInterfaceController(driver string, entity mo
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }
@@ -312,7 +342,9 @@ func (generator *Generator) InterfaceControllerEntity(driver string, entity mode
 	}
 
 	// Render
-	file.Render(writer)
+	if file != nil {
+		file.Render(writer)
+	}
 
 	return nil
 }

@@ -384,33 +384,40 @@ func (turnbull *turnbull) buildEntityInterfaceRepository(driver string, entity m
 		return err
 	}
 
-	// File Name
-	fileName, err := turnbull.formatter.OutputInterfaceRepositoryEntityFile(driver, entity)
-	if err != nil {
-		return err
-	}
+	// Exists
+	if len(buf.String()) > 0 {
 
-	// Ensure
-	dirName := filepath.Dir(fileName)
-	if _, serr := os.Stat(dirName); serr != nil {
-		merr := os.MkdirAll(dirName, os.ModePerm)
-		if merr != nil {
+		// File Name
+		fileName, err := turnbull.formatter.OutputInterfaceRepositoryEntityFile(driver, entity)
+		if err != nil {
 			return err
 		}
+
+		// Ensure
+		dirName := filepath.Dir(fileName)
+		if _, serr := os.Stat(dirName); serr != nil {
+			merr := os.MkdirAll(dirName, os.ModePerm)
+			if merr != nil {
+				return err
+			}
+		}
+
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+		
 	}
 
-	// File
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	// Write
-	_, err = file.WriteString(buf.String())
-	if err != nil {
-		return err
-	}
+	
 
 	return nil
 }

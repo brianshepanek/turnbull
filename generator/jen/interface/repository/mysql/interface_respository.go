@@ -89,15 +89,7 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 }	
 
 func (repositoryGenerator *repositoryGenerator) EntityFile(entity model.Entity) (*jen.File, error){
-
-	// File
-	packageName , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityPackageName()
-	if err != nil {
-		return nil, err
-	}
-	f := jen.NewFile(packageName)
-
-	return f , nil
+	return nil , nil
 }
 
 func (repositoryGenerator *repositoryGenerator) interfaceRepositoryStruct(entity model.Entity) (jen.Statement, error){
@@ -584,50 +576,68 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 			if err != nil {
 				return nil, err
 			}
-	
-			nextBlock = append(nextBlock,
-				jen.If().
+			
+			var fieldBlock []jen.Code
+
+			fieldBlock = append(fieldBlock, 
+				jen.List(
+					jen.Id("value"),
+					jen.Err(),
+				).
+				Op(":=").
 				Id("res").
 				Dot(getterId).
-				Dot("Valid").
-				Block(
-					
-					jen.List(
-						jen.Id("value"),
-						jen.Err(),
-					).
-					Op(":=").
-					Id("res").
-					Dot(getterId).
-					Dot("Value").
-					Call(),
+				Dot("Value").
+				Call(),
+			)
 
-					jen.If(
-						jen.Err().
-						Op("!=").
-						Nil().
-						Block(
-							jen.Return(
-								jen.Err(),
-							),
+			fieldBlock = append(fieldBlock, 
+				jen.If(
+					jen.Err().
+					Op("!=").
+					Nil().
+					Block(
+						jen.Return(
+							jen.Err(),
 						),
 					),
+				),
+			)
 
-					jen.Id("val").
-					Op(":=").
-					Id("value").
-					Assert(
-						jen.Qual(field.Package, field.Type),
-					),
-					
+			fieldBlock = append(fieldBlock, 
+				jen.Id("val").
+				Op(":=").
+				Id("value").
+				Assert(
+					jen.Qual(field.Package, field.Type),
+				),
+			)
+
+			if entity.Interface {
+				fieldBlock = append(fieldBlock, 
 					jen.Id("elem").
 					Dot(setterId).
 					Params(
 						jen.Op("&").
 						Id("val"),
 					),
-					
-				),
+				)
+			} else {
+				fieldBlock = append(fieldBlock, 
+					jen.Id("elem").
+					Dot(getterId).
+					Op("=").
+					Op("&").
+					Id("val"),
+				)
+			}
+
+			nextBlock = append(nextBlock,
+				jen.If().
+				Id("res").
+				Dot(getterId).
+				Dot("Valid").
+				Block(fieldBlock...),
 			)	
 	
 			nextBlock = append(nextBlock,
@@ -639,13 +649,24 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 		
 	}
 
-	nextBlock = append(nextBlock,
-		jen.Id("req").
-		Dot("Append").
-		Call(
-			jen.Id("elem"),
-		),
-	)
+	if entity.Interface {
+		nextBlock = append(nextBlock,
+			jen.Id("req").
+			Dot("Append").
+			Call(
+				jen.Id("elem"),
+			),
+		)
+	} else {
+		nextBlock = append(nextBlock,
+			jen.Id("*req").
+			Op("=").
+			Append(
+				jen.Id("*req"),
+				jen.Id("*elem"),
+			),
+		)
+	}
 
 	nextBlock = append(nextBlock,
 		jen.Line(),
@@ -868,49 +889,67 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 				return nil, err
 			}
 
-			block = append(block,
-				jen.If().
+			var fieldBlock []jen.Code
+
+			fieldBlock = append(fieldBlock, 
+				jen.List(
+					jen.Id("value"),
+					jen.Err(),
+				).
+				Op(":=").
 				Id("res").
 				Dot(getterId).
-				Dot("Valid").
-				Block(
+				Dot("Value").
+				Call(),
+			)
 
-					jen.List(
-						jen.Id("value"),
-						jen.Err(),
-					).
-					Op(":=").
-					Id("res").
-					Dot(getterId).
-					Dot("Value").
-					Call(),
-
-					jen.If(
-						jen.Err().
-						Op("!=").
-						Nil().
-						Block(
-							jen.Return(
-								jen.Err(),
-							),
+			fieldBlock = append(fieldBlock, 
+				jen.If(
+					jen.Err().
+					Op("!=").
+					Nil().
+					Block(
+						jen.Return(
+							jen.Err(),
 						),
 					),
+				),
+			)
 
-					jen.Id("val").
-					Op(":=").
-					Id("value").
-					Assert(
-						jen.Qual(field.Package, field.Type),
-					),
-					
+			fieldBlock = append(fieldBlock, 
+				jen.Id("val").
+				Op(":=").
+				Id("value").
+				Assert(
+					jen.Qual(field.Package, field.Type),
+				),
+			)
+
+			if entity.Interface {
+				fieldBlock = append(fieldBlock, 
 					jen.Id("req").
 					Dot(setterId).
 					Params(
 						jen.Op("&").
 						Id("val"),
 					),
-					
-				),
+				)
+			} else {
+				fieldBlock = append(fieldBlock, 
+					jen.Id("req").
+					Dot(getterId).
+					Op("=").
+					Op("&").
+					Id("val"),
+				)
+			}
+
+			block = append(block,
+				jen.If().
+				Id("res").
+				Dot(getterId).
+				Dot("Valid").
+				Block(fieldBlock...),
 			)	
 
 			block = append(block,
@@ -992,33 +1031,63 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 				return nil, err
 			}
 
-			block = append(block,
-				jen.If().
-				Id("req").
-				Dot(getterId).
-				Call().
-				Op("!=").
-				Nil().
-				Block(
-
-					jen.Id("set").
-					Op("=").
-					Append(
-						jen.Id("set"),
-						jen.Lit(tagId + ` = ?`),
+			if entity.Interface {
+				block = append(block,
+					jen.If().
+					Id("req").
+					Dot(getterId).
+					Call().
+					Op("!=").
+					Nil().
+					Block(
+	
+						jen.Id("set").
+						Op("=").
+						Append(
+							jen.Id("set"),
+							jen.Lit(tagId + ` = ?`),
+						),
+	
+						jen.Id("vals").
+						Op("=").
+						Append(
+							jen.Id("vals"),
+							jen.Id("req").
+							Dot(getterId).
+							Call(),
+						),
+	
 					),
-
-					jen.Id("vals").
-					Op("=").
-					Append(
-						jen.Id("vals"),
-						jen.Id("req").
-						Dot(getterId).
-						Call(),
+				)
+			} else {
+				block = append(block,
+					jen.If().
+					Id("req").
+					Dot(getterId).
+					Op("!=").
+					Nil().
+					Block(
+	
+						jen.Id("set").
+						Op("=").
+						Append(
+							jen.Id("set"),
+							jen.Lit(tagId + ` = ?`),
+						),
+	
+						jen.Id("vals").
+						Op("=").
+						Append(
+							jen.Id("vals"),
+							jen.Id("req").
+							Dot(getterId),
+						),
+	
 					),
+				)
+			}
 
-				),
-			)
+			
 
 			// Line
 			block = append(block, jen.Line())
@@ -1204,40 +1273,77 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryAddMe
 				return nil, err
 			}
 
-			block = append(block,
-				jen.If().
-				Id("req").
-				Dot(getterId).
-				Call().
-				Op("!=").
-				Nil().
-				Block(
-
-					jen.Id("set").
-					Op("=").
-					Append(
-						jen.Id("set"),
-						jen.Lit(tagId),
+			if entity.Interface {
+				block = append(block,
+					jen.If().
+					Id("req").
+					Dot(getterId).
+					Call().
+					Op("!=").
+					Nil().
+					Block(
+	
+						jen.Id("set").
+						Op("=").
+						Append(
+							jen.Id("set"),
+							jen.Lit(tagId),
+						),
+	
+						jen.Id("vars").
+						Op("=").
+						Append(
+							jen.Id("vars"),
+							jen.Lit("?"),
+						),
+	
+						jen.Id("vals").
+						Op("=").
+						Append(
+							jen.Id("vals"),
+							jen.Id("req").
+							Dot(getterId).
+							Call(),
+						),
+	
 					),
-
-					jen.Id("vars").
-					Op("=").
-					Append(
-						jen.Id("vars"),
-						jen.Lit("?"),
+				)
+			} else {
+				block = append(block,
+					jen.If().
+					Id("req").
+					Dot(getterId).
+					Op("!=").
+					Nil().
+					Block(
+	
+						jen.Id("set").
+						Op("=").
+						Append(
+							jen.Id("set"),
+							jen.Lit(tagId),
+						),
+	
+						jen.Id("vars").
+						Op("=").
+						Append(
+							jen.Id("vars"),
+							jen.Lit("?"),
+						),
+	
+						jen.Id("vals").
+						Op("=").
+						Append(
+							jen.Id("vals"),
+							jen.Id("req").
+							Dot(getterId),
+						),
+	
 					),
+				)
+			}
 
-					jen.Id("vals").
-					Op("=").
-					Append(
-						jen.Id("vals"),
-						jen.Id("req").
-						Dot(getterId).
-						Call(),
-					),
-
-				),
-			)
+			
 
 			// Line
 			block = append(block, jen.Line())

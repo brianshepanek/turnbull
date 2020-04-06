@@ -1,0 +1,133 @@
+package repository
+
+import (
+	"context"
+	"encoding/json"
+	entity "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
+	"github.com/go-redis/redis/v7"
+	cast "github.com/spf13/cast"
+)
+
+type redisFooRepositoryStruct struct {
+	client    *redis.Client
+	namespace string
+}
+
+func (r *redisFooRepositoryStruct) Count(ctx context.Context, req int) error {
+	return nil
+}
+
+func (r *redisFooRepositoryStruct) Browse(ctx context.Context, req *[]entity.Foo) error {
+
+	match := r.namespace + ":*"
+	keys, _, err := r.client.Scan(0, match, -1).Result()
+	if err != nil {
+		return err
+	}
+
+	for _, key := range keys {
+
+		elem := entity.NewFoo()
+		val, err := r.client.Get(key).Result()
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal([]byte(val), elem)
+		if err != nil {
+			return err
+		}
+
+		*req = append(*req, *elem)
+
+	}
+
+	return nil
+
+}
+
+func (r *redisFooRepositoryStruct) Read(ctx context.Context, id int64, req *entity.Foo) error {
+
+	key := r.namespace + ":" + cast.ToString(id)
+	val, err := r.client.Get(key).Result()
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal([]byte(val), req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (r *redisFooRepositoryStruct) Edit(ctx context.Context, id int64, req *entity.Foo) error {
+
+	current := entity.NewFoo()
+	key := r.namespace + ":" + cast.ToString(id)
+	currentVal, err := r.client.Get(key).Result()
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal([]byte(currentVal), current)
+	if err != nil {
+		return err
+	}
+
+	if req.Identifier != nil {
+		current.Identifier = req.Identifier
+	}
+
+	if req.String != nil {
+		current.String = req.String
+	}
+
+	if req.Int != nil {
+		current.Int = req.Int
+	}
+
+	val, err := json.Marshal(current)
+	if err != nil {
+		return err
+	}
+
+	err = r.client.Set(key, val, 0).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (r *redisFooRepositoryStruct) Add(ctx context.Context, req *entity.Foo) error {
+
+	key := r.namespace + ":" + cast.ToString(req.Identifier)
+	val, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	err = r.client.Set(key, val, 0).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (r *redisFooRepositoryStruct) Delete(ctx context.Context, id int64, req *entity.Foo) error {
+
+	key := r.namespace + ":" + cast.ToString(id)
+	err := r.client.Del(key).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}

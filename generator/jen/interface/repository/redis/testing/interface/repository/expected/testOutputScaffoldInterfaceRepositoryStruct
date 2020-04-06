@@ -1,0 +1,4 @@
+type redisFooRepositoryStruct struct {
+	client    *v7.Client
+	namespace string
+}
