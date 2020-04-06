@@ -34,6 +34,25 @@ func New(config *config.Config, formatter formatter.Formatter, helperGenerator h
 	}
 }
 
+func (controllerGenerator *controllerGenerator) AppFile(entities []model.Entity) (*jen.File, error){
+
+	// File
+	packageName , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+	
+	// Interface
+	interfaceControllerInterface, err := controllerGenerator.interfaceAppControllerInterface(entities)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceControllerInterface)
+
+	return f, nil
+}
+
 func (controllerGenerator *controllerGenerator) File(entity model.Entity) (*jen.File, error){
 
 	// File
@@ -204,6 +223,78 @@ func (controllerGenerator *controllerGenerator) interfaceControllerStruct(entity
 
 	return resp, nil
 
+}
+
+func (controllerGenerator *controllerGenerator) interfaceAppControllerInterface(entities []model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := controllerGenerator.formatter.OutputInterfaceControllerInterfaceId("http", model.Entity{Name : "app"})
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+	
+	for _, entity := range entities {
+
+		// ID
+		var statement jen.Statement
+
+		// Import Path
+		importPath, err := controllerGenerator.formatter.OutputInterfaceControllerDirectoryImportPath("http", entity)
+		if err != nil {
+			return nil, err
+		}
+
+		// Constructor
+		constructorId, err := controllerGenerator.formatter.OutputRegistryEntityControllerConstructorFunctionId("http", entity)
+		if err != nil {
+			return nil, err
+		}
+
+		// Interface
+		interfaceId, err := controllerGenerator.formatter.OutputInterfaceControllerInterfaceId("http", entity)
+		if err != nil {
+			return nil, err
+		}
+
+		// Set
+		statement.Id(constructorId)
+
+		// Params
+		statement.Params()
+
+		// Field
+		err = controllerGenerator.helperGenerator.Field("", model.Field{Package : importPath, Type : interfaceId}, entity, &statement)
+		if err != nil {
+			return nil, err
+		}
+		
+		
+		fields = append(fields, &statement)
+
+	}
+	// // Scaffold
+	// scaffoldId , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerInterfaceId("http", entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// // Fields
+	// fields = append(fields, jen.Id(scaffoldId))
+
+
+	// Interface
+	resp.Interface(fields...)
+
+	return resp, nil
+	
 }
 
 func (controllerGenerator *controllerGenerator) interfaceControllerInterface(entity model.Entity) (jen.Statement, error){

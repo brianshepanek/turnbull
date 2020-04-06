@@ -19,6 +19,8 @@ const(
 	testOutputRegistryEntityFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/registry/foo_registry.go"
 	testOutputRegistryEntityRepositoryConstructorFunctionId = "NewFooRepository"
 	testOutputRegistryEntityPresenterConstructorFunctionId = "NewFooPresenter"
+	testOutputRegistryEntityControllerConstructorFunctionId = "NewHttpFooController"
+	
 
 	testOutputScaffoldDomainDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/domain"
 	testOutputScaffoldDomainEntityDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/domain/entity"
@@ -42,6 +44,8 @@ const(
 
 	testOutputScaffoldInterfaceDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface"
 	testOutputScaffoldInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller"
+	testOutputInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http"
+	testOutputInterfaceControllerDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http"
 	testOutputInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http/controller.go"
 	testOutputScaffoldInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http/scaffold.go"
 	testOutputScaffoldInterfaceRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository"
@@ -196,6 +200,23 @@ func TestOutputRegistryEntityFile(t *testing.T){
 
 	if file != testOutputRegistryEntityFile {
 		t.Errorf(`OutputRegistryEntityFile() failed; want "%s", got "%s"`, testOutputRegistryEntityFile, file)
+	}
+}
+
+// Test Output Registry Entity Controller Constructor Function ID
+func TestOutputRegistryEntityControllerConstructorFunctionId(t *testing.T){
+
+	// Build
+
+	file, err := testFormatter.OutputRegistryEntityControllerConstructorFunctionId("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputRegistryEntityControllerConstructorFunctionId() failed with error %v`, err)
+	}
+
+	if file != testOutputRegistryEntityControllerConstructorFunctionId {
+		t.Errorf(`OutputRegistryEntityControllerConstructorFunctionId() failed; want "%s", got "%s"`, testOutputRegistryEntityControllerConstructorFunctionId, file)
 	}
 }
 
@@ -587,6 +608,40 @@ func TestOutputScaffoldInterfaceControllerDirectory(t *testing.T){
 
 	if dir != testOutputScaffoldInterfaceControllerDirectory {
 		t.Errorf(`OutputScaffoldInterfaceControllerDirectory() failed; want "%s", got "%s"`, testOutputScaffoldInterfaceControllerDirectory, dir)
+	}
+}
+
+// Test Output Interface Controller Directory
+func TestOutputInterfaceRepositoryControllerDirectory(t *testing.T){
+
+	// Build
+
+	dir, err := testFormatter.OutputInterfaceControllerDirectory("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfaceControllerDirectory() failed with error %v`, err)
+	}
+
+	if dir != testOutputInterfaceControllerDirectory {
+		t.Errorf(`OutputInterfaceControllerDirectory() failed; want "%s", got "%s"`, testOutputInterfaceControllerDirectory, dir)
+	}
+}
+
+// Test Output Interface Controller Directory Import Path
+func TestOutputInterfaceRepositoryControllerDirectoryImportPath(t *testing.T){
+
+	// Build
+
+	dir, err := testFormatter.OutputInterfaceControllerDirectoryImportPath("http", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfaceControllerDirectoryImportPath() failed with error %v`, err)
+	}
+
+	if dir != testOutputInterfaceControllerDirectoryImportPath {
+		t.Errorf(`OutputInterfaceControllerDirectoryImportPath() failed; want "%s", got "%s"`, testOutputInterfaceControllerDirectoryImportPath, dir)
 	}
 }
 

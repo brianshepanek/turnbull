@@ -23,6 +23,7 @@ type Formatter interface{
 	OutputRegistryEntityFile(entity model.Entity) (string, error)
 	OutputRegistryEntityPresenterConstructorFunctionId(entity model.Entity) (string, error)
 	OutputRegistryEntityRepositoryConstructorFunctionId(entity model.Entity) (string, error)
+	OutputRegistryEntityControllerConstructorFunctionId(driver string, entity model.Entity) (string, error)
 
 	OutputScaffoldDomainDirectory() (string, error)
 	OutputScaffoldDomainEntityDirectory() (string, error)
@@ -46,6 +47,8 @@ type Formatter interface{
 
 	OutputScaffoldInterfaceDirectory() (string, error)
 	OutputScaffoldInterfaceControllerDirectory() (string, error)
+	OutputInterfaceControllerDirectory(driver string, entity model.Entity) (string, error)
+	OutputInterfaceControllerDirectoryImportPath(driver string, entity model.Entity) (string, error)
 	OutputInterfaceControllerFile(driver string, entity model.Entity) (string, error)
 	OutputInterfaceControllerEntityFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceControllerFile(driver string, entity model.Entity) (string, error)
@@ -162,6 +165,9 @@ func (formatter *formatter) OutputRegistryEntityRepositoryConstructorFunctionId(
 	return strcase.ToCamel(strings.Join([]string{"new", entity.Name, formatter.config.Layers.Usecase.Repository.Name}, formatter.config.StringSeparator)), nil
 }
 
+func (formatter *formatter) OutputRegistryEntityControllerConstructorFunctionId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
+}
 
 // Domain
 
@@ -316,6 +322,22 @@ func (formatter *formatter) OutputScaffoldInterfaceDirectory() (string, error) {
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerDirectory() (string, error) {
 	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputInterfaceControllerDirectory(driver string, entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldInterfaceControllerDirectory()
+	if err != nil {
+		return "", nil
+	}
+	return strings.Join([]string{path, entity.Name, driver}, formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputInterfaceControllerDirectoryImportPath(driver string, entity model.Entity) (string, error) {
+	path, err  := formatter.OutputInterfaceControllerDirectory(driver, entity)
+	if err != nil {
+		return "", nil
+	}
+	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputInterfaceControllerFile(driver string, entity model.Entity) (string, error) {

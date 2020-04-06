@@ -18,6 +18,7 @@ type PresenterGenerator interface{
 }
 
 type ControllerGenerator interface{
+	AppFile(entities []model.Entity) (*jen.File, error)
 	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
 	EntityFile(entity model.Entity) (*jen.File, error)

@@ -437,6 +437,18 @@ func TestBuildScaffoldInterfacePresenter(t *testing.T){
 	}	
 }
 
+// Test Build Interface App Controller
+func TestBuildInterfaceAppController(t *testing.T){
+
+	// Build
+	err := testTurnbull.buildInterfaceAppController("http", testEntities)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildInterfaceController() failed with error %v`, err)
+	}	
+}
+
 // Test Build Interface Controller
 func TestBuildInterfaceController(t *testing.T){
 

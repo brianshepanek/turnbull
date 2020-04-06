@@ -283,6 +283,28 @@ func (generator *Generator) ScaffoldInterfacePresenter(driver string, entity mod
 	return nil
 }
 
+func (generator *Generator) InterfaceAppController(driver string, entities []model.Entity, writer io.Writer) (error){
+
+	// Vars
+	var interfaceControllerGenerator generatorInterface.ControllerGenerator
+	if val, ok := generator.interfaceControllerGenerators[driver]; ok {
+		interfaceControllerGenerator = val
+	}
+
+	// File
+	file, err := interfaceControllerGenerator.AppFile(entities)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	if file != nil {
+		file.Render(writer)
+	}
+
+	return nil
+}
+
 func (generator *Generator) InterfaceController(driver string, entity model.Entity, writer io.Writer) (error){
 
 	// Vars
