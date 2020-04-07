@@ -36,6 +36,8 @@ type InterfaceGenerator interface {
 
 	InterfacePresenter(driver string, entity model.Entity, writer io.Writer) (error)
 	ScaffoldInterfacePresenter(driver string, entity model.Entity, writer io.Writer) (error)
+	InterfacePresenterEntity(driver string, entity model.Entity, writer io.Writer) (error)
+	InterfacePresenterRegistry(driver string, entity model.Entity, writer io.Writer) (error)
 
 	InterfaceAppController(driver string, entities []model.Entity, writer io.Writer) (error)
 	InterfaceController(driver string, entity model.Entity, writer io.Writer) (error)

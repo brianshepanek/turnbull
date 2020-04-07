@@ -107,6 +107,11 @@ var (
 					Type : "redis",
 				},
 			},
+			Presenters : []model.Presenter {
+				model.Presenter {
+					Type : "default",
+				},
+			},
 		},	
 		model.Entity{
 			Name : "comment",
@@ -192,6 +197,11 @@ var (
 				},
 				model.Repository {
 					Type : "redis",
+				},
+			},
+			Presenters : []model.Presenter {
+				model.Presenter {
+					Type : "default",
 				},
 			},
 		},	
@@ -454,6 +464,46 @@ func TestBuildScaffoldInterfacePresenter(t *testing.T){
 		if err != nil {
 			t.Errorf(`buildScaffoldInterfacePresenter() failed with error %v`, err)
 		}
+	}	
+}
+
+// Test Build Interface Presenter Registry
+func TestBuildInterfacePresenterRegistry(t *testing.T){
+
+	// Build
+	for _, testEntity := range testEntities {
+
+		for _, presenter := range testEntity.Presenters {
+
+			err := testTurnbull.buildRegistryInterfacePresenter(presenter.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
+			}
+
+		}
+
+	}	
+}
+
+// Test Build Interface Presenter Entity
+func TestBuildInterfacePresenterEntity(t *testing.T){
+
+	// Build
+	for _, testEntity := range testEntities {
+
+		for _, presenter := range testEntity.Presenters {
+
+			err := testTurnbull.buildEntityInterfacePresenter(presenter.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildEntityInterfacePresenter() failed with error %v`, err)
+			}
+
+		}
+
 	}	
 }
 

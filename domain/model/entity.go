@@ -6,6 +6,7 @@ type Entity struct {
 	Fields []Field
 	Methods []Method
 	Repositories []Repository
+	Presenters []Presenter
 }
 
 type Field struct {
@@ -30,6 +31,11 @@ type Callback struct {
 }
 
 type Repository struct {
+	Type string
+	Primary bool
+}
+
+type Presenter struct {
 	Type string
 	Primary bool
 }

@@ -4,7 +4,9 @@ type registry struct {
 	postMongoRepositoryRegistry
 	postMysqlRepositoryRegistry
 	postRedisRepositoryRegistry
+	postDefaultPresenterRegistry
 	commentMongoRepositoryRegistry
 	commentMysqlRepositoryRegistry
 	commentRedisRepositoryRegistry
+	commentDefaultPresenterRegistry
 }

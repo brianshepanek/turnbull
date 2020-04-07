@@ -93,6 +93,193 @@ func (presenterGenerator *presenterGenerator) ScaffoldFile(entity model.Entity) 
 	return f, nil
 }	
 
+func (presenterGenerator *presenterGenerator) EntityFile(entity model.Entity) (*jen.File, error){
+	return nil, nil
+}
+
+func (presenterGenerator *presenterGenerator) RegistryFile(entity model.Entity) (*jen.File, error){
+
+	// File
+	packageName , err := presenterGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+	
+	// Struct
+	interfacePresenterStruct, err := presenterGenerator.scaffoldInterfacePresenterRegistryStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfacePresenterStruct)
+
+	// Constructor Function
+	interfacePresenterRegistryConstructorFunction, err := presenterGenerator.interfacePresenterRegistryConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfacePresenterRegistryConstructorFunction)
+
+	// Local Constructor Function
+	interfacePresenterRegistryLocalConstructorFunction, err := presenterGenerator.interfacePresenterRegistryLocalConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfacePresenterRegistryLocalConstructorFunction)
+
+
+	return f, nil
+}
+
+func (presenterGenerator *presenterGenerator) scaffoldInterfacePresenterRegistryStruct(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Fields
+	fields, err := presenterGenerator.scaffoldInterfacePresenterStructFields()
+	if err != nil {
+		return nil, err
+	}
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := presenterGenerator.formatter.OutputScaffoldInterfacePresenterRegistryStructId("default", entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Struct
+	resp.Struct(fields...)
+
+	
+	return resp, nil
+
+}
+
+func (presenterGenerator *presenterGenerator) interfacePresenterRegistryConstructorFunction(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Registry
+	registryName , err := presenterGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// ID
+	// registryStructId , err := presenterGenerator.formatter.OutputScaffoldInterfacePresenterRegistryStructId("default", entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// Type
+	resp.Func()
+
+	resp.Params(
+		jen.Id("r").
+		Op("*").
+		Qual("", registryName),
+	)
+
+	// Fields
+	fields, err := presenterGenerator.scaffoldInterfacePresenterStructFields()
+	if err != nil {
+		return nil, err
+	}
+
+	// ID
+	id , err := presenterGenerator.formatter.OutputScaffoldInterfacePresenterRegistryConstructorFunctionId("default", entity)
+	if err != nil {
+		return nil, err
+	}
+
+
+	resp.Id(id)
+
+	// Params
+	resp.Params(fields...)
+
+	// Block
+	resp.Block()
+	
+	return resp, nil
+
+}
+
+func (presenterGenerator *presenterGenerator) interfacePresenterRegistryLocalConstructorFunction(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Registry
+	registryName , err := presenterGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// // ID
+	// registryStructId , err := presenterGenerator.formatter.OutputScaffoldInterfacePresenterRegistryStructId("default", entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	interfaceId , err := presenterGenerator.formatter.OutputUsecasePresenterInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	interfaceImportPath , err := presenterGenerator.formatter.OutputInterfacePresenterDirectoryImportPath("default", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	usecaseImportPath , err := presenterGenerator.formatter.OutputScaffoldUsecasePresenterDirectoryImportPath()
+	if err != nil {
+		return nil, err
+	}
+	
+	// Type
+	resp.Func()
+
+	resp.Params(
+		jen.Id("r").
+		Op("*").
+		Qual("", registryName),
+	)
+
+	// ID
+	id , err := presenterGenerator.formatter.OutputScaffoldInterfacePresenterRegistryLocalConstructorFunctionId("default", entity)
+	if err != nil {
+		return nil, err
+	}
+
+
+	resp.Id(id)
+
+	// Params
+	resp.Params()
+
+	resp.Parens(
+		jen.List(
+			jen.Qual(usecaseImportPath, interfaceId),
+		),
+	)
+
+	resp.Block(
+		jen.Return(
+			jen.Qual(interfaceImportPath, "New").
+			Call(),
+		),
+	)
+	
+	return resp, nil
+
+}
+
 func (presenterGenerator *presenterGenerator) interfacePresenterStruct(entity model.Entity) (jen.Statement, error){
 
 	// Vars
@@ -363,4 +550,14 @@ func (presenterGenerator *presenterGenerator) scaffoldInterfacePresenterInterfac
 	)	
 	
 	return resp, nil
+}
+
+func (presenterGenerator *presenterGenerator) scaffoldInterfacePresenterStructFields() ([]jen.Code, error){
+
+	// Vars
+	var fields []jen.Code
+
+
+	return fields, nil
+
 }

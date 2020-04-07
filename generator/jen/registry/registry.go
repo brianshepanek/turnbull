@@ -65,6 +65,18 @@ func (registryGenerator *registryGenerator) ScaffoldFile(entities []model.Entity
 			fields = append(fields, jen.Id(registryStructId))
 
 		}
+
+		for _, presenter := range entity.Presenters {
+			
+			// ID
+			registryStructId , err := registryGenerator.formatter.OutputScaffoldInterfacePresenterRegistryStructId(presenter.Type, entity)
+			if err != nil {
+				return nil, err
+			}
+
+			fields = append(fields, jen.Id(registryStructId))
+
+		}
 		
 	}
 

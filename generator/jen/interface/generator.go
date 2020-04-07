@@ -16,6 +16,8 @@ type RepositoryGenerator interface{
 type PresenterGenerator interface{
 	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
+	EntityFile(entity model.Entity) (*jen.File, error)
+	RegistryFile(entity model.Entity) (*jen.File, error)
 }
 
 type ControllerGenerator interface{

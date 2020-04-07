@@ -552,6 +552,102 @@ func (turnbull *turnbull) buildScaffoldInterfacePresenter(driver string, entity 
 	return nil
 }
 
+// Build Registry Interface Presenter
+func (turnbull *turnbull) buildRegistryInterfacePresenter(driver string, entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.InterfacePresenterRegistry(driver, entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// Exists
+	if len(buf.String()) > 0 {
+
+		// File Name
+		fileName, err := turnbull.formatter.OutputInterfacePresenterRegistryFile(driver, entity)
+		if err != nil {
+			return err
+		}
+
+		// Ensure
+		dirName := filepath.Dir(fileName)
+		if _, serr := os.Stat(dirName); serr != nil {
+			merr := os.MkdirAll(dirName, os.ModePerm)
+			if merr != nil {
+				return err
+			}
+		}
+
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+		
+	}
+
+	
+
+	return nil
+}
+
+// Build Entity Interface Presenter
+func (turnbull *turnbull) buildEntityInterfacePresenter(driver string, entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.InterfacePresenterEntity(driver, entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// Exists
+	if len(buf.String()) > 0 {
+
+		// File Name
+		fileName, err := turnbull.formatter.OutputInterfacePresenterEntityFile(driver, entity)
+		if err != nil {
+			return err
+		}
+
+		// Ensure
+		dirName := filepath.Dir(fileName)
+		if _, serr := os.Stat(dirName); serr != nil {
+			merr := os.MkdirAll(dirName, os.ModePerm)
+			if merr != nil {
+				return err
+			}
+		}
+
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+		
+	}
+
+	
+
+	return nil
+}
+
 // Build Interface App
 func (turnbull *turnbull) buildInterfaceAppController(driver string, entities []model.Entity) (error){
 
