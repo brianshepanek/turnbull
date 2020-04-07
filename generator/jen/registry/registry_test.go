@@ -19,52 +19,192 @@ const(
 
 var(
 
-	// Test Entity
-	testEntity  = model.Entity{
-		Name : "foo",
-		Fields : []model.Field{
-			model.Field{
-				Name : "string",
-				Type : "string",
+	testEntities = []model.Entity{
+		model.Entity{
+			Name : "post",
+			Fields : []model.Field{
+				model.Field{
+					Name : "id",
+					Type : "int64",
+					Primary : true,
+				},
+				model.Field{
+					Name : "user_id",
+					Type : "int64",
+				},
+				model.Field{
+					Name : "title",
+					Type : "string",
+				},
+				model.Field{
+					Name : "subtitle",
+					Type : "string",
+				},
+				model.Field{
+					Name : "views",
+					Type : "int",
+				},
+				model.Field{
+					Name : "tags",
+					Slice : true,
+					Type : "string",
+				},
+				model.Field{
+					Name : "created",
+					Package : "time",
+					Type : "Time",
+				},
+				model.Field{
+					Name : "modified",
+					Package : "time",
+					Type : "Time",
+				},
 			},
-			model.Field{
-				Name : "int",
-				Type : "int",
+			Methods : []model.Method {
+				model.Method{
+					Name : "browse",
+					Type : "browse",
+				},
+				model.Method{
+					Name : "read",
+					Type : "read",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "edit",
+					Type : "edit",
+				},
+				model.Method{
+					Name : "add",
+					Type : "add",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "delete",
+					Type : "delete",
+				},
 			},
-		},
-		Methods : []model.Method {
-			model.Method{
-				Name : "add",
-				Type : "add",
+			Repositories : []model.Repository {
+				model.Repository {
+					Type : "mongo",
+				},
+				model.Repository {
+					Type : "mysql",
+				},
+				model.Repository {
+					Type : "redis",
+				},
 			},
-			model.Method{
-				Name : "read",
-				Type : "read",
+		},	
+		model.Entity{
+			Name : "comment",
+			Interface : true,
+			Fields : []model.Field{
+				model.Field{
+					Name : "id",
+					Type : "int64",
+					Primary : true,
+					Private : true,
+				},
+				model.Field{
+					Name : "post_id",
+					Type : "int64",
+					Private : true,
+				},
+				model.Field{
+					Name : "user_id",
+					Type : "int64",
+					Private : true,
+				},
+				model.Field{
+					Name : "title",
+					Type : "string",
+					Private : true,
+				},
+				model.Field{
+					Name : "body",
+					Type : "string",
+					Private : true,
+				},
+				model.Field{
+					Name : "created",
+					Package : "time",
+					Type : "Time",
+					Private : true,
+				},
+				model.Field{
+					Name : "modified",
+					Package : "time",
+					Type : "Time",
+					Private : true,
+				},
 			},
-			model.Method{
-				Name : "browse",
-				Type : "browse",
+			Methods : []model.Method {
+				model.Method{
+					Name : "browse",
+					Type : "browse",
+				},
+				model.Method{
+					Name : "read",
+					Type : "read",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "edit",
+					Type : "edit",
+				},
+				model.Method{
+					Name : "add",
+					Type : "add",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "delete",
+					Type : "delete",
+				},
 			},
-		},
-	}
-	testField  = model.Field{
-		Name : "bar",
-		Type : "string",
-	}
-	testMethod  = model.Method{
-		Name : "add",
-		Type : "add",
+			Repositories : []model.Repository {
+				model.Repository {
+					Type : "mongo",
+				},
+				model.Repository {
+					Type : "mysql",
+				},
+				model.Repository {
+					Type : "redis",
+				},
+			},
+		},	
 	}
 )
 
 var (
+
 	testRegistryGenerator RegistryGenerator
 
 	// Test File Names
-	testOutputRegistryEntityFileName = "testOutputRegistryEntityFile"
+	testOutputRegistryFileName = "testOutputRegistryFile"
+	testOutputRegistryScaffoldFileName = "testOutputRegistryScaffolFile"
 
 	// Test File Strings
-	testOutputRegistryEntityFile string
+	testOutputRegistryFile string
+	testOutputRegistryScaffoldFile string
 
 )
 
@@ -77,24 +217,26 @@ func init(){
 	testRegistryGenerator = New(formatter, testHelperGenerator)
 
 	// Test
-	testOutputRegistryEntityFileFile, _ := ioutil.ReadFile("./testing/registry/expected/" + testOutputRegistryEntityFileName)
+	testOutputRegistryFileFile, _ := ioutil.ReadFile("./testing/registry/expected/" + testOutputRegistryFileName)
+	testOutputRegistryScaffoldFileFile, _ := ioutil.ReadFile("./testing/registry/expected/" + testOutputRegistryScaffoldFileName)
 
-	testOutputRegistryEntityFile = string(testOutputRegistryEntityFileFile)
+	testOutputRegistryFile = string(testOutputRegistryFileFile)
+	testOutputRegistryScaffoldFile = string(testOutputRegistryScaffoldFileFile)
 
 }
 
-// Test Registry Entity File
+// Test Registry File
 func TestRegistryFile(t *testing.T){
 
 	// Build
-	statement, err := testRegistryGenerator.File(testEntity)
+	statement, err := testRegistryGenerator.File(testEntities)
 
 	// Return
 	if err != nil {
 		t.Errorf(`File() failed with error %v`, err)
 	}
 
-	f, err := os.Create("./testing/registry/created/" + testOutputRegistryEntityFileName)
+	f, err := os.Create("./testing/registry/created/" + testOutputRegistryFileName)
 	if err != nil {
 		t.Errorf(`File() failed with error %v`, err)
 	}
@@ -105,8 +247,36 @@ func TestRegistryFile(t *testing.T){
 	}
 	_, err = f.Write(buf.Bytes())
 
-	if buf.String() != testOutputRegistryEntityFile {
-		t.Errorf(`File() failed; want "%s", got "%s"`, testOutputRegistryEntityFile, buf.String())
+	if buf.String() != testOutputRegistryFile {
+		t.Errorf(`File() failed; want "%s", got "%s"`, testOutputRegistryFile, buf.String())
+	}
+	
+}
+
+// Test Registry Scaffold File
+func TestRegistryScaffoldFile(t *testing.T){
+
+	// Build
+	statement, err := testRegistryGenerator.ScaffoldFile(testEntities)
+
+	// Return
+	if err != nil {
+		t.Errorf(`ScaffoldFile() failed with error %v`, err)
+	}
+
+	f, err := os.Create("./testing/registry/created/" + testOutputRegistryScaffoldFileName)
+	if err != nil {
+		t.Errorf(`ScaffoldFile() failed with error %v`, err)
+	}
+	buf := &bytes.Buffer{}
+	err = statement.Render(buf)
+	if err != nil {
+		t.Errorf(`ScaffoldFile() failed with error %v`, err)
+	}
+	_, err = f.Write(buf.Bytes())
+
+	if buf.String() != testOutputRegistryScaffoldFile {
+		t.Errorf(`ScaffoldFile() failed; want "%s", got "%s"`, testOutputRegistryScaffoldFile, buf.String())
 	}
 	
 }

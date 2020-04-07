@@ -44,13 +44,17 @@ const(
 
 	testOutputScaffoldInterfaceDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface"
 	testOutputScaffoldInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller"
+	
 	testOutputInterfaceControllerDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http"
 	testOutputInterfaceControllerDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http"
 	testOutputInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http/controller.go"
 	testOutputScaffoldInterfaceControllerFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/controller/foo/http/scaffold.go"
+	
 	testOutputScaffoldInterfaceRepositoryDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository"
+	testOutputInterfaceRepositoryDirectoryImportPath = "github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo/scribble"
 	testOutputInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo/scribble/repository.go"
 	testOutputScaffoldInterfaceRepositoryFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/repository/foo/scribble/scaffold.go"
+	
 	testOutputScaffoldInterfacePresenterDirectory = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter"
 	testOutputInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo/default/presenter.go"
 	testOutputScaffoldInterfacePresenterFile = "/go/src/github.com/brianshepanek/turnbull/_testing/output/interface/presenter/foo/default/scaffold.go"
@@ -642,6 +646,23 @@ func TestOutputInterfaceRepositoryControllerDirectoryImportPath(t *testing.T){
 
 	if dir != testOutputInterfaceControllerDirectoryImportPath {
 		t.Errorf(`OutputInterfaceControllerDirectoryImportPath() failed; want "%s", got "%s"`, testOutputInterfaceControllerDirectoryImportPath, dir)
+	}
+}
+
+// Test Output Interface Controller Directory Import Path
+func TestOutputInterfaceRepositoryDirectoryImportPath(t *testing.T){
+
+	// Build
+
+	dir, err := testFormatter.OutputInterfaceRepositoryDirectoryImportPath("scribble", testEntity)
+
+	// Return
+	if err != nil {
+		t.Errorf(`OutputInterfaceControllerDirectoryImportPath() failed with error %v`, err)
+	}
+
+	if dir != testOutputInterfaceRepositoryDirectoryImportPath {
+		t.Errorf(`OutputInterfaceControllerDirectoryImportPath() failed; want "%s", got "%s"`, testOutputInterfaceRepositoryDirectoryImportPath, dir)
 	}
 }
 

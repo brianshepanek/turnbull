@@ -31,4 +31,5 @@ type Callback struct {
 
 type Repository struct {
 	Type string
+	Primary bool
 }

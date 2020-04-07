@@ -88,14 +88,20 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 
 func (repositoryGenerator *repositoryGenerator) EntityFile(entity model.Entity) (*jen.File, error){
 
+	return nil , nil
+}
+
+func (repositoryGenerator *repositoryGenerator) RegistryFile(entity model.Entity) (*jen.File, error){
+
 	// File
-	packageName , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityPackageName()
+	packageName , err := repositoryGenerator.formatter.OutputRegistryPackageName()
 	if err != nil {
 		return nil, err
 	}
 	f := jen.NewFile(packageName)
 
-	return f , nil
+
+	return f, nil
 }
 
 func (repositoryGenerator *repositoryGenerator) interfaceRepositoryStruct(entity model.Entity) (jen.Statement, error){

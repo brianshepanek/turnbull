@@ -8,6 +8,7 @@ import(
 	"github.com/brianshepanek/turnbull/generator/jen/helper"
 	"github.com/brianshepanek/turnbull/generator/jen/domain"
 	"github.com/brianshepanek/turnbull/generator/jen/usecase"
+	"github.com/brianshepanek/turnbull/generator/jen/registry"
 	generatorInterface "github.com/brianshepanek/turnbull/generator/jen/interface"
 )
 
@@ -21,6 +22,7 @@ type Generator struct{
 	interfaceControllerGenerators map[string]generatorInterface.ControllerGenerator
 	interfacePresenterGenerators map[string]generatorInterface.PresenterGenerator
 	interfaceRepositoryGenerators map[string]generatorInterface.RepositoryGenerator
+	registryGenerator registry.RegistryGenerator
 }
 
 func New(config *config.Config, formatter formatter.Formatter, interfaceControllerGenerators map[string]generatorInterface.ControllerGenerator,interfacePresenterGenerators map[string]generatorInterface.PresenterGenerator, interfaceRepositoryGenerators map[string]generatorInterface.RepositoryGenerator) * Generator{
@@ -31,6 +33,7 @@ func New(config *config.Config, formatter formatter.Formatter, interfaceControll
 	usecaseInteractorGenerator := usecase.NewInteractorGenerator(config, formatter, helperGenerator)
 	usecasePresenterGenerator := usecase.NewPresenterGenerator(config, formatter, helperGenerator)
 	usecaseRepositoryGenerator := usecase.NewRepositoryGenerator(config, formatter, helperGenerator)
+	registryGenerator := registry.New(formatter, helperGenerator)
 
 	return &Generator{
 		config : config,
@@ -42,6 +45,7 @@ func New(config *config.Config, formatter formatter.Formatter, interfaceControll
 		interfaceControllerGenerators : interfaceControllerGenerators,
 		interfacePresenterGenerators : interfacePresenterGenerators,
 		interfaceRepositoryGenerators : interfaceRepositoryGenerators,
+		registryGenerator :registryGenerator,
 	}
 }
 
@@ -239,6 +243,28 @@ func (generator *Generator) InterfaceRepositoryEntity(driver string, entity mode
 	return nil
 }
 
+func (generator *Generator) InterfaceRepositoryRegistry(driver string, entity model.Entity, writer io.Writer) (error){
+
+	// Vars
+	var interfaceRepositoryGenerator generatorInterface.RepositoryGenerator
+	if val, ok := generator.interfaceRepositoryGenerators[driver]; ok {
+		interfaceRepositoryGenerator = val
+	}
+
+	// File
+	file, err := interfaceRepositoryGenerator.RegistryFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	if file != nil {
+		file.Render(writer)
+	}
+
+	return nil
+}
+
 func (generator *Generator) InterfacePresenter(driver string, entity model.Entity, writer io.Writer) (error){
 
 	// Vars
@@ -359,6 +385,38 @@ func (generator *Generator) InterfaceControllerEntity(driver string, entity mode
 
 	// File
 	file, err := interfaceControllerGenerator.EntityFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	if file != nil {
+		file.Render(writer)
+	}
+
+	return nil
+}
+
+func (generator *Generator) Registry(entities []model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.registryGenerator.File(entities)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	if file != nil {
+		file.Render(writer)
+	}
+
+	return nil
+}
+
+func (generator *Generator) ScaffoldRegistry(entities []model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.registryGenerator.ScaffoldFile(entities)
 	if err != nil {
 		return err
 	}

@@ -46,6 +46,7 @@ func (repositoryGenerator *repositoryGenerator) File(entity model.Entity) (*jen.
 	}
 	f.Add(&interfaceRepositoryConstructorFunction)
 
+
 	return f, nil
 }
 
@@ -90,6 +91,213 @@ func (repositoryGenerator *repositoryGenerator) ScaffoldFile(entity model.Entity
 
 func (repositoryGenerator *repositoryGenerator) EntityFile(entity model.Entity) (*jen.File, error){
 	return nil , nil
+}
+
+func (repositoryGenerator *repositoryGenerator) RegistryFile(entity model.Entity) (*jen.File, error){
+
+	// File
+	packageName , err := repositoryGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+	
+	// Struct
+	interfaceRepositoryStruct, err := repositoryGenerator.scaffoldInterfaceRepositoryRegistryStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceRepositoryStruct)
+
+	// Constructor Function
+	interfaceRepositoryRegistryConstructorFunction, err := repositoryGenerator.interfaceRepositoryRegistryConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceRepositoryRegistryConstructorFunction)
+
+	// Local Constructor Function
+	interfaceRepositoryRegistryLocalConstructorFunction, err := repositoryGenerator.interfaceRepositoryRegistryLocalConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceRepositoryRegistryLocalConstructorFunction)
+
+
+	return f, nil
+}
+
+func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryRegistryStruct(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Fields
+	fields, err := repositoryGenerator.scaffoldInterfaceRepositoryStructFields()
+	if err != nil {
+		return nil, err
+	}
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryRegistryStructId("mysql", entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Struct
+	resp.Struct(fields...)
+
+	
+	return resp, nil
+
+}
+
+func (repositoryGenerator *repositoryGenerator) interfaceRepositoryRegistryConstructorFunction(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Registry
+	registryName , err := repositoryGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// ID
+	registryStructId , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryRegistryStructId("mysql", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Type
+	resp.Func()
+
+	resp.Params(
+		jen.Id("r").
+		Op("*").
+		Qual("", registryName),
+	)
+
+	// Fields
+	fields, err := repositoryGenerator.scaffoldInterfaceRepositoryStructFields()
+	if err != nil {
+		return nil, err
+	}
+
+	// ID
+	id , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryRegistryConstructorFunctionId("mysql", entity)
+	if err != nil {
+		return nil, err
+	}
+
+
+	resp.Id(id)
+
+	// Params
+	resp.Params(fields...)
+
+	// Block
+	resp.Block(
+
+		jen.Id("r").
+		Dot(registryStructId).
+		Dot("db").
+		Op("=").
+		Id("db"),
+
+		jen.Id("r").
+		Dot(registryStructId).
+		Dot("table").
+		Op("=").
+		Id("table"),
+
+	)
+	
+	return resp, nil
+
+}
+
+func (repositoryGenerator *repositoryGenerator) interfaceRepositoryRegistryLocalConstructorFunction(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Registry
+	registryName , err := repositoryGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// ID
+	registryStructId , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryRegistryStructId("mysql", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	interfaceId , err := repositoryGenerator.formatter.OutputUsecaseRepositoryInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	interfaceImportPath , err := repositoryGenerator.formatter.OutputInterfaceRepositoryDirectoryImportPath("mysql", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	usecaseImportPath , err := repositoryGenerator.formatter.OutputScaffoldUsecaseRepositoryDirectoryImportPath()
+	if err != nil {
+		return nil, err
+	}
+	
+	// Type
+	resp.Func()
+
+	resp.Params(
+		jen.Id("r").
+		Op("*").
+		Qual("", registryName),
+	)
+
+	// ID
+	id , err := repositoryGenerator.formatter.OutputScaffoldInterfaceRepositoryRegistryLocalConstructorFunctionId("mysql", entity)
+	if err != nil {
+		return nil, err
+	}
+
+
+	resp.Id(id)
+
+	// Params
+	resp.Params()
+
+	resp.Parens(
+		jen.List(
+			jen.Qual(usecaseImportPath, interfaceId),
+		),
+	)
+
+	resp.Block(
+		jen.Return(
+			jen.Qual(interfaceImportPath, "New").
+			Params(
+
+				jen.Id("r").
+				Dot(registryStructId).
+				Dot("db"),
+
+				jen.Id("r").
+				Dot(registryStructId).
+				Dot("table"),
+
+			),
+		),
+	)
+	
+	return resp, nil
+
 }
 
 func (repositoryGenerator *repositoryGenerator) interfaceRepositoryStruct(entity model.Entity) (jen.Statement, error){

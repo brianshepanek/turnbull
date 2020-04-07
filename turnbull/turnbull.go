@@ -422,6 +422,54 @@ func (turnbull *turnbull) buildEntityInterfaceRepository(driver string, entity m
 	return nil
 }
 
+// Build Registry Interface Repository
+func (turnbull *turnbull) buildRegistryInterfaceRepository(driver string, entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.InterfaceRepositoryRegistry(driver, entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// Exists
+	if len(buf.String()) > 0 {
+
+		// File Name
+		fileName, err := turnbull.formatter.OutputInterfaceRepositoryRegistryFile(driver, entity)
+		if err != nil {
+			return err
+		}
+
+		// Ensure
+		dirName := filepath.Dir(fileName)
+		if _, serr := os.Stat(dirName); serr != nil {
+			merr := os.MkdirAll(dirName, os.ModePerm)
+			if merr != nil {
+				return err
+			}
+		}
+
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+		
+	}
+
+	
+
+	return nil
+}
+
 // Build Interface Presenter
 func (turnbull *turnbull) buildInterfacePresenter(driver string, entity model.Entity) (error){
 
@@ -651,6 +699,38 @@ func (turnbull *turnbull) buildInterfaceControllerEntity(driver string, entity m
 		if merr != nil {
 			return err
 		}
+	}
+
+	// File
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Write
+	_, err = file.WriteString(buf.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Build Scaffold Registry
+func (turnbull *turnbull) buildScaffoldRegistry(entities []model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.ScaffoldRegistry(entities, buf)
+	if err != nil {
+		return err
+	}
+
+	// File Name
+	fileName, err := turnbull.formatter.OutputRegistryFile()
+	if err != nil {
+		return err
 	}
 
 	// File

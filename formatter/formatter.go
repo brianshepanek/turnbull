@@ -20,6 +20,7 @@ type Formatter interface{
 
 	OutputRegistryPackageName() (string, error)
 	OutputRegistryDirectory() (string, error)
+	OutputRegistryFile() (string, error)
 	OutputRegistryEntityFile(entity model.Entity) (string, error)
 	OutputRegistryEntityPresenterConstructorFunctionId(entity model.Entity) (string, error)
 	OutputRegistryEntityRepositoryConstructorFunctionId(entity model.Entity) (string, error)
@@ -46,16 +47,22 @@ type Formatter interface{
 	OutputScaffoldUsecasePresenterFile(entity model.Entity) (string, error)
 
 	OutputScaffoldInterfaceDirectory() (string, error)
+	
 	OutputScaffoldInterfaceControllerDirectory() (string, error)
 	OutputInterfaceControllerDirectory(driver string, entity model.Entity) (string, error)
 	OutputInterfaceControllerDirectoryImportPath(driver string, entity model.Entity) (string, error)
 	OutputInterfaceControllerFile(driver string, entity model.Entity) (string, error)
 	OutputInterfaceControllerEntityFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceControllerFile(driver string, entity model.Entity) (string, error)
+
 	OutputScaffoldInterfaceRepositoryDirectory() (string, error)
 	OutputInterfaceRepositoryFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryFile(driver string, entity model.Entity) (string, error)
 	OutputInterfaceRepositoryEntityFile(driver string, entity model.Entity) (string, error)
+	OutputInterfaceRepositoryRegistryFile(driver string, entity model.Entity) (string, error)
+	OutputInterfaceRepositoryDirectory(driver string, entity model.Entity) (string, error)
+	OutputInterfaceRepositoryDirectoryImportPath(driver string, entity model.Entity) (string, error)
+
 	OutputScaffoldInterfacePresenterDirectory() (string, error)
 	OutputInterfacePresenterFile(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfacePresenterFile(driver string, entity model.Entity) (string, error)
@@ -107,6 +114,9 @@ type Formatter interface{
 	OutputScaffoldInterfaceRepositoryPackageName() (string, error)
 	OutputInterfaceRepositoryStructId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryStructId(driver string, entity model.Entity) (string, error)
+	OutputScaffoldInterfaceRepositoryRegistryStructId(driver string, entity model.Entity) (string, error)
+	OutputScaffoldInterfaceRepositoryRegistryConstructorFunctionId(driver string, entity model.Entity) (string, error)
+	OutputScaffoldInterfaceRepositoryRegistryLocalConstructorFunctionId(driver string, entity model.Entity) (string, error)
 	OutputScaffoldInterfaceRepositoryConstructorFunctionId(driver string, entity model.Entity) (string, error)
 
 	OutputScaffoldInterfacePresenterPackageName() (string, error)
@@ -145,6 +155,17 @@ func (formatter *formatter) OutputRegistryDirectory() (string, error) {
 	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Registry.Name}, formatter.config.PathSeparator), nil
 }
 
+func (formatter *formatter) OutputRegistryFile() (string, error) {
+	
+	path, err  := formatter.OutputRegistryDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{formatter.config.Registry.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+
+}
 func (formatter *formatter) OutputRegistryEntityFile(entity model.Entity) (string, error) {
 	
 	path, err  := formatter.OutputRegistryDirectory()
@@ -375,6 +396,22 @@ func (formatter *formatter) OutputScaffoldInterfaceRepositoryDirectory() (string
 	return strings.Join([]string{formatter.config.AbsOutputPath, formatter.config.Layers.Interface.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.PathSeparator), nil
 }
 
+func (formatter *formatter) OutputInterfaceRepositoryDirectory(driver string, entity model.Entity) (string, error) {
+	path, err  := formatter.OutputScaffoldInterfaceRepositoryDirectory()
+	if err != nil {
+		return "", nil
+	}
+	return strings.Join([]string{path, entity.Name, driver}, formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputInterfaceRepositoryDirectoryImportPath(driver string, entity model.Entity) (string, error) {
+	path, err  := formatter.OutputInterfaceRepositoryDirectory(driver, entity)
+	if err != nil {
+		return "", nil
+	}
+	return strings.TrimLeft(strings.Replace(path, strings.Join([]string{os.Getenv("GOPATH"), formatter.config.WorkspaceSourceDirName}, formatter.config.PathSeparator), "", 1), formatter.config.PathSeparator), nil
+}
+
 func (formatter *formatter) OutputInterfaceRepositoryFile(driver string, entity model.Entity) (string, error) {
 	path, err  := formatter.OutputScaffoldInterfaceRepositoryDirectory()
 	if err != nil {
@@ -401,6 +438,17 @@ func (formatter *formatter) OutputInterfaceRepositoryEntityFile(driver string, e
 		return "", nil
 	}
 	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputInterfaceRepositoryRegistryFile(driver string, entity model.Entity) (string, error) {
+	
+	path, err  := formatter.OutputRegistryDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, driver, formatter.config.Layers.Usecase.Repository.Name, formatter.config.Registry.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }
@@ -624,6 +672,18 @@ func (formatter *formatter) OutputInterfaceRepositoryStructId(driver string, ent
 
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryStructId(driver string, entity model.Entity) (string, error) {
 	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name, formatter.config.Layers.Interface.Repository.Name, "struct"}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldInterfaceRepositoryRegistryStructId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{entity.Name, driver, formatter.config.Layers.Interface.Repository.Name, formatter.config.Registry.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldInterfaceRepositoryRegistryConstructorFunctionId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToCamel(strings.Join([]string{"register", entity.Name, driver, formatter.config.Layers.Interface.Repository.Name, formatter.config.Registry.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldInterfaceRepositoryRegistryLocalConstructorFunctionId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{"new", entity.Name, driver, formatter.config.Layers.Interface.Repository.Name, formatter.config.Registry.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryConstructorFunctionId(driver string, entity model.Entity) (string, error) {

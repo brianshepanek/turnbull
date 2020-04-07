@@ -389,6 +389,26 @@ func TestBuildScaffoldInterfaceRepository(t *testing.T){
 	}	
 }
 
+// Test Build Interface Repository Registry
+func TestBuildInterfaceRepositoryRegistry(t *testing.T){
+
+	// Build
+	for _, testEntity := range testEntities {
+
+		for _, repository := range testEntity.Repositories {
+
+			err := testTurnbull.buildRegistryInterfaceRepository(repository.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildRegistryInterfaceRepository() failed with error %v`, err)
+			}
+
+		}
+
+	}	
+}
+
 // Test Build Interface Repository Entity
 func TestBuildInterfaceRepositoryEntity(t *testing.T){
 
@@ -489,4 +509,16 @@ func TestBuildInterfaceControllerEntity(t *testing.T){
 			t.Errorf(`buildScaffoldInterfaceController() failed with error %v`, err)
 		}
 	}	
+}
+
+// Test Build Scaffold Registry
+func TestBuildScaffoldRegistry(t *testing.T){
+
+	err := testTurnbull.buildScaffoldRegistry(testEntities)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildScaffoldRegistry() failed with error %v`, err)
+	}
+
 }

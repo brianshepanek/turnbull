@@ -1,0 +1,10 @@
+package registry
+
+type registry struct {
+	postMongoRepositoryRegistry
+	postMysqlRepositoryRegistry
+	postRedisRepositoryRegistry
+	commentMongoRepositoryRegistry
+	commentMysqlRepositoryRegistry
+	commentRedisRepositoryRegistry
+}

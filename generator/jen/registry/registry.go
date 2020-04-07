@@ -15,7 +15,8 @@ type registryGenerator struct{
 type RegistryGenerator interface{
 
 	// File
-	File(entity model.Entity) (*jen.File, error)
+	File(entities []model.Entity) (*jen.File, error)
+	ScaffoldFile(entities []model.Entity) (*jen.File, error)
 
 }
 
@@ -26,7 +27,7 @@ func New(formatter formatter.Formatter, helperGenerator helper.Generator) Regist
 	}
 }
 
-func (registryGenerator *registryGenerator) File(entity model.Entity) (*jen.File, error){
+func (registryGenerator *registryGenerator) File(entities []model.Entity) (*jen.File, error){
 	
 	
 	// File
@@ -36,118 +37,47 @@ func (registryGenerator *registryGenerator) File(entity model.Entity) (*jen.File
 	}
 	f := jen.NewFile(packageName)
 
-	// Presenter Constructor Function
-	presenterConstructorFunction, err := registryGenerator.presenterConstructorFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&presenterConstructorFunction)
-	f.Line()
-
-	// Repository Constructor Function
-	repositoryConstructorFunction, err := registryGenerator.repositoryConstructorFunction(entity)
-	if err != nil {
-		return nil, err
-	}
-	f.Add(&repositoryConstructorFunction)
-	f.Line()
-	
-	
 	return f, nil
 }
 
-func (registryGenerator *registryGenerator) presenterConstructorFunction(entity model.Entity) (jen.Statement, error){
-
-	// ID
-	var statement jen.Statement
+func (registryGenerator *registryGenerator) ScaffoldFile(entities []model.Entity) (*jen.File, error){
+	
+	// Vars
+	var resp jen.Statement
+	var fields []jen.Code
+	
+	// File
 	packageName , err := registryGenerator.formatter.OutputRegistryPackageName()
 	if err != nil {
 		return nil, err
 	}
+	f := jen.NewFile(packageName)
 
-	id , err := registryGenerator.formatter.OutputRegistryEntityPresenterConstructorFunctionId(entity)
-	if err != nil {
-		return nil, err
+	for _, entity := range entities {
+		for _, repository := range entity.Repositories {
+			
+			// ID
+			registryStructId , err := registryGenerator.formatter.OutputScaffoldInterfaceRepositoryRegistryStructId(repository.Type, entity)
+			if err != nil {
+				return nil, err
+			}
+
+			fields = append(fields, jen.Id(registryStructId))
+
+		}
+		
 	}
 
-	usecaseImportPath , err := registryGenerator.formatter.OutputScaffoldUsecasePresenterDirectoryImportPath()
-	if err != nil {
-		return nil, err
-	}
-
-	usecaseInterfaceId , err := registryGenerator.formatter.OutputUsecasePresenterInterfaceId(entity)
-	if err != nil {
-		return nil, err
-	}
-	
-
-	// Func
-	statement.Func()
-
-	// Params
-	statement.Params(
-		jen.Op("*").
-		Id(packageName),
-	)
+	// Type
+	resp.Type()
 
 	// ID
-	statement.Id(id)
+	resp.Id(packageName)
 
-	// Params
-	statement.Params()
+	// Struct
+	resp.Struct(fields...)
 
-	// List
-	statement.List(
-		jen.Qual(usecaseImportPath, usecaseInterfaceId),
-	)
+	f.Add(&resp)
 
-	return statement, nil
-}
-
-func (registryGenerator *registryGenerator) repositoryConstructorFunction(entity model.Entity) (jen.Statement, error){
-
-	// ID
-	var statement jen.Statement
-	packageName , err := registryGenerator.formatter.OutputRegistryPackageName()
-	if err != nil {
-		return nil, err
-	}
-
-	id , err := registryGenerator.formatter.OutputRegistryEntityRepositoryConstructorFunctionId(entity)
-	if err != nil {
-		return nil, err
-	}
-
-	usecaseImportPath , err := registryGenerator.formatter.OutputScaffoldUsecaseRepositoryDirectoryImportPath()
-	if err != nil {
-		return nil, err
-	}
-
-	usecaseInterfaceId , err := registryGenerator.formatter.OutputUsecaseRepositoryInterfaceId(entity)
-	if err != nil {
-		return nil, err
-	}
-	
-
-	// Func
-	statement.Func()
-
-	// Params
-	statement.Params(
-		jen.Op("*").
-		Id(packageName),
-	)
-
-	// ID
-	statement.Id(id)
-
-	// Params
-	statement.Params()
-
-	// List
-	statement.List(
-		jen.Qual(usecaseImportPath, usecaseInterfaceId),
-	)
-
-	return statement, nil
+	return f, nil
 }

@@ -9,6 +9,7 @@ type Generator interface {
 	DomainGenerator
 	UsecaseGenerator
 	InterfaceGenerator
+	RegistryGenerator
 
 }
 
@@ -27,14 +28,25 @@ type UsecaseGenerator interface {
 }
 
 type InterfaceGenerator interface {
+
 	InterfaceRepository(driver string, entity model.Entity, writer io.Writer) (error)
 	ScaffoldInterfaceRepository(driver string, entity model.Entity, writer io.Writer) (error)
 	InterfaceRepositoryEntity(driver string, entity model.Entity, writer io.Writer) (error)
+	InterfaceRepositoryRegistry(driver string, entity model.Entity, writer io.Writer) (error)
+
 	InterfacePresenter(driver string, entity model.Entity, writer io.Writer) (error)
 	ScaffoldInterfacePresenter(driver string, entity model.Entity, writer io.Writer) (error)
+
 	InterfaceAppController(driver string, entities []model.Entity, writer io.Writer) (error)
 	InterfaceController(driver string, entity model.Entity, writer io.Writer) (error)
 	ScaffoldInterfaceController(driver string, entity model.Entity, writer io.Writer) (error)
 	InterfaceControllerEntity(driver string, entity model.Entity, writer io.Writer) (error)
+}
+
+type RegistryGenerator interface {
+	Registry(entities []model.Entity, writer io.Writer) (error)
+	ScaffoldRegistry(entities []model.Entity, writer io.Writer) (error)
+	// EntityRegistry(entity model.Entity, writer io.Writer) (error)
+	// EntityScaffoldRegistry(entity model.Entity, writer io.Writer) (error)
 }
 
