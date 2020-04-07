@@ -11,10 +11,10 @@ type commentMysqlRepositoryRegistry struct {
 	table string
 }
 
-func (r *registry) RegisterCommentMysqlRepositoryRegistry(db *sql.DB, table string) {
+func (r *registry) RegisterMysqlCommentRepository(db *sql.DB, table string) {
 	r.commentMysqlRepositoryRegistry.db = db
 	r.commentMysqlRepositoryRegistry.table = table
 }
-func (r *registry) newCommentMysqlRepository() repository.CommentRepository {
+func (r *registry) newMysqlCommentRepository() repository.CommentRepository {
 	return mysql.New(r.commentMysqlRepositoryRegistry.db, r.commentMysqlRepositoryRegistry.table)
 }

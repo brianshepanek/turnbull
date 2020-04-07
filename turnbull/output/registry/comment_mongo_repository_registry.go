@@ -12,11 +12,11 @@ type commentMongoRepositoryRegistry struct {
 	collection string
 }
 
-func (r *registry) RegisterCommentMongoRepositoryRegistry(client *mongo.Client, db string, collection string) {
+func (r *registry) RegisterMongoCommentRepository(client *mongo.Client, db string, collection string) {
 	r.commentMongoRepositoryRegistry.client = client
 	r.commentMongoRepositoryRegistry.db = db
 	r.commentMongoRepositoryRegistry.collection = collection
 }
-func (r *registry) newCommentMongoRepository() repository.CommentRepository {
+func (r *registry) newMongoCommentRepository() repository.CommentRepository {
 	return mongo1.New(r.commentMongoRepositoryRegistry.client, r.commentMongoRepositoryRegistry.db, r.commentMongoRepositoryRegistry.collection)
 }

@@ -7,7 +7,7 @@ import (
 
 type commentHttpControllerRegistry struct{}
 
-func (r *registry) RegisterCommentHttpControllerRegistry() {}
-func (r *registry) NewCommentHttpController() http.HttpCommentController {
-	return http.New(interactor.NewCommentInteractor(r.newCommentMysqlRepository(), r.newCommentDefaultPresenter()))
+func (r *registry) RegisterHttpCommentController() {}
+func (r *registry) NewHttpCommentController() http.HttpCommentController {
+	return http.New(interactor.NewCommentInteractor(r.newMysqlCommentRepository(), r.newDefaultCommentPresenter()))
 }

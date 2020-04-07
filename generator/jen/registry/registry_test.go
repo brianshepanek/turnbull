@@ -103,6 +103,11 @@ var(
 					Type : "redis",
 				},
 			},
+			Controllers : []model.Controller {
+				model.Controller {
+					Type : "http",
+				},
+			},
 		},	
 		model.Entity{
 			Name : "comment",
@@ -188,6 +193,11 @@ var(
 				},
 				model.Repository {
 					Type : "redis",
+				},
+			},
+			Controllers : []model.Controller {
+				model.Controller {
+					Type : "http",
 				},
 			},
 		},	

@@ -12,11 +12,11 @@ type postMongoRepositoryRegistry struct {
 	collection string
 }
 
-func (r *registry) RegisterPostMongoRepositoryRegistry(client *mongo.Client, db string, collection string) {
+func (r *registry) RegisterMongoPostRepository(client *mongo.Client, db string, collection string) {
 	r.postMongoRepositoryRegistry.client = client
 	r.postMongoRepositoryRegistry.db = db
 	r.postMongoRepositoryRegistry.collection = collection
 }
-func (r *registry) newPostMongoRepository() repository.PostRepository {
+func (r *registry) newMongoPostRepository() repository.PostRepository {
 	return mongo1.New(r.postMongoRepositoryRegistry.client, r.postMongoRepositoryRegistry.db, r.postMongoRepositoryRegistry.collection)
 }

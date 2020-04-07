@@ -745,11 +745,11 @@ func (formatter *formatter) OutputScaffoldInterfaceRepositoryRegistryStructId(dr
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryRegistryConstructorFunctionId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{"register", entity.Name, driver, formatter.config.Layers.Interface.Repository.Name, formatter.config.Registry.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToCamel(strings.Join([]string{"register", driver, entity.Name, formatter.config.Layers.Interface.Repository.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryRegistryLocalConstructorFunctionId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToLowerCamel(strings.Join([]string{"new", entity.Name, driver, formatter.config.Layers.Interface.Repository.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{"new", driver, entity.Name,  formatter.config.Layers.Interface.Repository.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceRepositoryConstructorFunctionId(driver string, entity model.Entity) (string, error) {
@@ -781,11 +781,11 @@ func (formatter *formatter) OutputScaffoldInterfacePresenterRegistryStructId(dri
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterRegistryConstructorFunctionId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{"register", entity.Name, driver, formatter.config.Layers.Interface.Presenter.Name, formatter.config.Registry.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToCamel(strings.Join([]string{"register", driver, entity.Name, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterRegistryLocalConstructorFunctionId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToLowerCamel(strings.Join([]string{"new", entity.Name, driver, formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToLowerCamel(strings.Join([]string{"new", driver, entity.Name,  formatter.config.Layers.Interface.Presenter.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerPackageName() (string, error) {
@@ -817,11 +817,11 @@ func (formatter *formatter) OutputScaffoldInterfaceControllerRegistryStructId(dr
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerRegistryConstructorFunctionId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{"register", entity.Name, driver, formatter.config.Layers.Interface.Controller.Name, formatter.config.Registry.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToCamel(strings.Join([]string{"register", driver,  entity.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfaceControllerRegistryLocalConstructorFunctionId(driver string, entity model.Entity) (string, error) {
-	return strcase.ToCamel(strings.Join([]string{"new", entity.Name, driver, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
+	return strcase.ToCamel(strings.Join([]string{"new", driver, entity.Name, formatter.config.Layers.Interface.Controller.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldUsecaseInteractorRegistryLocalConstructorFunctionId(entity model.Entity) (string, error) {

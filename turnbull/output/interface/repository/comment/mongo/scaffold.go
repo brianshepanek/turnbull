@@ -24,7 +24,7 @@ func (r *mongoCommentRepositoryStruct) Browse(ctx context.Context, req entity.Co
 
 	for cursor.Next(ctx) {
 		elem := entity.NewComment()
-		err := cursor.Decode(&elem)
+		err := cursor.Decode(elem)
 		if err != nil {
 			return err
 		}

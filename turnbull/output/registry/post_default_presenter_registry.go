@@ -7,7 +7,7 @@ import (
 
 type postDefaultPresenterRegistry struct{}
 
-func (r *registry) RegisterPostDefaultPresenterRegistry() {}
-func (r *registry) newPostDefaultPresenter() presenter.PostPresenter {
+func (r *registry) RegisterDefaultPostPresenter() {}
+func (r *registry) newDefaultPostPresenter() presenter.PostPresenter {
 	return default1.New()
 }

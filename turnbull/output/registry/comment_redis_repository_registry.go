@@ -11,10 +11,10 @@ type commentRedisRepositoryRegistry struct {
 	namespace string
 }
 
-func (r *registry) RegisterCommentRedisRepositoryRegistry(client *redis.Client, namespace string) {
+func (r *registry) RegisterRedisCommentRepository(client *redis.Client, namespace string) {
 	r.commentRedisRepositoryRegistry.client = client
 	r.commentRedisRepositoryRegistry.namespace = namespace
 }
-func (r *registry) newCommentRedisRepository() repository.CommentRepository {
+func (r *registry) newRedisCommentRepository() repository.CommentRepository {
 	return redis1.New(r.commentRedisRepositoryRegistry.client, r.commentRedisRepositoryRegistry.namespace)
 }

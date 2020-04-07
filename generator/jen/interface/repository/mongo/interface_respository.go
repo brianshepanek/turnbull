@@ -694,16 +694,28 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 		Call(),
 	)
 
-	nextBlock = append(nextBlock,
-		jen.Err().
-		Op(":=").
-		Id("cursor").
-		Dot("Decode").
-		Params(
-			jen.Op("&").
-			Id("elem"),
-		),
-	)
+	if entity.Interface {
+		nextBlock = append(nextBlock,
+			jen.Err().
+			Op(":=").
+			Id("cursor").
+			Dot("Decode").
+			Params(
+				jen.Id("elem"),
+			),
+		)
+	} else {
+		nextBlock = append(nextBlock,
+			jen.Err().
+			Op(":=").
+			Id("cursor").
+			Dot("Decode").
+			Params(
+				jen.Op("&").
+				Id("elem"),
+			),
+		)
+	}	
 
 	nextBlock = append(nextBlock,
 		jen.If(

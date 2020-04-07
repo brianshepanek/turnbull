@@ -7,7 +7,7 @@ import (
 
 type postHttpControllerRegistry struct{}
 
-func (r *registry) RegisterPostHttpControllerRegistry() {}
-func (r *registry) NewPostHttpController() http.HttpPostController {
-	return http.New(interactor.NewPostInteractor(r.newPostMongoRepository(), r.newPostDefaultPresenter()))
+func (r *registry) RegisterHttpPostController() {}
+func (r *registry) NewHttpPostController() http.HttpPostController {
+	return http.New(interactor.NewPostInteractor(r.newMongoPostRepository(), r.newDefaultPostPresenter()))
 }

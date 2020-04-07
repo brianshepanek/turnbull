@@ -7,7 +7,7 @@ import (
 
 type commentDefaultPresenterRegistry struct{}
 
-func (r *registry) RegisterCommentDefaultPresenterRegistry() {}
-func (r *registry) newCommentDefaultPresenter() presenter.CommentPresenter {
+func (r *registry) RegisterDefaultCommentPresenter() {}
+func (r *registry) newDefaultCommentPresenter() presenter.CommentPresenter {
 	return default1.New()
 }
