@@ -15,6 +15,6 @@ func (r *registry) RegisterPostRedisRepositoryRegistry(client *redis.Client, nam
 	r.postRedisRepositoryRegistry.client = client
 	r.postRedisRepositoryRegistry.namespace = namespace
 }
-func (r *registry) newPostRedisRepositoryRegistry() repository.PostRepository {
+func (r *registry) newPostRedisRepository() repository.PostRepository {
 	return redis1.New(r.postRedisRepositoryRegistry.client, r.postRedisRepositoryRegistry.namespace)
 }

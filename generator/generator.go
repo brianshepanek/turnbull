@@ -43,6 +43,7 @@ type InterfaceGenerator interface {
 	InterfaceController(driver string, entity model.Entity, writer io.Writer) (error)
 	ScaffoldInterfaceController(driver string, entity model.Entity, writer io.Writer) (error)
 	InterfaceControllerEntity(driver string, entity model.Entity, writer io.Writer) (error)
+	InterfaceControllerRegistry(driver string, entity model.Entity, writer io.Writer) (error)
 }
 
 type RegistryGenerator interface {

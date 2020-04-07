@@ -7,6 +7,7 @@ type Entity struct {
 	Methods []Method
 	Repositories []Repository
 	Presenters []Presenter
+	Controllers []Controller
 }
 
 type Field struct {
@@ -36,6 +37,11 @@ type Repository struct {
 }
 
 type Presenter struct {
+	Type string
+	Primary bool
+}
+
+type Controller struct {
 	Type string
 	Primary bool
 }

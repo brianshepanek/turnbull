@@ -8,6 +8,6 @@ import (
 type postDefaultPresenterRegistry struct{}
 
 func (r *registry) RegisterPostDefaultPresenterRegistry() {}
-func (r *registry) newPostDefaultPresenterRegistry() presenter.PostPresenter {
+func (r *registry) newPostDefaultPresenter() presenter.PostPresenter {
 	return default1.New()
 }

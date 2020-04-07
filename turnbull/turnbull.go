@@ -813,6 +813,54 @@ func (turnbull *turnbull) buildInterfaceControllerEntity(driver string, entity m
 	return nil
 }
 
+// Build Registry Interface Controller
+func (turnbull *turnbull) buildRegistryInterfaceController(driver string, entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.InterfaceControllerRegistry(driver, entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// Exists
+	if len(buf.String()) > 0 {
+
+		// File Name
+		fileName, err := turnbull.formatter.OutputInterfaceControllerRegistryFile(driver, entity)
+		if err != nil {
+			return err
+		}
+
+		// Ensure
+		dirName := filepath.Dir(fileName)
+		if _, serr := os.Stat(dirName); serr != nil {
+			merr := os.MkdirAll(dirName, os.ModePerm)
+			if merr != nil {
+				return err
+			}
+		}
+
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+		
+	}
+
+	
+
+	return nil
+}
+
 // Build Scaffold Registry
 func (turnbull *turnbull) buildScaffoldRegistry(entities []model.Entity) (error){
 

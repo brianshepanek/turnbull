@@ -99,6 +99,7 @@ var (
 			Repositories : []model.Repository {
 				model.Repository {
 					Type : "mongo",
+					Primary : true,
 				},
 				model.Repository {
 					Type : "mysql",
@@ -110,6 +111,12 @@ var (
 			Presenters : []model.Presenter {
 				model.Presenter {
 					Type : "default",
+					Primary : true,
+				},
+			},
+			Controllers : []model.Controller {
+				model.Controller {
+					Type : "http",
 				},
 			},
 		},	
@@ -194,6 +201,7 @@ var (
 				},
 				model.Repository {
 					Type : "mysql",
+					Primary : true,
 				},
 				model.Repository {
 					Type : "redis",
@@ -202,6 +210,12 @@ var (
 			Presenters : []model.Presenter {
 				model.Presenter {
 					Type : "default",
+					Primary : true,
+				},
+			},
+			Controllers : []model.Controller {
+				model.Controller {
+					Type : "http",
 				},
 			},
 		},	
@@ -558,6 +572,26 @@ func TestBuildInterfaceControllerEntity(t *testing.T){
 		if err != nil {
 			t.Errorf(`buildScaffoldInterfaceController() failed with error %v`, err)
 		}
+	}	
+}
+
+// Test Build Interface Controller Registry
+func TestBuildInterfaceControllerRegistry(t *testing.T){
+
+	// Build
+	for _, testEntity := range testEntities {
+
+		for _, controller := range testEntity.Controllers {
+
+			err := testTurnbull.buildRegistryInterfaceController(controller.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
+			}
+
+		}
+
 	}	
 }
 

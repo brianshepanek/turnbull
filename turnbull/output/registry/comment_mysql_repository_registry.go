@@ -15,6 +15,6 @@ func (r *registry) RegisterCommentMysqlRepositoryRegistry(db *sql.DB, table stri
 	r.commentMysqlRepositoryRegistry.db = db
 	r.commentMysqlRepositoryRegistry.table = table
 }
-func (r *registry) newCommentMysqlRepositoryRegistry() repository.CommentRepository {
+func (r *registry) newCommentMysqlRepository() repository.CommentRepository {
 	return mysql.New(r.commentMysqlRepositoryRegistry.db, r.commentMysqlRepositoryRegistry.table)
 }

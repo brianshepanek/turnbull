@@ -17,6 +17,6 @@ func (r *registry) RegisterPostMongoRepositoryRegistry(client *mongo.Client, db 
 	r.postMongoRepositoryRegistry.db = db
 	r.postMongoRepositoryRegistry.collection = collection
 }
-func (r *registry) newPostMongoRepositoryRegistry() repository.PostRepository {
+func (r *registry) newPostMongoRepository() repository.PostRepository {
 	return mongo1.New(r.postMongoRepositoryRegistry.client, r.postMongoRepositoryRegistry.db, r.postMongoRepositoryRegistry.collection)
 }

@@ -161,6 +161,40 @@ func (controllerGenerator *controllerGenerator) EntityFile(entity model.Entity) 
 	return f, nil
 }
 
+func (controllerGenerator *controllerGenerator) RegistryFile(entity model.Entity) (*jen.File, error){
+
+	// File
+	packageName , err := controllerGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+	
+	// Struct
+	interfaceControllerStruct, err := controllerGenerator.scaffoldInterfaceControllerRegistryStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceControllerStruct)
+
+	// Constructor Function
+	interfaceControllerRegistryConstructorFunction, err := controllerGenerator.interfaceControllerRegistryConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceControllerRegistryConstructorFunction)
+
+	// Local Constructor Function
+	interfaceControllerRegistryLocalConstructorFunction, err := controllerGenerator.interfaceControllerRegistryLocalConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&interfaceControllerRegistryLocalConstructorFunction)
+
+
+	return f, nil
+}
+
 func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerStructFields(entity model.Entity) ([]jen.Code, error){
 
 	// Vars
@@ -1988,4 +2022,204 @@ func (controllerGenerator *controllerGenerator) scaffoldEntityJSONStructField(fi
 	statement.Tag(map[string]string{"json": strings.Join([]string{tagId, "omitempty"}, ",")})
 
 	return &statement, nil
+}
+
+func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerRegistryStruct(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Fields
+	var fields []jen.Code
+
+	// Type
+	resp.Type()
+
+	// ID
+	id , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerRegistryStructId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+	resp.Id(id)
+
+	// Struct
+	resp.Struct(fields...)
+
+	
+	return resp, nil
+
+}
+
+func (controllerGenerator *controllerGenerator) interfaceControllerRegistryConstructorFunction(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Registry
+	registryName , err := controllerGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// ID
+	// registryStructId , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerRegistryStructId("http", entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// Type
+	resp.Func()
+
+	resp.Params(
+		jen.Id("r").
+		Op("*").
+		Qual("", registryName),
+	)
+
+	// Fields
+	var fields []jen.Code
+
+	// ID
+	id , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerRegistryConstructorFunctionId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+
+
+	resp.Id(id)
+
+	// Params
+	resp.Params(fields...)
+
+	// Block
+	resp.Block()
+	
+	return resp, nil
+
+}
+
+func (controllerGenerator *controllerGenerator) interfaceControllerRegistryLocalConstructorFunction(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Registry
+	registryName , err := controllerGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// // ID
+	// registryStructId , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerRegistryStructId("http", entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	interfaceId , err := controllerGenerator.formatter.OutputInterfaceControllerInterfaceId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// interfaceImportPath , err := controllerGenerator.formatter.OutputInterfaceControllerDirectoryImportPath("http", entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	usecaseImportPath , err := controllerGenerator.formatter.OutputInterfaceControllerDirectoryImportPath("http", entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Type
+	resp.Func()
+
+	resp.Params(
+		jen.Id("r").
+		Op("*").
+		Qual("", registryName),
+	)
+
+	// ID
+	id , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerRegistryLocalConstructorFunctionId("http", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Interactor Import Path
+	interactorImportPath , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorDirectoryImportPath()
+	if err != nil {
+		return nil, err
+	}
+	
+
+	// Local Interactor Id
+	interactorId , err := controllerGenerator.formatter.OutputUsecaseInteractorInterfaceConstructorFunctionId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Primary Repository Function
+	var primaryRepositoryConstructorId string
+	for _, repository := range entity.Repositories {
+		if repository.Primary {
+
+			// ID
+			id, err := controllerGenerator.formatter.OutputScaffoldInterfaceRepositoryRegistryLocalConstructorFunctionId(repository.Type, entity)
+			if err != nil {
+				return nil, err
+			}
+			primaryRepositoryConstructorId = id
+
+		}
+	}
+
+	// Primary Presenter Function
+	var primaryPresenterConstructorId string
+	for _, presenter := range entity.Presenters {
+		if presenter.Primary {
+
+			// ID
+			id, err := controllerGenerator.formatter.OutputScaffoldInterfacePresenterRegistryLocalConstructorFunctionId(presenter.Type, entity)
+			if err != nil {
+				return nil, err
+			}
+			primaryPresenterConstructorId = id
+
+		}
+	}
+	
+
+	resp.Id(id)
+
+	// Params
+	resp.Params()
+
+	resp.Parens(
+		jen.List(
+			jen.Qual(usecaseImportPath, interfaceId),
+		),
+	)
+
+	resp.Block(
+		jen.Return(
+			jen.Qual(usecaseImportPath, "New").
+			Params(
+				jen.Qual(interactorImportPath, interactorId).
+				Params(
+					
+					jen.Id("r").
+					Dot(primaryRepositoryConstructorId).
+					Call(),
+
+					jen.Id("r").
+					Dot(primaryPresenterConstructorId).
+					Call(),
+
+				),
+			),
+		),
+	)
+	
+	return resp, nil
+
 }

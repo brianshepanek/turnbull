@@ -15,6 +15,6 @@ func (r *registry) RegisterPostMysqlRepositoryRegistry(db *sql.DB, table string)
 	r.postMysqlRepositoryRegistry.db = db
 	r.postMysqlRepositoryRegistry.table = table
 }
-func (r *registry) newPostMysqlRepositoryRegistry() repository.PostRepository {
+func (r *registry) newPostMysqlRepository() repository.PostRepository {
 	return mysql.New(r.postMysqlRepositoryRegistry.db, r.postMysqlRepositoryRegistry.table)
 }

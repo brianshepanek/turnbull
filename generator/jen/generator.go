@@ -441,6 +441,28 @@ func (generator *Generator) InterfaceControllerEntity(driver string, entity mode
 	return nil
 }
 
+func (generator *Generator) InterfaceControllerRegistry(driver string, entity model.Entity, writer io.Writer) (error){
+
+	// Vars
+	var interfaceControllerGenerator generatorInterface.ControllerGenerator
+	if val, ok := generator.interfaceControllerGenerators[driver]; ok {
+		interfaceControllerGenerator = val
+	}
+
+	// File
+	file, err := interfaceControllerGenerator.RegistryFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	if file != nil {
+		file.Render(writer)
+	}
+
+	return nil
+}
+
 func (generator *Generator) Registry(entities []model.Entity, writer io.Writer) (error){
 
 	// File

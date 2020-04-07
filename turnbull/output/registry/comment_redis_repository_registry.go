@@ -15,6 +15,6 @@ func (r *registry) RegisterCommentRedisRepositoryRegistry(client *redis.Client, 
 	r.commentRedisRepositoryRegistry.client = client
 	r.commentRedisRepositoryRegistry.namespace = namespace
 }
-func (r *registry) newCommentRedisRepositoryRegistry() repository.CommentRepository {
+func (r *registry) newCommentRedisRepository() repository.CommentRepository {
 	return redis1.New(r.commentRedisRepositoryRegistry.client, r.commentRedisRepositoryRegistry.namespace)
 }
