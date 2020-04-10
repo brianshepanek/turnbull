@@ -2,22 +2,18 @@ package repository
 
 import (
 	"context"
-	entity "github.com/brianshepanek/turnbull/_testing/output/domain/entity"
+	entity "github.com/brianshepanek/turnbull/turnbull/output/domain/entity"
 	bson "go.mongodb.org/mongo-driver/bson"
 	mongo "go.mongodb.org/mongo-driver/mongo"
 )
 
-type mongoFooRepositoryStruct struct {
+type mongoAccountRepositoryStruct struct {
 	client     *mongo.Client
 	db         string
 	collection string
 }
 
-func (r *mongoFooRepositoryStruct) Count(ctx context.Context, req int) error {
-	return nil
-}
-
-func (r *mongoFooRepositoryStruct) Browse(ctx context.Context, req *[]entity.Foo) error {
+func (r *mongoAccountRepositoryStruct) Browse(ctx context.Context, req entity.Accounts) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -29,23 +25,23 @@ func (r *mongoFooRepositoryStruct) Browse(ctx context.Context, req *[]entity.Foo
 	}
 
 	for cursor.Next(ctx) {
-		elem := entity.NewFoo()
-		err := cursor.Decode(&elem)
+		elem := entity.NewAccount()
+		err := cursor.Decode(elem)
 		if err != nil {
 			return err
 		}
-		*req = append(*req, *elem)
+		req.Append(elem)
 	}
 
 	return nil
 
 }
 
-func (r *mongoFooRepositoryStruct) Read(ctx context.Context, id int64, req *entity.Foo) error {
+func (r *mongoAccountRepositoryStruct) Read(ctx context.Context, id int64, req entity.Account) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
-	filter := bson.M{"": id}
+	filter := bson.M{"id": id}
 
 	err := collection.FindOne(ctx, filter).Decode(req)
 	if err != nil {
@@ -58,13 +54,13 @@ func (r *mongoFooRepositoryStruct) Read(ctx context.Context, id int64, req *enti
 
 }
 
-func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id int64, req *entity.Foo) error {
+func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Account) error {
 
-	current := entity.NewFoo()
+	current := entity.NewAccount()
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
-	filter := bson.M{"": id}
+	filter := bson.M{"id": id}
 
 	err := collection.FindOne(ctx, filter).Decode(&current)
 	if err != nil {
@@ -73,16 +69,12 @@ func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id int64, req *enti
 		}
 	}
 
-	if req.Identifier != nil {
-		current.Identifier = req.Identifier
+	if req.Name() != nil {
+		current.SetName(req.Name())
 	}
 
-	if req.String != nil {
-		current.String = req.String
-	}
-
-	if req.Int != nil {
-		current.Int = req.Int
+	if req.Email() != nil {
+		current.SetEmail(req.Email())
 	}
 
 	err = collection.FindOneAndReplace(ctx, filter, current).Decode(&current)
@@ -96,7 +88,7 @@ func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id int64, req *enti
 
 }
 
-func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req *entity.Foo) error {
+func (r *mongoAccountRepositoryStruct) Add(ctx context.Context, req entity.Account) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -109,11 +101,11 @@ func (r *mongoFooRepositoryStruct) Add(ctx context.Context, req *entity.Foo) err
 
 }
 
-func (r *mongoFooRepositoryStruct) Delete(ctx context.Context, id int64, req *entity.Foo) error {
+func (r *mongoAccountRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Account) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
-	filter := bson.M{"": id}
+	filter := bson.M{"id": id}
 
 	_, err := collection.DeleteOne(ctx, filter)
 	if err != nil {

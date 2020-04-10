@@ -117,12 +117,12 @@ var (
 					Type : "delete",
 				},
 			},
-			// Repositories : []model.Repository {
-			// 	model.Repository {
-			// 		Type : "mongo",
-			// 		Primary : true,
-			// 	},
-			// },
+			Repositories : []model.Repository {
+				model.Repository {
+					Type : "mongo",
+					Primary : true,
+				},
+			},
 			Presenters : []model.Presenter {
 				model.Presenter {
 					Type : "default",
@@ -357,25 +357,25 @@ func TestBuildScaffoldInterfaceRepository(t *testing.T){
 	}	
 }
 
-// // Test Build Interface Repository Registry
-// func TestBuildInterfaceRepositoryRegistry(t *testing.T){
+// Test Build Interface Repository Registry
+func TestBuildInterfaceRepositoryRegistry(t *testing.T){
 
-// 	// Build
-// 	for _, testEntity := range testEntities {
+	// Build
+	for _, testEntity := range testEntities {
 
-// 		for _, repository := range testEntity.Repositories {
+		for _, repository := range testEntity.Repositories {
 
-// 			err := testTurnbull.buildRegistryInterfaceRepository(repository.Type, testEntity)
+			err := testTurnbull.buildRegistryInterfaceRepository(repository.Type, testEntity)
 
-// 			// Return
-// 			if err != nil {
-// 				t.Errorf(`buildRegistryInterfaceRepository() failed with error %v`, err)
-// 			}
+			// Return
+			if err != nil {
+				t.Errorf(`buildRegistryInterfaceRepository() failed with error %v`, err)
+			}
 
-// 		}
+		}
 
-// 	}	
-// }
+	}	
+}
 
 // Test Build Interface Repository Entity
 func TestBuildInterfaceRepositoryEntity(t *testing.T){
@@ -429,25 +429,25 @@ func TestBuildScaffoldInterfacePresenter(t *testing.T){
 	}	
 }
 
-// // Test Build Interface Presenter Registry
-// func TestBuildInterfacePresenterRegistry(t *testing.T){
+// Test Build Interface Presenter Registry
+func TestBuildInterfacePresenterRegistry(t *testing.T){
 
-// 	// Build
-// 	for _, testEntity := range testEntities {
+	// Build
+	for _, testEntity := range testEntities {
 
-// 		for _, presenter := range testEntity.Presenters {
+		for _, presenter := range testEntity.Presenters {
 
-// 			err := testTurnbull.buildRegistryInterfacePresenter(presenter.Type, testEntity)
+			err := testTurnbull.buildRegistryInterfacePresenter(presenter.Type, testEntity)
 
-// 			// Return
-// 			if err != nil {
-// 				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
-// 			}
+			// Return
+			if err != nil {
+				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
+			}
 
-// 		}
+		}
 
-// 	}	
-// }
+	}	
+}
 
 // Test Build Interface Presenter Entity
 func TestBuildInterfacePresenterEntity(t *testing.T){
@@ -542,34 +542,34 @@ func TestBuildInterfaceControllerEntity(t *testing.T){
 	}	
 }
 
-// // Test Build Interface Controller Registry
-// func TestBuildInterfaceControllerRegistry(t *testing.T){
+// Test Build Interface Controller Registry
+func TestBuildInterfaceControllerRegistry(t *testing.T){
 
-// 	// Build
-// 	for _, testEntity := range testEntities {
+	// Build
+	for _, testEntity := range testEntities {
 
-// 		for _, controller := range testEntity.Controllers {
+		for _, controller := range testEntity.Controllers {
 
-// 			err := testTurnbull.buildRegistryInterfaceController(controller.Type, testEntity)
+			err := testTurnbull.buildRegistryInterfaceController(controller.Type, testEntity)
 
-// 			// Return
-// 			if err != nil {
-// 				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
-// 			}
+			// Return
+			if err != nil {
+				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
+			}
 
-// 		}
+		}
 
-// 	}	
-// }
+	}	
+}
 
-// // Test Build Scaffold Registry
-// func TestBuildScaffoldRegistry(t *testing.T){
+// Test Build Scaffold Registry
+func TestBuildScaffoldRegistry(t *testing.T){
 
-// 	err := testTurnbull.buildScaffoldRegistry(testEntities)
+	err := testTurnbull.buildScaffoldRegistry(testEntities)
 
-// 	// Return
-// 	if err != nil {
-// 		t.Errorf(`buildScaffoldRegistry() failed with error %v`, err)
-// 	}
+	// Return
+	if err != nil {
+		t.Errorf(`buildScaffoldRegistry() failed with error %v`, err)
+	}
 
-// }
+}

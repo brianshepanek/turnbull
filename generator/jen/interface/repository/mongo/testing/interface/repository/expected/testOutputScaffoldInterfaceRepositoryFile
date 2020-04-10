@@ -45,7 +45,7 @@ func (r *mongoFooRepositoryStruct) Read(ctx context.Context, id int64, req *enti
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
-	filter := bson.M{"identifier": id}
+	filter := bson.M{"": id}
 
 	err := collection.FindOne(ctx, filter).Decode(req)
 	if err != nil {
@@ -64,7 +64,7 @@ func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id int64, req *enti
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
-	filter := bson.M{"identifier": id}
+	filter := bson.M{"": id}
 
 	err := collection.FindOne(ctx, filter).Decode(&current)
 	if err != nil {
@@ -113,7 +113,7 @@ func (r *mongoFooRepositoryStruct) Delete(ctx context.Context, id int64, req *en
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
-	filter := bson.M{"identifier": id}
+	filter := bson.M{"": id}
 
 	_, err := collection.DeleteOne(ctx, filter)
 	if err != nil {

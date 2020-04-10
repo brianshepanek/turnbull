@@ -1,6 +1,7 @@
 package mongo
 
 import(
+	"strings"
 	"github.com/dave/jennifer/jen"
 	"github.com/brianshepanek/turnbull/domain/model"
 	"github.com/brianshepanek/turnbull/config"
@@ -90,8 +91,32 @@ func (repositoryGenerator *repositoryGenerator) EntityFile(entity model.Entity) 
 	f := jen.NewFile(packageName)
 
 
+	// Struct
+	jsonStruct, err := repositoryGenerator.scaffoldInterfaceControllerBSONStruct(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&jsonStruct)
+	f.Line()
+
+	// Local Marshal
+	localMarshalBSON, err := repositoryGenerator.scaffoldInterfaceControllerLocalMarshalBSONFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&localMarshalBSON)
+	f.Line()
+
+	// Local Unmarshal
+	localUnmarshalBSON, err := repositoryGenerator.scaffoldInterfaceControllerLocalUnmarshalBSONFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&localUnmarshalBSON)
+	f.Line()
+
 	// Marshal
-	marshalBSON, err := repositoryGenerator.scaffoldInterfaceRepositoryMarshalBSONFunction(entity)
+	marshalBSON, err := repositoryGenerator.scaffoldInterfaceControllerMarshalBSONFunction(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +124,7 @@ func (repositoryGenerator *repositoryGenerator) EntityFile(entity model.Entity) 
 	f.Line()
 
 	// Unmarshal
-	unmarshalBSON, err := repositoryGenerator.scaffoldInterfaceRepositoryUnmarshalBSONFunction(entity)
+	unmarshalBSON, err := repositoryGenerator.scaffoldInterfaceControllerUnmarshalBSONFunction(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -790,16 +815,19 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 	var block []jen.Code
 
 	// Primary Field Name
-	var err error
 	var primaryFieldName string
-	for _, field := range entity.Fields {
-		if field.Primary {
-			primaryFieldName , err = repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
-			if err != nil {
-				return nil, err
-			}
+	primaryField, err := repositoryGenerator.helperGenerator.PrimaryField(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	if primaryField != nil {
+		primaryFieldName, err = repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(*primaryField)
+		if err != nil {
+			return nil, err
 		}
 	}
+
 	
 	// Line
 	block = append(block, jen.Line())
@@ -912,12 +940,15 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 
 	// Primary Field Name
 	var primaryFieldName string
-	for _, field := range entity.Fields {
-		if field.Primary {
-			primaryFieldName , err = repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
-			if err != nil {
-				return nil, err
-			}
+	primaryField, err := repositoryGenerator.helperGenerator.PrimaryField(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	if primaryField != nil {
+		primaryFieldName, err = repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(*primaryField)
+		if err != nil {
+			return nil, err
 		}
 	}
 	
@@ -1014,59 +1045,64 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 	// Fields
 	for _, field := range entity.Fields {
 		
-		// Getter
-		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return block, err
-		}
+		if field.Embedded {
 
-		// Setter
-		setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
-		if err != nil {
-			return block, err
-		}
+		} else {
+			// Getter
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return block, err
+			}
 
-		// Check
-		if entity.Interface {
-			block = append(block,
-				jen.If(
-					jen.Id("req").
-					Dot(getterId).
-					Call().
-					Op("!=").
-					Nil().
-					Block(
-						jen.Id("current").
-						Dot(setterId).
-						Params(
-							jen.Id("req").
-							Dot(getterId).
-							Call(),
+			// Setter
+			setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
+			if err != nil {
+				return block, err
+			}
+
+			// Check
+			if entity.Interface {
+				block = append(block,
+					jen.If(
+						jen.Id("req").
+						Dot(getterId).
+						Call().
+						Op("!=").
+						Nil().
+						Block(
+							jen.Id("current").
+							Dot(setterId).
+							Params(
+								jen.Id("req").
+								Dot(getterId).
+								Call(),
+							),
 						),
 					),
-				),
-			)
-		} else {
-			block = append(block,
-				jen.If(
-					jen.Id("req").
-					Dot(getterId).
-					Op("!=").
-					Nil().
-					Block(
-						jen.Id("current").
+				)
+			} else {
+				block = append(block,
+					jen.If(
+						jen.Id("req").
 						Dot(getterId).
-						Op("=").
-						Id("req").
-						Dot(getterId),
+						Op("!=").
+						Nil().
+						Block(
+							jen.Id("current").
+							Dot(getterId).
+							Op("=").
+							Id("req").
+							Dot(getterId),
+						),
 					),
-				),
-			)
-		}
-			
+				)
+			}
+				
 
-		// Line
-		block = append(block, jen.Line())
+			// Line
+			block = append(block, jen.Line())
+		}
+		
 
 	}
 
@@ -1199,13 +1235,15 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryDelet
 
 	// Primary Field Name
 	var primaryFieldName string
-	var err error
-	for _, field := range entity.Fields {
-		if field.Primary {
-			primaryFieldName , err = repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(field)
-			if err != nil {
-				return nil, err
-			}
+	primaryField, err := repositoryGenerator.helperGenerator.PrimaryField(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	if primaryField != nil {
+		primaryFieldName, err = repositoryGenerator.formatter.OutputScaffoldDomainEntityJSONTagId(*primaryField)
+		if err != nil {
+			return nil, err
 		}
 	}
 	
@@ -1302,7 +1340,203 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryCount
 	return block, nil
 }
 
-func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryMarshalBSONFunction(entity model.Entity) (jen.Statement, error){
+
+func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceControllerBSONStruct(entity model.Entity) (jen.Statement, error){
+
+	var statement jen.Statement
+	var fields []jen.Code
+	for _, field := range entity.Fields {
+		if !field.Embedded {
+			code, err := repositoryGenerator.scaffoldEntityBSONStructField(field, entity)
+			if err != nil {
+				return nil, err
+			}
+			
+			fields = append(fields, code)
+		} else {
+
+
+			
+			// Field ID
+			fieldId , err := repositoryGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			// Struct ID
+			structId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("bson", field.Entity)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, 
+				jen.Id(fieldId).
+				Op("*").
+				Qual("", structId).
+				Tag(map[string]string{"bson": strings.Join([]string{"inline"}, ",")}),
+			)
+
+		}
+		
+		
+	}
+
+	// Struct ID
+	structId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("bson", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Type
+	statement.Type()
+
+	// Id
+	statement.Id(structId)
+
+	// Struct
+	statement.Struct(fields...)
+	
+	return statement, nil
+
+}
+
+func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceControllerLocalMarshalBSONFunction(entity model.Entity) (jen.Statement, error){
+	
+	// ID
+	var statement jen.Statement
+
+	// Struct ID
+	structId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Marshal Struct ID
+	marshalStructId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("bson", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Func
+	statement.Func()
+
+	// Params
+	statement.Params(
+		jen.Id("m").
+		Op("*").
+		Qual("", structId),
+	)
+
+	// ID
+	statement.Id("marshalBSON")
+
+	// Params
+	statement.Params()
+
+	// Parens
+	statement.Parens(
+		jen.List(
+			jen.Op("*").
+			Id(marshalStructId),
+		),
+	)	
+
+
+	// Block
+	var block []jen.Code
+
+	block = append(block, jen.Line())
+
+	block = append(block,
+		jen.Id("bsonStruct").
+		Op(":=").
+		Id(marshalStructId).
+		Values(),
+	)
+
+	block = append(block, jen.Line())
+
+	for _, field := range entity.Fields {
+
+		if !field.Embedded {
+
+			// Getter ID
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
+
+			if entity.Interface {
+				block = append(block,
+					jen.Id("bsonStruct").
+					Dot(getterId).
+					Op("=").
+					Id("m").Dot(getterId).Call(),
+				)
+			} else {
+				block = append(block,
+					jen.Id("bsonStruct").
+					Dot(getterId).
+					Op("=").
+					Id("m").Dot(getterId),
+				)
+			}
+		} else {
+
+			// Vars
+			var entityId string
+
+			// Struct ID
+			fieldId , err := repositoryGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			// Interface ID
+			if field.Entity.Interface {
+				structId , err := repositoryGenerator.formatter.OutputDomainEntityStructId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = structId
+			} else {
+				interfaceId , err := repositoryGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = interfaceId
+			}
+
+			block = append(block,
+				jen.Id("bsonStruct").
+				Dot(fieldId).
+				Op("=").
+				Id("m").
+				Dot(entityId).
+				Dot("marshalBSON").
+				Call(),
+			)
+
+		}	
+	}
+
+	block = append(block, jen.Line())
+
+	block = append(block,
+		jen.Return(
+			jen.Op("&").
+			Id("bsonStruct"),
+		),
+	)
+	
+	statement.Block(
+		block...,
+	)
+	
+	
+	return statement, nil
+}
+
+func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceControllerMarshalBSONFunction(entity model.Entity) (jen.Statement, error){
 	
 	// ID
 	var statement jen.Statement
@@ -1338,46 +1572,16 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryMarsh
 		),
 	)	
 
-	var bsonStruct []jen.Code
-	bsonStructDict := make(jen.Dict)
-	for _, field := range entity.Fields {
-
-		// Getter ID
-		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
-		
-		code, err := repositoryGenerator.scaffoldEntityBSONStructField(field, entity)
-		if err != nil {
-			return nil, err
-		}
-		
-		bsonStruct = append(bsonStruct, code)
-		if entity.Interface {
-			bsonStructDict[jen.Id(getterId)] = jen.Id("m").Dot(getterId).Call()
-		} else {
-			bsonStructDict[jen.Id(getterId)] = jen.Id("m").Dot(getterId)
-		}
-		
-		
-	}
 
 	// Block
 	statement.Block(
-
-		jen.Type().Id("bsonStructPrivate").Struct(bsonStruct...),
-
-		jen.Id("bsonStruct").
-		Op(":=").
-		Qual("", "bsonStructPrivate").
-		Values(bsonStructDict),
-
-		jen.Return().
-		Qual("go.mongodb.org/mongo-driver/bson", "Marshal").
-		Call(
-			jen.Op("&").
-			Id("bsonStruct"),
+		jen.Return(
+			jen.Qual("go.mongodb.org/mongo-driver/bson", "Marshal").
+			Call(
+				jen.Op("m").
+				Dot("marshalBSON").
+				Call(),
+			),
 		),
 	)
 	
@@ -1385,13 +1589,142 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryMarsh
 	return statement, nil
 }
 
-func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryUnmarshalBSONFunction(entity model.Entity) (jen.Statement, error){
+func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceControllerLocalUnmarshalBSONFunction(entity model.Entity) (jen.Statement, error){
 	
 	// ID
 	var statement jen.Statement
 
 	// Struct ID
 	structId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Marshal Struct ID
+	marshalStructId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("bson", entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Func
+	statement.Func()
+
+	// Params
+	statement.Params(
+		jen.Id("m").
+		Op("*").
+		Qual("", structId),
+	)
+
+	// ID
+	statement.Id("unmarshalBSON")
+
+	// Params
+	statement.Params(
+		jen.Id("bsonStruct").
+		Op("*").
+		Qual("", marshalStructId),
+	)
+
+	// Block
+	var block []jen.Code
+
+	
+	for _, field := range entity.Fields {
+
+		if !field.Embedded {
+
+			// Getter ID
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
+
+			// Setter ID
+			setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
+			if err != nil {
+				return nil, err
+			}
+			
+
+			if entity.Interface {
+				block = append(block, 
+					jen.Id("m").
+					Dot(setterId).
+					Call(
+						jen.Id("bsonStruct").
+						Dot(getterId),
+					),
+				)
+			} else {
+				block = append(block, 
+					jen.Id("m").
+					Dot(getterId).
+					Op("=").
+					Id("bsonStruct").
+					Dot(getterId),
+				)
+			}	
+		} else {
+
+			// Vars
+			var entityId string
+
+			// Struct ID
+			fieldId , err := repositoryGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			// Interface ID
+			if field.Entity.Interface {
+				structId , err := repositoryGenerator.formatter.OutputDomainEntityStructId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = structId
+			} else {
+				interfaceId , err := repositoryGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = interfaceId
+			}
+
+			block = append(block,
+				jen.Id("m").
+				Dot(entityId).
+				Dot("unmarshalBSON").
+				Params(
+					jen.Id("bsonStruct").
+					Dot(fieldId),
+				),
+			)
+
+		} 
+	}	
+
+	statement.Block(
+		block...,
+	)
+	
+	
+	return statement, nil
+}
+
+func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceControllerUnmarshalBSONFunction(entity model.Entity) (jen.Statement, error){
+	
+	// ID
+	var statement jen.Statement
+
+	// Struct ID
+	structId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Marshal Struct ID
+	marshalStructId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("bson", entity)
 	if err != nil {
 		return nil, err
 	}
@@ -1423,64 +1756,50 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryUnmar
 		),
 	)	
 
-	var bsonStruct []jen.Code
-	var bsonSetterFunctions []jen.Code
-	for _, field := range entity.Fields {
-
-		// Getter ID
-		getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
-
-		// Setter ID
-		setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
-		if err != nil {
-			return nil, err
-		}
-		
-		code, err := repositoryGenerator.scaffoldEntityBSONStructField(field, entity)
-		if err != nil {
-			return nil, err
-		}
-
-		bsonStruct = append(bsonStruct, code)
-		if entity.Interface {
-			bsonSetterFunctions = append(bsonSetterFunctions, 
-				jen.Id("m").
-				Dot(setterId).
-				Call(
-					jen.Id("bsonStruct").
-					Dot(getterId),
-				),
-			)
-		} else {
-			bsonSetterFunctions = append(bsonSetterFunctions, 
-				jen.Id("m").
-				Dot(getterId).
-				Op("=").
-				Id("bsonStruct").
-				Dot(getterId),
-			)
-		}	
-		
-	}
-
 	// Block
 	var block []jen.Code
 
+	block = append(block, jen.Line())
 
-	block = append(block, 
-		jen.Type().
-		Id("bsonStructPrivate").
-		Struct(bsonStruct...),
-	)
 	block = append(block, 
 		jen.Id("bsonStruct").
 		Op(":=").
-		Qual("", "bsonStructPrivate").
+		Qual("", marshalStructId).
 		Values(),
 	)
+
+	for _, field := range entity.Fields {
+
+		if field.Embedded {
+
+			// Field ID
+			fieldId , err := repositoryGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			// Struct ID
+			structId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("bson", field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			block = append(block, 
+				jen.Id("bsonStruct").
+				Dot(fieldId).
+				Op("=").
+				Op("&").
+				Id(structId).
+				Values(),
+			)
+
+		}
+		
+
+	}
+
+	block = append(block, jen.Line())
+
 	block = append(block, 
 		jen.Err().
 		Op(":=").
@@ -1505,14 +1824,29 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryUnmar
 			),
 		),
 	)
-	for _, bsonSetterFunction := range bsonSetterFunctions {
-		block = append(block, bsonSetterFunction)
-	}
-	block = append(block, jen.Return(
-		jen.List(
-			jen.Nil(),
+	
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.Id("m").
+		Dot("unmarshalBSON").
+		Params(
+			jen.Op("&").
+			Id("bsonStruct"),
 		),
-	),)
+	)
+
+	block = append(block, jen.Line())
+
+	block = append(block, 
+		jen.Return(
+			jen.List(
+				jen.Nil(),
+			),
+		),
+	)
+
+	block = append(block, jen.Line())
 
 	statement.Block(
 		block...,
@@ -1546,8 +1880,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldEntityBSONStructField(fi
 	}
 
 	// Tag
-	statement.Tag(map[string]string{"bson": tagId})
+	statement.Tag(map[string]string{"bson": strings.Join([]string{tagId, "omitempty"}, ",")})
 
 	return &statement, nil
-	
 }

@@ -14,6 +14,7 @@ type Generator interface{
 
 	// General
 	Field(id string, field model.Field, entity model.Entity, statement *jen.Statement) (error)
+	PrimaryField(entity model.Entity) (*model.Field, error)
 
 }	
 
@@ -126,6 +127,27 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 
 	
 	return nil
+}
+
+func (generator *generator) PrimaryField(entity model.Entity) (*model.Field, error){
+	var primaryField model.Field
+
+	for _, field := range entity.Fields {
+		if field.Primary {
+			return &primaryField, nil
+		}
+	}
+	for _, field := range entity.Fields {
+		if field.Embedded {
+			for _, embeddedField := range field.Entity.Fields {
+				if embeddedField.Primary {
+					return &embeddedField, nil
+				}
+			}
+		}
+	}
+
+	return nil, nil
 }
 
 func (generator *generator) primary(entity model.Entity) (string, string, error){

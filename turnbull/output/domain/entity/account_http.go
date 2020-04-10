@@ -35,6 +35,8 @@ func (m *accountStruct) MarshalJSON() ([]byte, error) {
 func (m *accountStruct) UnmarshalJSON(data []byte) error {
 
 	jsonStruct := jsonAccount{}
+	jsonStruct.jsonModel = &jsonModel{}
+	jsonStruct.jsonLucky = &jsonLucky{}
 
 	err := json.Unmarshal(data, &jsonStruct)
 	if err != nil {

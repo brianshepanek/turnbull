@@ -731,12 +731,6 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 	
 	var block []jen.Code
 
-	// ID
-	// jsonSliceId, err := controllerGenerator.formatter.OutputDomainEntitySliceStructId(entity)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	// Interface ID
 	id , err := controllerGenerator.formatter.OutputDomainEntitySliceInterfaceConstructorFunctionId(entity)
 	if err != nil {
@@ -828,14 +822,6 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 	// Line
 	block = append(block, jen.Line())
 
-	// block = append(block, 
-	// 	jen.Var().
-	// 	Id(jsonSliceId).
-	// 	Index().
-	// 	Op("*").
-	// 	Id(jsonId),
-	// )
-
 	block = append(block, 
 		jen.Id("w").
 		Dot("Header").
@@ -858,28 +844,6 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerBrows
 	)
 
 	if entity.Interface {
-		// block = append(block, 
-		// 	jen.For(
-		// 		jen.List(
-		// 			jen.Id("_"),
-		// 			jen.Id("elem"),
-		// 		).
-		// 		Op(":=").
-		// 		Range().
-		// 		Id("resp").
-		// 		Dot("Elements").
-		// 		Call().
-		// 		Block(
-		// 			jen.Id(jsonSliceId).
-		// 			Op("=").
-		// 			Append(
-		// 				jen.Id(jsonSliceId),
-		// 				jen.Op("&").
-		// 				Id("elem"),
-		// 			),
-		// 		),
-		// 	),
-		// )
 		block = append(block, 
 			jen.Qual("encoding/json", "NewEncoder").
 			Call(
@@ -2155,53 +2119,8 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerLocal
 				),
 			)
 
-			// m.model.unmarshalJSON(jsonStruct.jsonModel)
-
 		} 
 	}	
-	// block = append(block, 
-	// 	jen.Type().
-	// 	Id("jsonStructPrivate").
-	// 	Struct(jsonStruct...),
-	// )
-	// block = append(block, 
-	// 	jen.Id("jsonStruct").
-	// 	Op(":=").
-	// 	Qual("", "jsonStructPrivate").
-	// 	Values(),
-	// )
-	// block = append(block, 
-	// 	jen.Err().
-	// 	Op(":=").
-	// 	Qual("encoding/json", "Unmarshal").
-	// 	Call(
-	// 		jen.Id("data"),
-	// 		jen.Op("&").
-	// 		Id("jsonStruct"),
-	// 	),
-	// )
-	// block = append(block, 
-	// 	jen.If(
-	// 		jen.Err().
-	// 		Op("!=").
-	// 		Nil(),
-	// 	).
-	// 	Block(
-	// 		jen.Return(
-	// 			jen.List(
-	// 				jen.Err(),
-	// 			),
-	// 		),
-	// 	),
-	// )
-	// for _, jsonSetterFunction := range jsonSetterFunctions {
-	// 	block = append(block, jsonSetterFunction)
-	// }
-	// block = append(block, jen.Return(
-	// 	jen.List(
-	// 		jen.Nil(),
-	// 	),
-	// ),)
 
 	statement.Block(
 		block...,
@@ -2266,6 +2185,30 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerUnmar
 		Qual("", marshalStructId).
 		Values(),
 	)
+
+	for _, field := range entity.Fields {
+
+		if field.Embedded {
+
+			// Struct ID
+			structId , err := controllerGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("json", field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			block = append(block, 
+				jen.Id("jsonStruct").
+				Dot(structId).
+				Op("=").
+				Op("&").
+				Id(structId).
+				Values(),
+			)
+
+		}
+		
+
+	}
 
 	block = append(block, jen.Line())
 
@@ -2390,13 +2333,6 @@ func (controllerGenerator *controllerGenerator) interfaceControllerRegistryConst
 	if err != nil {
 		return nil, err
 	}
-
-	// ID
-	// registryStructId , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerRegistryStructId("http", entity)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	// Type
 	resp.Func()
 
