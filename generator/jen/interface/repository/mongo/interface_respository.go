@@ -1044,20 +1044,89 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 	// Fields
 	for _, field := range entity.Fields {
 		
+		var getterId, setterId string
+		
 		if field.Embedded {
 
+			for _, embeddedField := range field.Entity.Fields {
+
+				// Getter
+				getter , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(embeddedField)
+				if err != nil {
+					return block, err
+				}
+
+				getterId = getter
+
+				// Setter
+				setter , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(embeddedField)
+				if err != nil {
+					return block, err
+				}
+
+				setterId = setter
+
+				// Check
+				if entity.Interface {
+					block = append(block,
+						jen.If(
+							jen.Id("req").
+							Dot(getterId).
+							Call().
+							Op("!=").
+							Nil().
+							Block(
+								jen.Id("current").
+								Dot(setterId).
+								Params(
+									jen.Id("req").
+									Dot(getterId).
+									Call(),
+								),
+							),
+						),
+					)
+				} else {
+					block = append(block,
+						jen.If(
+							jen.Id("req").
+							Dot(getterId).
+							Op("!=").
+							Nil().
+							Block(
+								jen.Id("current").
+								Dot(getterId).
+								Op("=").
+								Id("req").
+								Dot(getterId),
+							),
+						),
+					)
+				}
+					
+
+				// Line
+				block = append(block, jen.Line())
+			}
+
+
 		} else {
+
 			// Getter
-			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			getter , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
 			if err != nil {
 				return block, err
 			}
 
+			getterId = getter
+
 			// Setter
-			setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
+			setter , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
 			if err != nil {
 				return block, err
 			}
+
+			setterId = setter
 
 			// Check
 			if entity.Interface {
@@ -1100,7 +1169,10 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 
 			// Line
 			block = append(block, jen.Line())
+
 		}
+
+		
 		
 
 	}

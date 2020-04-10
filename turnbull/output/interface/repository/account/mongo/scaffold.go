@@ -69,6 +69,22 @@ func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req e
 		}
 	}
 
+	if req.Id() != nil {
+		current.SetId(req.Id())
+	}
+
+	if req.Created() != nil {
+		current.SetCreated(req.Created())
+	}
+
+	if req.Modified() != nil {
+		current.SetModified(req.Modified())
+	}
+
+	if req.Thing() != nil {
+		current.SetThing(req.Thing())
+	}
+
 	if req.Name() != nil {
 		current.SetName(req.Name())
 	}
