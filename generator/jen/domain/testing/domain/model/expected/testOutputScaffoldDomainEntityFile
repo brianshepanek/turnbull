@@ -7,6 +7,14 @@ type fooStruct struct {
 	title *string
 }
 
+func newFoo() *foo {
+	return &foo{fooStruct: newFooStruct()}
+}
+
+func newFooStruct() *fooStruct {
+	return &fooStruct{}
+}
+
 type foosStruct []fooInterface
 
 type fooInterface interface {

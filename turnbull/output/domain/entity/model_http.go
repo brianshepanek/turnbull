@@ -22,7 +22,7 @@ func (m *modelStruct) marshalJSON() *jsonModel {
 	return &jsonStruct
 }
 
-func (m *modelStruct) unmarshalJSON(jsonStruct jsonModel) {
+func (m *modelStruct) unmarshalJSON(jsonStruct *jsonModel) {
 	m.SetId(jsonStruct.Id)
 	m.SetCreated(jsonStruct.Created)
 	m.SetModified(jsonStruct.Modified)
@@ -41,7 +41,7 @@ func (m *modelStruct) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	m.unmarshalJSON(jsonStruct)
+	m.unmarshalJSON(&jsonStruct)
 
 	return nil
 

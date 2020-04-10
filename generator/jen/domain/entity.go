@@ -216,22 +216,27 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 
 		// Getters
 		for _, field := range entity.Fields {
-			entityGetter, err := entityGenerator.scaffoldEntityInterfaceGetterFunction(field, entity)
-			if err != nil {
-				return nil, err
+			if !field.Embedded {
+				entityGetter, err := entityGenerator.scaffoldEntityInterfaceGetterFunction(field, entity)
+				if err != nil {
+					return nil, err
+				}
+				f.Add(&entityGetter)
+				f.Line()
 			}
-			f.Add(&entityGetter)
-			f.Line()
+			
 		}
 		
 		// Setters
 		for _, field := range entity.Fields {
-			entitySetter, err := entityGenerator.scaffoldEntityInterfaceSetterFunction(field, entity)
-			if err != nil {
-				return nil, err
-			}
-			f.Add(&entitySetter)
-			f.Line()
+			if !field.Embedded {
+				entitySetter, err := entityGenerator.scaffoldEntityInterfaceSetterFunction(field, entity)
+				if err != nil {
+					return nil, err
+				}
+				f.Add(&entitySetter)
+				f.Line()
+			}	
 		}
 
 		// Set All Setter
@@ -257,15 +262,28 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 	}
 
 	// To Primary
-	toPrimary, err := entityGenerator.scaffoldEntityInterfaceToPrimaryFunction(entity)
-	if err != nil {
-		return nil, err
+	if entityGenerator.hasPrimary(entity) {
+		toPrimary, err := entityGenerator.scaffoldEntityInterfaceToPrimaryFunction(entity)
+		if err != nil {
+			return nil, err
+		}
+		f.Add(&toPrimary)
+		f.Line()
 	}
-	f.Add(&toPrimary)
-	f.Line()
+	
 
 	
 	return f, nil
+}
+
+func (entityGenerator *entityGenerator) hasPrimary(entity model.Entity) (bool){
+	var hasPrimary bool
+	for _, field := range entity.Fields {
+		if field.Primary {
+			hasPrimary = true
+		}
+	}
+	return hasPrimary
 }
 
 func (entityGenerator *entityGenerator) entityStruct(entity model.Entity) (jen.Statement, error){
@@ -414,11 +432,13 @@ func (entityGenerator *entityGenerator) scaffoldEntityStruct(entity model.Entity
 
 	// Fields
 	for _, field := range entity.Fields {
-		code, err := entityGenerator.scaffoldEntityStructField(field, entity)
-		if err != nil {
-			return nil, err
-		}
-		fields = append(fields, code)
+		// if !field.Embedded {
+			code, err := entityGenerator.scaffoldEntityStructField(field, entity)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, code)
+		// }	
 	}
 
 	// Struct
@@ -476,23 +496,33 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterface(entity model.Ent
 	// Getter
 	for _, field := range entity.Fields {
 
-		// Getter
-		code, err := entityGenerator.scaffoldEntityInterfaceGetter(field, entity)
-		if err != nil {
-			return nil, err
+		if !field.Embedded {
+
+			// Getter
+			code, err := entityGenerator.scaffoldEntityInterfaceGetter(field, entity)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, code)
+
 		}
-		fields = append(fields, code)
+
+		
 	}
 
 	// Setter
 	for _, field := range entity.Fields {
 
-		// Setter
-		code, err := entityGenerator.scaffoldEntityInterfaceSetter(field, entity)
-		if err != nil {
-			return nil, err
-		}
-		fields = append(fields, code)
+		if !field.Embedded {
+
+			// Setter
+			code, err := entityGenerator.scaffoldEntityInterfaceSetter(field, entity)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, code)
+
+		}	
 	}
 
 	// Callbacks
@@ -517,11 +547,13 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterface(entity model.Ent
 	fields = append(fields, setAllCode)
 
 	// To Primary
-	toPrimaryCode, err := entityGenerator.scaffoldEntityInterfaceToPrimary(entity)
-	if err != nil {
-		return nil, err
-	}
-	fields = append(fields, toPrimaryCode)
+	if entityGenerator.hasPrimary(entity) {
+		toPrimaryCode, err := entityGenerator.scaffoldEntityInterfaceToPrimary(entity)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, toPrimaryCode)
+	}	
 
 
 	// Interface
@@ -938,12 +970,48 @@ func (entityGenerator *entityGenerator) scaffoldEntityScaffoldStructConstructorF
 		list...,
 	)
 
+	
+	dict := make(jen.Dict)
+	for _, field := range entity.Fields {
+		if field.Embedded {
+
+			// Vars
+			var entityId string
+
+			// Interface ID
+			if field.Entity.Interface {
+				structId , err := entityGenerator.formatter.OutputDomainEntityStructId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = structId
+			} else {
+				interfaceId , err := entityGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = interfaceId
+			}
+			
+
+			constructorId , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructConstructorFunctionId(field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			dict[jen.Id(entityId)] = jen.Id(constructorId).Call()
+
+		}
+	}
+
 	// Block
 	statement.Block(
 		jen.Return(
 			jen.Op("&").
 			Id(structId).
-			Values(),
+			Values(
+				dict,
+			),
 		),
 	)
 	
@@ -1518,24 +1586,29 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterfaceSetAllSetterFunct
 
 	// Block
 	for _, field := range entity.Fields {
+
+		if !field.Embedded {
+
+			setterId , err := entityGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
+			if err != nil {
+				return nil, err
+			}
+			getterId , err := entityGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
+			block = append(block,
+				jen.Id("m").
+				Dot(setterId).
+				Call(
+					jen.Id("req").
+					Dot(getterId).
+					Call(),
+				),
+			)
+
+		}
 		
-		setterId , err := entityGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
-		if err != nil {
-			return nil, err
-		}
-		getterId , err := entityGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
-		block = append(block,
-			jen.Id("m").
-			Dot(setterId).
-			Call(
-				jen.Id("req").
-				Dot(getterId).
-				Call(),
-			),
-		)
 		
 	}
 

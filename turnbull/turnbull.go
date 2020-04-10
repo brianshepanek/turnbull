@@ -36,6 +36,30 @@ func (turnbull *turnbull) buildStructure() (error){
 	return nil
 }
 
+func (turnbull *turnbull) formatDomainEntities(req *[]model.Entity) (error){
+
+	if req != nil {
+		entities := *req
+
+		for entityKey, entity := range entities {
+			for fieldKey, field := range entity.Fields {
+				if field.Embedded {
+					for _, embeddedEntity := range entities {
+						if embeddedEntity.Name == field.Type {
+							entities[entityKey].Fields[fieldKey].Entity = embeddedEntity
+						}
+					}
+				}
+			}
+		}
+
+		req = &entities
+	}
+
+	return nil
+}
+
+
 // Build Domain Entity
 func (turnbull *turnbull) buildDomainEntity(entity model.Entity) (error){
 
@@ -782,32 +806,35 @@ func (turnbull *turnbull) buildInterfaceControllerEntity(driver string, entity m
 		return err
 	}
 
-	// File Name
-	fileName, err := turnbull.formatter.OutputInterfaceControllerEntityFile(driver, entity)
-	if err != nil {
-		return err
-	}
+	if len(buf.String()) > 0 {
 
-	// Ensure
-	dirName := filepath.Dir(fileName)
-	if _, serr := os.Stat(dirName); serr != nil {
-		merr := os.MkdirAll(dirName, os.ModePerm)
-		if merr != nil {
+		// File Name
+		fileName, err := turnbull.formatter.OutputInterfaceControllerEntityFile(driver, entity)
+		if err != nil {
 			return err
 		}
-	}
 
-	// File
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+		// Ensure
+		dirName := filepath.Dir(fileName)
+		if _, serr := os.Stat(dirName); serr != nil {
+			merr := os.MkdirAll(dirName, os.ModePerm)
+			if merr != nil {
+				return err
+			}
+		}
 
-	// Write
-	_, err = file.WriteString(buf.String())
-	if err != nil {
-		return err
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

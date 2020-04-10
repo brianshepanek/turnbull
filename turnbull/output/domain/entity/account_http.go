@@ -1,34 +1,31 @@
 package entity
 
-import (
-	"encoding/json"
-	"time"
-)
+import "encoding/json"
 
 type jsonAccount struct {
-	Id       *int64     `json:"id,omitempty"`
-	Name     *string    `json:"name,omitempty"`
-	Created  *time.Time `json:"created,omitempty"`
-	Modified *time.Time `json:"modified,omitempty"`
+	*jsonModel
+	*jsonLucky
+	Name  *string `json:"name,omitempty"`
+	Email *string `json:"email,omitempty"`
 }
 
 func (m *accountStruct) marshalJSON() *jsonAccount {
 
 	jsonStruct := jsonAccount{}
 
-	jsonStruct.Id = m.Id()
+	jsonStruct.jsonModel = m.model.marshalJSON()
+	jsonStruct.jsonLucky = m.lucky.marshalJSON()
 	jsonStruct.Name = m.Name()
-	jsonStruct.Created = m.Created()
-	jsonStruct.Modified = m.Modified()
+	jsonStruct.Email = m.Email()
 
 	return &jsonStruct
 }
 
-func (m *accountStruct) unmarshalJSON(jsonStruct jsonAccount) {
-	m.SetId(jsonStruct.Id)
+func (m *accountStruct) unmarshalJSON(jsonStruct *jsonAccount) {
+	m.model.unmarshalJSON(jsonStruct.jsonModel)
+	m.lucky.unmarshalJSON(jsonStruct.jsonLucky)
 	m.SetName(jsonStruct.Name)
-	m.SetCreated(jsonStruct.Created)
-	m.SetModified(jsonStruct.Modified)
+	m.SetEmail(jsonStruct.Email)
 }
 
 func (m *accountStruct) MarshalJSON() ([]byte, error) {
@@ -44,7 +41,7 @@ func (m *accountStruct) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	m.unmarshalJSON(jsonStruct)
+	m.unmarshalJSON(&jsonStruct)
 
 	return nil
 

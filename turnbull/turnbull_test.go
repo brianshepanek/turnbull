@@ -48,16 +48,32 @@ var (
 					Private : true,
 				},
 			},
-			Repositories : []model.Repository {
-				model.Repository {
-					Type : "mongo",
-					Primary : true,
+			// Repositories : []model.Repository {
+			// 	model.Repository {
+			// 		Type : "mongo",
+			// 		Primary : true,
+			// 	},
+			// },
+			// Presenters : []model.Presenter {
+			// 	model.Presenter {
+			// 		Type : "default",
+			// 		Primary : true,
+			// 	},
+			// },
+			Controllers : []model.Controller {
+				model.Controller {
+					Type : "http",
 				},
 			},
-			Presenters : []model.Presenter {
-				model.Presenter {
-					Type : "default",
-					Primary : true,
+		},
+		model.Entity{
+			Name : "lucky",
+			Interface : true,
+			Fields : []model.Field{
+				model.Field{
+					Name : "thing",
+					Type : "string",
+					Private : true,
 				},
 			},
 			Controllers : []model.Controller {
@@ -71,85 +87,123 @@ var (
 			Interface : true,
 			Fields : []model.Field{
 				model.Field{
-					Name : "id",
-					Type : "int64",
-					Primary : true,
+					Type : "model",
 					Private : true,
+					Embedded : true,
 				},
+				model.Field{
+					Type : "lucky",
+					Private : true,
+					Embedded : true,
+				},
+				// model.Field{
+				// 	Name : "id",
+				// 	Type : "int64",
+				// 	Primary : true,
+				// 	Private : true,
+				// },
 				model.Field{
 					Name : "name",
 					Type : "string",
 					Private : true,
 				},
 				model.Field{
-					Name : "created",
-					Package : "time",
-					Type : "Time",
-					Private : true,
-				},
-				model.Field{
-					Name : "modified",
-					Package : "time",
-					Type : "Time",
+					Name : "email",
+					Type : "string",
 					Private : true,
 				},
 			},
-			Methods : []model.Method {
-				model.Method{
-					Name : "browse",
-					Type : "browse",
-				},
-				model.Method{
-					Name : "read",
-					Type : "read",
-					Callbacks : []model.Callback {
-						model.Callback {
-							Type : "before",
-						},
-					},
-				},
-				model.Method{
-					Name : "edit",
-					Type : "edit",
-				},
-				model.Method{
-					Name : "add",
-					Type : "add",
-					Callbacks : []model.Callback {
-						model.Callback {
-							Type : "before",
-						},
-					},
-				},
-				model.Method{
-					Name : "delete",
-					Type : "delete",
-				},
-			},
-			Repositories : []model.Repository {
-				model.Repository {
-					Type : "mongo",
-					Primary : true,
-				},
-				// model.Repository {
-				// 	Type : "mysql",
-				// },
-				// model.Repository {
-				// 	Type : "redis",
-				// },
-			},
-			Presenters : []model.Presenter {
-				model.Presenter {
-					Type : "default",
-					Primary : true,
-				},
-			},
+			// Methods : []model.Method {
+			// 	model.Method{
+			// 		Name : "browse",
+			// 		Type : "browse",
+			// 	},
+			// 	model.Method{
+			// 		Name : "read",
+			// 		Type : "read",
+			// 		Callbacks : []model.Callback {
+			// 			model.Callback {
+			// 				Type : "before",
+			// 			},
+			// 		},
+			// 	},
+			// 	model.Method{
+			// 		Name : "edit",
+			// 		Type : "edit",
+			// 	},
+			// 	model.Method{
+			// 		Name : "add",
+			// 		Type : "add",
+			// 		Callbacks : []model.Callback {
+			// 			model.Callback {
+			// 				Type : "before",
+			// 			},
+			// 		},
+			// 	},
+			// 	model.Method{
+			// 		Name : "delete",
+			// 		Type : "delete",
+			// 	},
+			// },
+			// Repositories : []model.Repository {
+			// 	model.Repository {
+			// 		Type : "mongo",
+			// 		Primary : true,
+			// 	},
+			// 	// model.Repository {
+			// 	// 	Type : "mysql",
+			// 	// },
+			// 	// model.Repository {
+			// 	// 	Type : "redis",
+			// 	// },
+			// },
+			// Presenters : []model.Presenter {
+			// 	model.Presenter {
+			// 		Type : "default",
+			// 		Primary : true,
+			// 	},
+			// },
 			Controllers : []model.Controller {
 				model.Controller {
 					Type : "http",
 				},
 			},
 		},
+		// model.Entity{
+		// 	Name : "lucky",
+		// 	Fields : []model.Field{
+		// 		model.Field{
+		// 			Name : "email",
+		// 			Type : "string",
+		// 		},
+		// 	},
+		// },
+		// model.Entity{
+		// 	Name : "user",
+		// 	Interface : true,
+		// 	Fields : []model.Field{
+		// 		model.Field{
+		// 			Type : "lucky",
+		// 			Private : true,
+		// 			Embedded : true,
+		// 		},
+		// 		model.Field{
+		// 			Type : "account",
+		// 			Private : true,
+		// 			Embedded : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "first_name",
+		// 			Type : "string",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "last_name",
+		// 			Type : "string",
+		// 			Private : true,
+		// 		},
+		// 	},
+		// },
 		// model.Entity{
 		// 	Name : "user",
 		// 	Interface : true,
@@ -478,8 +532,29 @@ func TestBuildStructure(t *testing.T){
 	}
 }
 
+// Test Format Domain Entities
+func TestFormatDomainEntities(t *testing.T){
+	
+
+	err := testTurnbull.formatDomainEntities(&testEntities)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildDomainEntity() failed with error %v`, err)
+	}
+	
+}
+
+
 // Test Build Domain Entity
 func TestBuildDomainEntity(t *testing.T){
+	
+	err := testTurnbull.formatDomainEntities(&testEntities)
+
+	// Return
+	if err != nil {
+		t.Errorf(`buildDomainEntity() failed with error %v`, err)
+	}
 
 	// Build
 	for _, testEntity := range testEntities {
@@ -676,12 +751,14 @@ func TestBuildInterfacePresenter(t *testing.T){
 
 	// Build
 	for _, testEntity := range testEntities {
-		err := testTurnbull.buildInterfacePresenter("default", testEntity)
+		for _, presenter := range testEntity.Presenters {
+			err := testTurnbull.buildInterfacePresenter(presenter.Type, testEntity)
 
-		// Return
-		if err != nil {
-			t.Errorf(`buildInterfacePresenter() failed with error %v`, err)
-		}
+			// Return
+			if err != nil {
+				t.Errorf(`buildInterfacePresenter() failed with error %v`, err)
+			}
+		}	
 	}	
 }
 
@@ -690,12 +767,14 @@ func TestBuildScaffoldInterfacePresenter(t *testing.T){
 
 	// Build
 	for _, testEntity := range testEntities {
-		err := testTurnbull.buildScaffoldInterfacePresenter("default", testEntity)
+		for _, presenter := range testEntity.Presenters {
+			err := testTurnbull.buildScaffoldInterfacePresenter(presenter.Type, testEntity)
 
-		// Return
-		if err != nil {
-			t.Errorf(`buildScaffoldInterfacePresenter() failed with error %v`, err)
-		}
+			// Return
+			if err != nil {
+				t.Errorf(`buildScaffoldInterfacePresenter() failed with error %v`, err)
+			}
+		}	
 	}	
 }
 
@@ -743,12 +822,18 @@ func TestBuildInterfacePresenterEntity(t *testing.T){
 func TestBuildInterfaceAppController(t *testing.T){
 
 	// Build
-	err := testTurnbull.buildInterfaceAppController("http", testEntities)
+	for _, testEntity := range testEntities {
+		for _, controller := range testEntity.Controllers {
+			err := testTurnbull.buildInterfaceAppController(controller.Type, testEntities)
 
-	// Return
-	if err != nil {
-		t.Errorf(`buildInterfaceController() failed with error %v`, err)
-	}	
+			// Return
+			if err != nil {
+				t.Errorf(`buildInterfaceController() failed with error %v`, err)
+			}	
+		}
+	}		
+
+	
 }
 
 // Test Build Interface Controller
@@ -756,12 +841,16 @@ func TestBuildInterfaceController(t *testing.T){
 
 	// Build
 	for _, testEntity := range testEntities {
-		err := testTurnbull.buildInterfaceController("http", testEntity)
+		for _, controller := range testEntity.Controllers {
 
-		// Return
-		if err != nil {
-			t.Errorf(`buildInterfaceController() failed with error %v`, err)
+			err := testTurnbull.buildInterfaceController(controller.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildInterfaceController() failed with error %v`, err)
+			}
 		}
+		
 	}	
 }
 
@@ -770,12 +859,17 @@ func TestBuildScaffoldInterfaceController(t *testing.T){
 
 	// Build
 	for _, testEntity := range testEntities {
-		err := testTurnbull.buildScaffoldInterfaceController("http", testEntity)
 
-		// Return
-		if err != nil {
-			t.Errorf(`buildScaffoldInterfaceController() failed with error %v`, err)
+		for _, controller := range testEntity.Controllers {
+
+			err := testTurnbull.buildScaffoldInterfaceController(controller.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildScaffoldInterfaceController() failed with error %v`, err)
+			}
 		}
+			
 	}	
 }
 
@@ -784,12 +878,16 @@ func TestBuildInterfaceControllerEntity(t *testing.T){
 
 	// Build
 	for _, testEntity := range testEntities {
-		err := testTurnbull.buildInterfaceControllerEntity("http", testEntity)
 
-		// Return
-		if err != nil {
-			t.Errorf(`buildScaffoldInterfaceController() failed with error %v`, err)
-		}
+		for _, controller := range testEntity.Controllers {
+
+			err := testTurnbull.buildInterfaceControllerEntity(controller.Type, testEntity)
+
+			// Return
+			if err != nil {
+				t.Errorf(`buildScaffoldInterfaceController() failed with error %v`, err)
+			}
+		}	
 	}	
 }
 
@@ -813,14 +911,14 @@ func TestBuildInterfaceControllerRegistry(t *testing.T){
 	}	
 }
 
-// Test Build Scaffold Registry
-func TestBuildScaffoldRegistry(t *testing.T){
+// // Test Build Scaffold Registry
+// func TestBuildScaffoldRegistry(t *testing.T){
 
-	err := testTurnbull.buildScaffoldRegistry(testEntities)
+// 	err := testTurnbull.buildScaffoldRegistry(testEntities)
 
-	// Return
-	if err != nil {
-		t.Errorf(`buildScaffoldRegistry() failed with error %v`, err)
-	}
+// 	// Return
+// 	if err != nil {
+// 		t.Errorf(`buildScaffoldRegistry() failed with error %v`, err)
+// 	}
 
-}
+// }

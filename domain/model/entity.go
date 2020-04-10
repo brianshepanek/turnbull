@@ -18,6 +18,8 @@ type Field struct {
 	Type string
 	Slice bool
 	Private bool
+	Embedded bool
+	Entity Entity
 }
 
 type Method struct {

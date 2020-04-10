@@ -1802,13 +1802,25 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerJSONS
 	var statement jen.Statement
 	var fields []jen.Code
 	for _, field := range entity.Fields {
+		if !field.Embedded {
+			code, err := controllerGenerator.scaffoldEntityJSONStructField(field, entity)
+			if err != nil {
+				return nil, err
+			}
+			
+			fields = append(fields, code)
+		} else {
 
-		code, err := controllerGenerator.scaffoldEntityJSONStructField(field, entity)
-		if err != nil {
-			return nil, err
+			// Struct ID
+			structId , err := controllerGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("json", field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			fields = append(fields, jen.Op("*").Id(structId))
+
 		}
 		
-		fields = append(fields, code)
 		
 	}
 
@@ -1889,27 +1901,66 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerLocal
 
 	for _, field := range entity.Fields {
 
-		// Getter ID
-		getterId , err := controllerGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
+		if !field.Embedded {
 
-		if entity.Interface {
-			block = append(block,
-				jen.Id("jsonStruct").
-				Dot(getterId).
-				Op("=").
-				Id("m").Dot(getterId).Call(),
-			)
+			// Getter ID
+			getterId , err := controllerGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
+
+			if entity.Interface {
+				block = append(block,
+					jen.Id("jsonStruct").
+					Dot(getterId).
+					Op("=").
+					Id("m").Dot(getterId).Call(),
+				)
+			} else {
+				block = append(block,
+					jen.Id("jsonStruct").
+					Dot(getterId).
+					Op("=").
+					Id("m").Dot(getterId),
+				)
+			}
 		} else {
+
+			// Vars
+			var entityId string
+
+			// Struct ID
+			fieldId , err := controllerGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("json", field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			// Interface ID
+			if field.Entity.Interface {
+				structId , err := controllerGenerator.formatter.OutputDomainEntityStructId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = structId
+			} else {
+				interfaceId , err := controllerGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = interfaceId
+			}
+
 			block = append(block,
 				jen.Id("jsonStruct").
-				Dot(getterId).
+				Dot(fieldId).
 				Op("=").
-				Id("m").Dot(getterId),
+				Id("m").
+				Dot(entityId).
+				Dot("marshalJSON").
+				Call(),
 			)
-		}
+
+		}	
 	}
 
 	block = append(block, jen.Line())
@@ -2015,56 +2066,9 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerLocal
 	// Params
 	statement.Params(
 		jen.Id("jsonStruct").
+		Op("*").
 		Qual("", marshalStructId),
 	)
-
-	// Parens
-	// statement.Parens()	
-
-	// var jsonStruct []jen.Code
-	// var jsonSetterFunctions []jen.Code
-	// for _, field := range entity.Fields {
-
-	// 	// Getter ID
-	// 	getterId , err := controllerGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	// Setter ID
-	// 	setterId , err := controllerGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-		
-	// 	code, err := controllerGenerator.scaffoldEntityJSONStructField(field, entity)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	jsonStruct = append(jsonStruct, code)
-
-	// 	if entity.Interface {
-	// 		jsonSetterFunctions = append(jsonSetterFunctions, 
-	// 			jen.Id("m").
-	// 			Dot(setterId).
-	// 			Call(
-	// 				jen.Id("jsonStruct").
-	// 				Dot(getterId),
-	// 			),
-	// 		)
-	// 	} else {
-	// 		jsonSetterFunctions = append(jsonSetterFunctions, 
-	// 			jen.Id("m").
-	// 			Dot(getterId).
-	// 			Op("=").
-	// 			Id("jsonStruct").
-	// 			Dot(getterId),
-	// 		)
-	// 	}	
-		
-		
-	// }
 
 	// Block
 	var block []jen.Code
@@ -2072,37 +2076,78 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerLocal
 	
 	for _, field := range entity.Fields {
 
-		// Getter ID
-		getterId , err := controllerGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
-		if err != nil {
-			return nil, err
-		}
+		if !field.Embedded {
 
-		// Setter ID
-		setterId , err := controllerGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
-		if err != nil {
-			return nil, err
-		}
-		
+			// Getter ID
+			getterId , err := controllerGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			if err != nil {
+				return nil, err
+			}
 
-		if entity.Interface {
-			block = append(block, 
-				jen.Id("m").
-				Dot(setterId).
-				Call(
-					jen.Id("jsonStruct").
+			// Setter ID
+			setterId , err := controllerGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
+			if err != nil {
+				return nil, err
+			}
+			
+
+			if entity.Interface {
+				block = append(block, 
+					jen.Id("m").
+					Dot(setterId).
+					Call(
+						jen.Id("jsonStruct").
+						Dot(getterId),
+					),
+				)
+			} else {
+				block = append(block, 
+					jen.Id("m").
+					Dot(getterId).
+					Op("=").
+					Id("jsonStruct").
 					Dot(getterId),
+				)
+			}	
+		} else {
+
+			// Vars
+			var entityId string
+
+			// Struct ID
+			fieldId , err := controllerGenerator.formatter.OutputScaffoldDomainEntityMarshalStructId("json", field.Entity)
+			if err != nil {
+				return nil, err
+			}
+
+			// Interface ID
+			if field.Entity.Interface {
+				structId , err := controllerGenerator.formatter.OutputDomainEntityStructId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = structId
+			} else {
+				interfaceId , err := controllerGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+				entityId = interfaceId
+			}
+
+			block = append(block,
+				jen.Id("m").
+				Dot(entityId).
+				Dot("unmarshalJSON").
+				Params(
+					jen.Id("jsonStruct").
+					Dot(fieldId),
 				),
 			)
-		} else {
-			block = append(block, 
-				jen.Id("m").
-				Dot(getterId).
-				Op("=").
-				Id("jsonStruct").
-				Dot(getterId),
-			)
-		}	
+
+			// m.model.unmarshalJSON(jsonStruct.jsonModel)
+
+		} 
 	}	
 	// block = append(block, 
 	// 	jen.Type().
@@ -2245,7 +2290,8 @@ func (controllerGenerator *controllerGenerator) scaffoldInterfaceControllerUnmar
 		jen.Id("m").
 		Dot("unmarshalJSON").
 		Params(
-			jen.Id("jsonStruct"),
+			jen.Op("&").
+			Id("jsonStruct"),
 		),
 	)
 

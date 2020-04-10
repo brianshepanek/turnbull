@@ -53,51 +53,76 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 	
 
 	// Qual
-	if field.Type != "" {
-		if field.Type == "self" {
-
-			// Vars
-			var id string
-
-			// Import Path
-			importPath , err := generator.formatter.OutputScaffoldDomainEntityDirectoryImportPath()
-			if err != nil {
-				return nil
-			}
-
-			if field.Slice && entity.Interface {
-
-				// Slice Interface ID
-				id, err = generator.formatter.OutputDomainEntitySliceInterfaceId(entity)
-				if err != nil {
-					return nil
-				}
+	if field.Embedded {
 		
-			} else {
+		// Vars
+		var entityId string
 
-				// Interface ID
-				id , err = generator.formatter.OutputDomainEntityInterfaceId(entity)
+		// Interface ID
+		if field.Entity.Interface {
+			structId , err := generator.formatter.OutputDomainEntityStructId(field.Entity)
+			if err != nil {
+				return err
+			}
+			entityId = structId
+		} else {
+			interfaceId , err := generator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+			if err != nil {
+				return err
+			}
+			entityId = interfaceId
+		}
+		statement.Qual("", entityId)
+
+
+	} else {
+		if field.Type != "" {
+			if field.Type == "self" {
+	
+				// Vars
+				var id string
+	
+				// Import Path
+				importPath , err := generator.formatter.OutputScaffoldDomainEntityDirectoryImportPath()
 				if err != nil {
 					return nil
 				}
-
-			}
-
-			// Set
-			statement.Qual(importPath, id)
-
-		} else if (field.Type == "primary"){ 
-
-			for _, entityField := range entity.Fields {
-				if entityField.Primary {
-					statement.Qual(entityField.Package, entityField.Type)
+	
+				if field.Slice && entity.Interface {
+	
+					// Slice Interface ID
+					id, err = generator.formatter.OutputDomainEntitySliceInterfaceId(entity)
+					if err != nil {
+						return nil
+					}
+			
+				} else {
+	
+					// Interface ID
+					id , err = generator.formatter.OutputDomainEntityInterfaceId(entity)
+					if err != nil {
+						return nil
+					}
+	
 				}
+	
+				// Set
+				statement.Qual(importPath, id)
+	
+			} else if (field.Type == "primary"){ 
+	
+				for _, entityField := range entity.Fields {
+					if entityField.Primary {
+						statement.Qual(entityField.Package, entityField.Type)
+					}
+				}
+	
+			} else {
+				statement.Qual(field.Package, field.Type)
 			}
-
-		} else {
-			statement.Qual(field.Package, field.Type)
-		}
-	} 
+		} 
+	}
+	
 
 	
 	return nil
