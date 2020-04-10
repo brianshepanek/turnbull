@@ -441,7 +441,15 @@ func (turnbull *turnbull) buildEntityInterfaceRepository(driver string, entity m
 		
 	}
 
-	
+	// Build Embedded
+	for _, field := range entity.Fields {
+		if field.Embedded {
+			err := turnbull.buildEntityInterfaceRepository(driver, field.Entity)
+			if err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
 }
@@ -667,7 +675,15 @@ func (turnbull *turnbull) buildEntityInterfacePresenter(driver string, entity mo
 		
 	}
 
-	
+	// Build Embedded
+	for _, field := range entity.Fields {
+		if field.Embedded {
+			err := turnbull.buildEntityInterfacePresenter(driver, field.Entity)
+			if err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
 }
@@ -834,6 +850,16 @@ func (turnbull *turnbull) buildInterfaceControllerEntity(driver string, entity m
 		_, err = file.WriteString(buf.String())
 		if err != nil {
 			return err
+		}
+	}
+
+	// Build Embedded
+	for _, field := range entity.Fields {
+		if field.Embedded {
+			err := turnbull.buildInterfaceControllerEntity(driver, field.Entity)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

@@ -48,23 +48,6 @@ var (
 					Private : true,
 				},
 			},
-			// Repositories : []model.Repository {
-			// 	model.Repository {
-			// 		Type : "mongo",
-			// 		Primary : true,
-			// 	},
-			// },
-			// Presenters : []model.Presenter {
-			// 	model.Presenter {
-			// 		Type : "default",
-			// 		Primary : true,
-			// 	},
-			// },
-			Controllers : []model.Controller {
-				model.Controller {
-					Type : "http",
-				},
-			},
 		},
 		model.Entity{
 			Name : "lucky",
@@ -74,11 +57,6 @@ var (
 					Name : "thing",
 					Type : "string",
 					Private : true,
-				},
-			},
-			Controllers : []model.Controller {
-				model.Controller {
-					Type : "http",
 				},
 			},
 		},
@@ -96,12 +74,6 @@ var (
 					Private : true,
 					Embedded : true,
 				},
-				// model.Field{
-				// 	Name : "id",
-				// 	Type : "int64",
-				// 	Primary : true,
-				// 	Private : true,
-				// },
 				model.Field{
 					Name : "name",
 					Type : "string",
@@ -151,340 +123,18 @@ var (
 			// 		Primary : true,
 			// 	},
 			// },
-			// Presenters : []model.Presenter {
-			// 	model.Presenter {
-			// 		Type : "default",
-			// 		Primary : true,
-			// 	},
-			// },
+			Presenters : []model.Presenter {
+				model.Presenter {
+					Type : "default",
+					Primary : true,
+				},
+			},
 			Controllers : []model.Controller {
 				model.Controller {
 					Type : "http",
 				},
 			},
 		},
-		// model.Entity{
-		// 	Name : "lucky",
-		// 	Fields : []model.Field{
-		// 		model.Field{
-		// 			Name : "email",
-		// 			Type : "string",
-		// 		},
-		// 	},
-		// },
-		// model.Entity{
-		// 	Name : "user",
-		// 	Interface : true,
-		// 	Fields : []model.Field{
-		// 		model.Field{
-		// 			Type : "lucky",
-		// 			Private : true,
-		// 			Embedded : true,
-		// 		},
-		// 		model.Field{
-		// 			Type : "account",
-		// 			Private : true,
-		// 			Embedded : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "first_name",
-		// 			Type : "string",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "last_name",
-		// 			Type : "string",
-		// 			Private : true,
-		// 		},
-		// 	},
-		// },
-		// model.Entity{
-		// 	Name : "user",
-		// 	Interface : true,
-		// 	Fields : []model.Field{
-		// 		model.Field{
-		// 			Name : "id",
-		// 			Type : "int64",
-		// 			Primary : true,
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "account_id",
-		// 			Type : "int64",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "first_name",
-		// 			Type : "string",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "last_name",
-		// 			Type : "string",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "email",
-		// 			Type : "string",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "created",
-		// 			Package : "time",
-		// 			Type : "Time",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "modified",
-		// 			Package : "time",
-		// 			Type : "Time",
-		// 			Private : true,
-		// 		},
-		// 	},
-		// 	Methods : []model.Method {
-		// 		model.Method{
-		// 			Name : "browse",
-		// 			Type : "browse",
-		// 		},
-		// 		model.Method{
-		// 			Name : "read",
-		// 			Type : "read",
-		// 			Callbacks : []model.Callback {
-		// 				model.Callback {
-		// 					Type : "before",
-		// 				},
-		// 			},
-		// 		},
-		// 		model.Method{
-		// 			Name : "edit",
-		// 			Type : "edit",
-		// 		},
-		// 		model.Method{
-		// 			Name : "add",
-		// 			Type : "add",
-		// 			Callbacks : []model.Callback {
-		// 				model.Callback {
-		// 					Type : "before",
-		// 				},
-		// 			},
-		// 		},
-		// 		model.Method{
-		// 			Name : "delete",
-		// 			Type : "delete",
-		// 		},
-		// 	},
-		// 	Repositories : []model.Repository {
-		// 		model.Repository {
-		// 			Type : "mongo",
-		// 			Primary : true,
-		// 		},
-		// 		// model.Repository {
-		// 		// 	Type : "mysql",
-		// 		// },
-		// 		// model.Repository {
-		// 		// 	Type : "redis",
-		// 		// },
-		// 	},
-		// 	Presenters : []model.Presenter {
-		// 		model.Presenter {
-		// 			Type : "default",
-		// 			Primary : true,
-		// 		},
-		// 	},
-		// 	Controllers : []model.Controller {
-		// 		model.Controller {
-		// 			Type : "http",
-		// 		},
-		// 	},
-		// },
-		// model.Entity{
-		// 	Name : "channel",
-		// 	Interface : true,
-		// 	Fields : []model.Field{
-		// 		model.Field{
-		// 			Name : "id",
-		// 			Type : "int64",
-		// 			Primary : true,
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "account_id",
-		// 			Type : "int64",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "name",
-		// 			Type : "string",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "created",
-		// 			Package : "time",
-		// 			Type : "Time",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "modified",
-		// 			Package : "time",
-		// 			Type : "Time",
-		// 			Private : true,
-		// 		},
-		// 	},
-		// 	Methods : []model.Method {
-		// 		model.Method{
-		// 			Name : "browse",
-		// 			Type : "browse",
-		// 		},
-		// 		model.Method{
-		// 			Name : "read",
-		// 			Type : "read",
-		// 			Callbacks : []model.Callback {
-		// 				model.Callback {
-		// 					Type : "before",
-		// 				},
-		// 			},
-		// 		},
-		// 		model.Method{
-		// 			Name : "edit",
-		// 			Type : "edit",
-		// 		},
-		// 		model.Method{
-		// 			Name : "add",
-		// 			Type : "add",
-		// 			Callbacks : []model.Callback {
-		// 				model.Callback {
-		// 					Type : "before",
-		// 				},
-		// 			},
-		// 		},
-		// 		model.Method{
-		// 			Name : "delete",
-		// 			Type : "delete",
-		// 		},
-		// 	},
-		// 	Repositories : []model.Repository {
-		// 		model.Repository {
-		// 			Type : "mongo",
-		// 			Primary : true,
-		// 		},
-		// 		// model.Repository {
-		// 		// 	Type : "mysql",
-		// 		// },
-		// 		// model.Repository {
-		// 		// 	Type : "redis",
-		// 		// },
-		// 	},
-		// 	Presenters : []model.Presenter {
-		// 		model.Presenter {
-		// 			Type : "default",
-		// 			Primary : true,
-		// 		},
-		// 	},
-		// 	Controllers : []model.Controller {
-		// 		model.Controller {
-		// 			Type : "http",
-		// 		},
-		// 	},
-		// },
-		// model.Entity{
-		// 	Name : "message",
-		// 	Interface : true,
-		// 	Fields : []model.Field{
-		// 		model.Field{
-		// 			Name : "id",
-		// 			Type : "int64",
-		// 			Primary : true,
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "account_id",
-		// 			Type : "int64",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "channel_id",
-		// 			Type : "int64",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "user_id",
-		// 			Type : "int64",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "body",
-		// 			Type : "string",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "created",
-		// 			Package : "time",
-		// 			Type : "Time",
-		// 			Private : true,
-		// 		},
-		// 		model.Field{
-		// 			Name : "modified",
-		// 			Package : "time",
-		// 			Type : "Time",
-		// 			Private : true,
-		// 		},
-		// 	},
-		// 	Methods : []model.Method {
-		// 		model.Method{
-		// 			Name : "browse",
-		// 			Type : "browse",
-		// 		},
-		// 		model.Method{
-		// 			Name : "read",
-		// 			Type : "read",
-		// 			Callbacks : []model.Callback {
-		// 				model.Callback {
-		// 					Type : "before",
-		// 				},
-		// 			},
-		// 		},
-		// 		model.Method{
-		// 			Name : "edit",
-		// 			Type : "edit",
-		// 		},
-		// 		model.Method{
-		// 			Name : "add",
-		// 			Type : "add",
-		// 			Callbacks : []model.Callback {
-		// 				model.Callback {
-		// 					Type : "before",
-		// 				},
-		// 			},
-		// 		},
-		// 		model.Method{
-		// 			Name : "delete",
-		// 			Type : "delete",
-		// 		},
-		// 	},
-		// 	Repositories : []model.Repository {
-		// 		model.Repository {
-		// 			Type : "mongo",
-		// 			Primary : true,
-		// 		},
-		// 		// model.Repository {
-		// 		// 	Type : "mysql",
-		// 		// },
-		// 		// model.Repository {
-		// 		// 	Type : "redis",
-		// 		// },
-		// 	},
-		// 	Presenters : []model.Presenter {
-		// 		model.Presenter {
-		// 			Type : "default",
-		// 			Primary : true,
-		// 		},
-		// 	},
-		// 	Controllers : []model.Controller {
-		// 		model.Controller {
-		// 			Type : "http",
-		// 		},
-		// 	},
-		// },	
 	}
 )
 
@@ -707,25 +357,25 @@ func TestBuildScaffoldInterfaceRepository(t *testing.T){
 	}	
 }
 
-// Test Build Interface Repository Registry
-func TestBuildInterfaceRepositoryRegistry(t *testing.T){
+// // Test Build Interface Repository Registry
+// func TestBuildInterfaceRepositoryRegistry(t *testing.T){
 
-	// Build
-	for _, testEntity := range testEntities {
+// 	// Build
+// 	for _, testEntity := range testEntities {
 
-		for _, repository := range testEntity.Repositories {
+// 		for _, repository := range testEntity.Repositories {
 
-			err := testTurnbull.buildRegistryInterfaceRepository(repository.Type, testEntity)
+// 			err := testTurnbull.buildRegistryInterfaceRepository(repository.Type, testEntity)
 
-			// Return
-			if err != nil {
-				t.Errorf(`buildRegistryInterfaceRepository() failed with error %v`, err)
-			}
+// 			// Return
+// 			if err != nil {
+// 				t.Errorf(`buildRegistryInterfaceRepository() failed with error %v`, err)
+// 			}
 
-		}
+// 		}
 
-	}	
-}
+// 	}	
+// }
 
 // Test Build Interface Repository Entity
 func TestBuildInterfaceRepositoryEntity(t *testing.T){
@@ -779,25 +429,25 @@ func TestBuildScaffoldInterfacePresenter(t *testing.T){
 	}	
 }
 
-// Test Build Interface Presenter Registry
-func TestBuildInterfacePresenterRegistry(t *testing.T){
+// // Test Build Interface Presenter Registry
+// func TestBuildInterfacePresenterRegistry(t *testing.T){
 
-	// Build
-	for _, testEntity := range testEntities {
+// 	// Build
+// 	for _, testEntity := range testEntities {
 
-		for _, presenter := range testEntity.Presenters {
+// 		for _, presenter := range testEntity.Presenters {
 
-			err := testTurnbull.buildRegistryInterfacePresenter(presenter.Type, testEntity)
+// 			err := testTurnbull.buildRegistryInterfacePresenter(presenter.Type, testEntity)
 
-			// Return
-			if err != nil {
-				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
-			}
+// 			// Return
+// 			if err != nil {
+// 				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
+// 			}
 
-		}
+// 		}
 
-	}	
-}
+// 	}	
+// }
 
 // Test Build Interface Presenter Entity
 func TestBuildInterfacePresenterEntity(t *testing.T){
@@ -892,25 +542,25 @@ func TestBuildInterfaceControllerEntity(t *testing.T){
 	}	
 }
 
-// Test Build Interface Controller Registry
-func TestBuildInterfaceControllerRegistry(t *testing.T){
+// // Test Build Interface Controller Registry
+// func TestBuildInterfaceControllerRegistry(t *testing.T){
 
-	// Build
-	for _, testEntity := range testEntities {
+// 	// Build
+// 	for _, testEntity := range testEntities {
 
-		for _, controller := range testEntity.Controllers {
+// 		for _, controller := range testEntity.Controllers {
 
-			err := testTurnbull.buildRegistryInterfaceController(controller.Type, testEntity)
+// 			err := testTurnbull.buildRegistryInterfaceController(controller.Type, testEntity)
 
-			// Return
-			if err != nil {
-				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
-			}
+// 			// Return
+// 			if err != nil {
+// 				t.Errorf(`buildRegistryInterfacePresenter() failed with error %v`, err)
+// 			}
 
-		}
+// 		}
 
-	}	
-}
+// 	}	
+// }
 
 // // Test Build Scaffold Registry
 // func TestBuildScaffoldRegistry(t *testing.T){

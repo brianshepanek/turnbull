@@ -300,41 +300,51 @@ func (controllerGenerator *controllerGenerator) interfaceAppControllerInterface(
 	
 	for _, entity := range entities {
 
-		// ID
-		var statement jen.Statement
-
-		// Import Path
-		importPath, err := controllerGenerator.formatter.OutputInterfaceControllerDirectoryImportPath("http", entity)
-		if err != nil {
-			return nil, err
+		var hasMatchingController bool
+		for _, controller := range entity.Controllers {
+			if controller.Type == "http" {
+				hasMatchingController = true
+			}
 		}
 
-		// Constructor
-		constructorId, err := controllerGenerator.formatter.OutputRegistryEntityControllerConstructorFunctionId("http", entity)
-		if err != nil {
-			return nil, err
-		}
+		if hasMatchingController {
+			// ID
+			var statement jen.Statement
 
-		// Interface
-		interfaceId, err := controllerGenerator.formatter.OutputInterfaceControllerInterfaceId("http", entity)
-		if err != nil {
-			return nil, err
-		}
+			// Import Path
+			importPath, err := controllerGenerator.formatter.OutputInterfaceControllerDirectoryImportPath("http", entity)
+			if err != nil {
+				return nil, err
+			}
 
-		// Set
-		statement.Id(constructorId)
+			// Constructor
+			constructorId, err := controllerGenerator.formatter.OutputRegistryEntityControllerConstructorFunctionId("http", entity)
+			if err != nil {
+				return nil, err
+			}
 
-		// Params
-		statement.Params()
+			// Interface
+			interfaceId, err := controllerGenerator.formatter.OutputInterfaceControllerInterfaceId("http", entity)
+			if err != nil {
+				return nil, err
+			}
 
-		// Field
-		err = controllerGenerator.helperGenerator.Field("", model.Field{Package : importPath, Type : interfaceId}, entity, &statement)
-		if err != nil {
-			return nil, err
+			// Set
+			statement.Id(constructorId)
+
+			// Params
+			statement.Params()
+
+			// Field
+			err = controllerGenerator.helperGenerator.Field("", model.Field{Package : importPath, Type : interfaceId}, entity, &statement)
+			if err != nil {
+				return nil, err
+			}
+
+
+			fields = append(fields, &statement)
 		}
 		
-		
-		fields = append(fields, &statement)
 
 	}
 	// // Scaffold
