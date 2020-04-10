@@ -390,7 +390,7 @@ func (presenterGenerator *presenterGenerator) interfacePresenterConstructorFunct
 
 
 	// Struct ID
-	structId , err := presenterGenerator.formatter.OutputScaffoldInterfacePresenterStructId("default", entity)
+	structId , err := presenterGenerator.formatter.OutputInterfacePresenterStructId("default", entity)
 	if err != nil {
 		return nil, err
 	}

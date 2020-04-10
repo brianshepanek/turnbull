@@ -675,8 +675,15 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryBrows
 			Op("!=").
 			Nil().
 			Block(
-				jen.Return(
-					jen.Err(),
+				jen.If(
+					jen.Err().
+					Op("!=").
+					Qual("go.mongodb.org/mongo-driver/mongo", "ErrNoDocuments").
+					Block(
+						jen.Return(
+							jen.Err(),
+						),
+					),
 				),
 			),
 		),
@@ -857,8 +864,15 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryReadM
 			Op("!=").
 			Nil().
 			Block(
-				jen.Return(
-					jen.Err(),
+				jen.If(
+					jen.Err().
+					Op("!=").
+					Qual("go.mongodb.org/mongo-driver/mongo", "ErrNoDocuments").
+					Block(
+						jen.Return(
+							jen.Err(),
+						),
+					),
 				),
 			),
 		),
@@ -980,8 +994,15 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 			Op("!=").
 			Nil().
 			Block(
-				jen.Return(
-					jen.Err(),
+				jen.If(
+					jen.Err().
+					Op("!=").
+					Qual("go.mongodb.org/mongo-driver/mongo", "ErrNoDocuments").
+					Block(
+						jen.Return(
+							jen.Err(),
+						),
+					),
 				),
 			),
 		),
@@ -1074,8 +1095,15 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 			Op("!=").
 			Nil().
 			Block(
-				jen.Return(
-					jen.Err(),
+				jen.If(
+					jen.Err().
+					Op("!=").
+					Qual("go.mongodb.org/mongo-driver/mongo", "ErrNoDocuments").
+					Block(
+						jen.Return(
+							jen.Err(),
+						),
+					),
 				),
 			),
 		),

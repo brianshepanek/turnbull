@@ -49,6 +49,8 @@ type EntityGenerator interface{
 	scaffoldEntitySliceInterfaceElements(entity model.Entity) (jen.Code, error)
 
 	// Scaffold Entity Interface Functions
+	scaffoldEntityStructConstructorFunction(entity model.Entity) (jen.Statement, error)
+	scaffoldEntityScaffoldStructConstructorFunction(entity model.Entity) (jen.Statement, error)
 	scaffoldEntityInterfaceConstructorFunction(entity model.Entity) (jen.Statement, error)
 	scaffoldEntitySliceInterfaceConstructorFunction(entity model.Entity) (jen.Statement, error)
 	scaffoldEntitySliceInterfaceLenFunction(entity model.Entity) (jen.Statement, error)
@@ -142,12 +144,29 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 	f := jen.NewFile(packageName)
 
 	// Struct
-	entityStruct, err := entityGenerator.scaffoldEntityStruct(entity)
+	scaffoldEntityStruct, err := entityGenerator.scaffoldEntityStruct(entity)
 	if err != nil {
 		return nil, err
 	}
-	f.Add(&entityStruct)
+	f.Add(&scaffoldEntityStruct)
 	f.Line()
+
+	// Struct Constructor Struct
+	entityStructConstructor, err := entityGenerator.scaffoldEntityStructConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&entityStructConstructor)
+	f.Line()
+
+	// Scaffold Struct Constructor Struct
+	scaffoldEntityStructConstructor, err := entityGenerator.scaffoldEntityScaffoldStructConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&scaffoldEntityStructConstructor)
+	f.Line()
+
 
 	// Interface
 	if entity.Interface {
@@ -272,7 +291,7 @@ func (entityGenerator *entityGenerator) entityStruct(entity model.Entity) (jen.S
 	}
 	
 	// Fields
-	fields = append(fields, jen.Id(scaffoldId))
+	fields = append(fields, jen.Op("*").Id(scaffoldId))
 
 	// Struct
 	resp.Struct(fields...)
@@ -829,6 +848,109 @@ func (entityGenerator *entityGenerator) scaffoldEntitySliceInterfaceElements(ent
 	return &statement, nil
 }
 
+func (entityGenerator *entityGenerator) scaffoldEntityStructConstructorFunction(entity model.Entity) (jen.Statement, error){
+	
+	// ID
+	var statement jen.Statement
+	id , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructConstructorFunctionId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	scaffoldStructConstructorId , err := entityGenerator.formatter.OutputScaffoldDomainEntityScaffoldStructConstructorFunctionId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Struct ID
+	structId , err := entityGenerator.formatter.OutputDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Scaffold Struct ID
+	scaffoldStructId , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Func
+	statement.Func()
+
+	// ID
+	statement.Id(id)
+
+	// Params
+	statement.Params()
+
+	// List
+	var list []jen.Code
+	list = append(list, jen.Op("*").Id(structId))
+	statement.List(
+		list...,
+	)
+
+	// Block
+	statement.Block(
+		jen.Return(
+			jen.Op("&").
+			Id(structId).
+			Values(
+				jen.Dict{
+					jen.Id(scaffoldStructId) : jen.Id(scaffoldStructConstructorId).Call(),
+				},
+			),
+		),
+	)
+	
+	
+	return statement, nil
+}
+
+func (entityGenerator *entityGenerator) scaffoldEntityScaffoldStructConstructorFunction(entity model.Entity) (jen.Statement, error){
+	
+	// ID
+	var statement jen.Statement
+	id , err := entityGenerator.formatter.OutputScaffoldDomainEntityScaffoldStructConstructorFunctionId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Struct ID
+	structId , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Func
+	statement.Func()
+
+	// ID
+	statement.Id(id)
+
+	// Params
+	statement.Params()
+
+	// List
+	var list []jen.Code
+	list = append(list, jen.Op("*").Id(structId))
+	statement.List(
+		list...,
+	)
+
+	// Block
+	statement.Block(
+		jen.Return(
+			jen.Op("&").
+			Id(structId).
+			Values(),
+		),
+	)
+	
+	
+	return statement, nil
+}
+
 func (entityGenerator *entityGenerator) scaffoldEntityInterfaceConstructorFunction(entity model.Entity) (jen.Statement, error){
 	
 	// ID
@@ -899,7 +1021,13 @@ func (entityGenerator *entityGenerator) entityInterfaceConstructorFunction(entit
 	}
 
 	// Struct ID
-	structId , err := entityGenerator.formatter.OutputDomainEntityStructId(entity)
+	// structId , err := entityGenerator.formatter.OutputDomainEntityStructId(entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// Struct Constructor ID
+	structConstructorId , err := entityGenerator.formatter.OutputScaffoldDomainEntityStructConstructorFunctionId(entity)
 	if err != nil {
 		return nil, err
 	}
@@ -927,9 +1055,7 @@ func (entityGenerator *entityGenerator) entityInterfaceConstructorFunction(entit
 	// Block
 	statement.Block(
 		jen.Return(
-			jen.Op("&").
-			Id(structId).
-			Values(),
+			jen.Id(structConstructorId).Call(),
 		),
 	)
 	

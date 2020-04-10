@@ -18,6 +18,7 @@ import(
 
 const(
 	testConfigPath = "./config"
+	// testOutputPath = "/go/src/github.com/brianshepanek/blog2"
 	testOutputPath = "./output"
 )
 
@@ -25,103 +26,7 @@ var (
 	testTurnbull *turnbull
 	testEntities = []model.Entity{
 		model.Entity{
-			Name : "post",
-			Fields : []model.Field{
-				model.Field{
-					Name : "id",
-					Type : "int64",
-					Primary : true,
-				},
-				model.Field{
-					Name : "user_id",
-					Type : "int64",
-				},
-				model.Field{
-					Name : "title",
-					Type : "string",
-				},
-				model.Field{
-					Name : "subtitle",
-					Type : "string",
-				},
-				model.Field{
-					Name : "views",
-					Type : "int",
-				},
-				model.Field{
-					Name : "tags",
-					Slice : true,
-					Type : "string",
-				},
-				model.Field{
-					Name : "created",
-					Package : "time",
-					Type : "Time",
-				},
-				model.Field{
-					Name : "modified",
-					Package : "time",
-					Type : "Time",
-				},
-			},
-			Methods : []model.Method {
-				model.Method{
-					Name : "browse",
-					Type : "browse",
-				},
-				model.Method{
-					Name : "read",
-					Type : "read",
-					Callbacks : []model.Callback {
-						model.Callback {
-							Type : "before",
-						},
-					},
-				},
-				model.Method{
-					Name : "edit",
-					Type : "edit",
-				},
-				model.Method{
-					Name : "add",
-					Type : "add",
-					Callbacks : []model.Callback {
-						model.Callback {
-							Type : "before",
-						},
-					},
-				},
-				model.Method{
-					Name : "delete",
-					Type : "delete",
-				},
-			},
-			Repositories : []model.Repository {
-				model.Repository {
-					Type : "mongo",
-					Primary : true,
-				},
-				model.Repository {
-					Type : "mysql",
-				},
-				model.Repository {
-					Type : "redis",
-				},
-			},
-			Presenters : []model.Presenter {
-				model.Presenter {
-					Type : "default",
-					Primary : true,
-				},
-			},
-			Controllers : []model.Controller {
-				model.Controller {
-					Type : "http",
-				},
-			},
-		},	
-		model.Entity{
-			Name : "comment",
+			Name : "model",
 			Interface : true,
 			Fields : []model.Field{
 				model.Field{
@@ -131,22 +36,48 @@ var (
 					Private : true,
 				},
 				model.Field{
-					Name : "post_id",
+					Name : "created",
+					Package : "time",
+					Type : "Time",
+					Private : true,
+				},
+				model.Field{
+					Name : "modified",
+					Package : "time",
+					Type : "Time",
+					Private : true,
+				},
+			},
+			Repositories : []model.Repository {
+				model.Repository {
+					Type : "mongo",
+					Primary : true,
+				},
+			},
+			Presenters : []model.Presenter {
+				model.Presenter {
+					Type : "default",
+					Primary : true,
+				},
+			},
+			Controllers : []model.Controller {
+				model.Controller {
+					Type : "http",
+				},
+			},
+		},
+		model.Entity{
+			Name : "account",
+			Interface : true,
+			Fields : []model.Field{
+				model.Field{
+					Name : "id",
 					Type : "int64",
+					Primary : true,
 					Private : true,
 				},
 				model.Field{
-					Name : "user_id",
-					Type : "int64",
-					Private : true,
-				},
-				model.Field{
-					Name : "title",
-					Type : "string",
-					Private : true,
-				},
-				model.Field{
-					Name : "body",
+					Name : "name",
 					Type : "string",
 					Private : true,
 				},
@@ -198,14 +129,14 @@ var (
 			Repositories : []model.Repository {
 				model.Repository {
 					Type : "mongo",
-				},
-				model.Repository {
-					Type : "mysql",
 					Primary : true,
 				},
-				model.Repository {
-					Type : "redis",
-				},
+				// model.Repository {
+				// 	Type : "mysql",
+				// },
+				// model.Repository {
+				// 	Type : "redis",
+				// },
 			},
 			Presenters : []model.Presenter {
 				model.Presenter {
@@ -218,7 +149,294 @@ var (
 					Type : "http",
 				},
 			},
-		},	
+		},
+		// model.Entity{
+		// 	Name : "user",
+		// 	Interface : true,
+		// 	Fields : []model.Field{
+		// 		model.Field{
+		// 			Name : "id",
+		// 			Type : "int64",
+		// 			Primary : true,
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "account_id",
+		// 			Type : "int64",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "first_name",
+		// 			Type : "string",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "last_name",
+		// 			Type : "string",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "email",
+		// 			Type : "string",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "created",
+		// 			Package : "time",
+		// 			Type : "Time",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "modified",
+		// 			Package : "time",
+		// 			Type : "Time",
+		// 			Private : true,
+		// 		},
+		// 	},
+		// 	Methods : []model.Method {
+		// 		model.Method{
+		// 			Name : "browse",
+		// 			Type : "browse",
+		// 		},
+		// 		model.Method{
+		// 			Name : "read",
+		// 			Type : "read",
+		// 			Callbacks : []model.Callback {
+		// 				model.Callback {
+		// 					Type : "before",
+		// 				},
+		// 			},
+		// 		},
+		// 		model.Method{
+		// 			Name : "edit",
+		// 			Type : "edit",
+		// 		},
+		// 		model.Method{
+		// 			Name : "add",
+		// 			Type : "add",
+		// 			Callbacks : []model.Callback {
+		// 				model.Callback {
+		// 					Type : "before",
+		// 				},
+		// 			},
+		// 		},
+		// 		model.Method{
+		// 			Name : "delete",
+		// 			Type : "delete",
+		// 		},
+		// 	},
+		// 	Repositories : []model.Repository {
+		// 		model.Repository {
+		// 			Type : "mongo",
+		// 			Primary : true,
+		// 		},
+		// 		// model.Repository {
+		// 		// 	Type : "mysql",
+		// 		// },
+		// 		// model.Repository {
+		// 		// 	Type : "redis",
+		// 		// },
+		// 	},
+		// 	Presenters : []model.Presenter {
+		// 		model.Presenter {
+		// 			Type : "default",
+		// 			Primary : true,
+		// 		},
+		// 	},
+		// 	Controllers : []model.Controller {
+		// 		model.Controller {
+		// 			Type : "http",
+		// 		},
+		// 	},
+		// },
+		// model.Entity{
+		// 	Name : "channel",
+		// 	Interface : true,
+		// 	Fields : []model.Field{
+		// 		model.Field{
+		// 			Name : "id",
+		// 			Type : "int64",
+		// 			Primary : true,
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "account_id",
+		// 			Type : "int64",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "name",
+		// 			Type : "string",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "created",
+		// 			Package : "time",
+		// 			Type : "Time",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "modified",
+		// 			Package : "time",
+		// 			Type : "Time",
+		// 			Private : true,
+		// 		},
+		// 	},
+		// 	Methods : []model.Method {
+		// 		model.Method{
+		// 			Name : "browse",
+		// 			Type : "browse",
+		// 		},
+		// 		model.Method{
+		// 			Name : "read",
+		// 			Type : "read",
+		// 			Callbacks : []model.Callback {
+		// 				model.Callback {
+		// 					Type : "before",
+		// 				},
+		// 			},
+		// 		},
+		// 		model.Method{
+		// 			Name : "edit",
+		// 			Type : "edit",
+		// 		},
+		// 		model.Method{
+		// 			Name : "add",
+		// 			Type : "add",
+		// 			Callbacks : []model.Callback {
+		// 				model.Callback {
+		// 					Type : "before",
+		// 				},
+		// 			},
+		// 		},
+		// 		model.Method{
+		// 			Name : "delete",
+		// 			Type : "delete",
+		// 		},
+		// 	},
+		// 	Repositories : []model.Repository {
+		// 		model.Repository {
+		// 			Type : "mongo",
+		// 			Primary : true,
+		// 		},
+		// 		// model.Repository {
+		// 		// 	Type : "mysql",
+		// 		// },
+		// 		// model.Repository {
+		// 		// 	Type : "redis",
+		// 		// },
+		// 	},
+		// 	Presenters : []model.Presenter {
+		// 		model.Presenter {
+		// 			Type : "default",
+		// 			Primary : true,
+		// 		},
+		// 	},
+		// 	Controllers : []model.Controller {
+		// 		model.Controller {
+		// 			Type : "http",
+		// 		},
+		// 	},
+		// },
+		// model.Entity{
+		// 	Name : "message",
+		// 	Interface : true,
+		// 	Fields : []model.Field{
+		// 		model.Field{
+		// 			Name : "id",
+		// 			Type : "int64",
+		// 			Primary : true,
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "account_id",
+		// 			Type : "int64",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "channel_id",
+		// 			Type : "int64",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "user_id",
+		// 			Type : "int64",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "body",
+		// 			Type : "string",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "created",
+		// 			Package : "time",
+		// 			Type : "Time",
+		// 			Private : true,
+		// 		},
+		// 		model.Field{
+		// 			Name : "modified",
+		// 			Package : "time",
+		// 			Type : "Time",
+		// 			Private : true,
+		// 		},
+		// 	},
+		// 	Methods : []model.Method {
+		// 		model.Method{
+		// 			Name : "browse",
+		// 			Type : "browse",
+		// 		},
+		// 		model.Method{
+		// 			Name : "read",
+		// 			Type : "read",
+		// 			Callbacks : []model.Callback {
+		// 				model.Callback {
+		// 					Type : "before",
+		// 				},
+		// 			},
+		// 		},
+		// 		model.Method{
+		// 			Name : "edit",
+		// 			Type : "edit",
+		// 		},
+		// 		model.Method{
+		// 			Name : "add",
+		// 			Type : "add",
+		// 			Callbacks : []model.Callback {
+		// 				model.Callback {
+		// 					Type : "before",
+		// 				},
+		// 			},
+		// 		},
+		// 		model.Method{
+		// 			Name : "delete",
+		// 			Type : "delete",
+		// 		},
+		// 	},
+		// 	Repositories : []model.Repository {
+		// 		model.Repository {
+		// 			Type : "mongo",
+		// 			Primary : true,
+		// 		},
+		// 		// model.Repository {
+		// 		// 	Type : "mysql",
+		// 		// },
+		// 		// model.Repository {
+		// 		// 	Type : "redis",
+		// 		// },
+		// 	},
+		// 	Presenters : []model.Presenter {
+		// 		model.Presenter {
+		// 			Type : "default",
+		// 			Primary : true,
+		// 		},
+		// 	},
+		// 	Controllers : []model.Controller {
+		// 		model.Controller {
+		// 			Type : "http",
+		// 		},
+		// 	},
+		// },	
 	}
 )
 

@@ -91,12 +91,15 @@ type Formatter interface{
 	OutputScaffoldDomainEntityLenId() (string,  error)
 	OutputScaffoldDomainEntityAppendId() (string,  error)
 	OutputScaffoldDomainEntityElementsId() (string,  error)
+	OutputScaffoldDomainEntityMarshalStructId(driver string, entity model.Entity) (string,  error)
 	OutputScaffoldDomainEntityJSONTagId(field model.Field) (string,  error)
 	
 	OutputDomainEntityInterfaceConstructorFunctionId(entity model.Entity) (string, error)
 	OutputDomainEntitySliceInterfaceConstructorFunctionId(entity model.Entity) (string, error)
 	OutputScaffoldDomainEntityInterfaceConstructorFunctionId(entity model.Entity) (string, error)
 	OutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId(entity model.Entity) (string, error)
+	OutputScaffoldDomainEntityStructConstructorFunctionId(entity model.Entity) (string, error)
+	OutputScaffoldDomainEntityScaffoldStructConstructorFunctionId(entity model.Entity) (string, error)
 
 	OutputScaffoldUsecaseRepositoryPackageName() (string, error)
 	OutputUsecaseRepositoryInterfaceId(entity model.Entity) (string, error)
@@ -495,7 +498,7 @@ func (formatter *formatter) OutputInterfacePresenterFile(driver string, entity m
 	}
 	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{formatter.config.Layers.Interface.Presenter.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
-	return strcase.ToSnake(strings.Join([]string{path, entity.Name, driver, file}, formatter.config.PathSeparator)), nil
+	return strings.Join([]string{path, entity.Name, driver, file}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputScaffoldInterfacePresenterFile(driver string, entity model.Entity) (string, error) {
@@ -505,7 +508,7 @@ func (formatter *formatter) OutputScaffoldInterfacePresenterFile(driver string, 
 	}
 	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
-	return strcase.ToSnake(strings.Join([]string{path, entity.Name, driver,  file}, formatter.config.PathSeparator)), nil
+	return strings.Join([]string{path, entity.Name, driver,  file}, formatter.config.PathSeparator), nil
 }
 
 func (formatter *formatter) OutputInterfacePresenterRegistryFile(driver string, entity model.Entity) (string, error) {
@@ -649,6 +652,15 @@ func (formatter *formatter) OutputScaffoldDomainEntityInterfaceConstructorFuncti
 	return strcase.ToCamel(strings.Join([]string{"new", entity.Name, formatter.config.Scaffold.Name, "struct"}, formatter.config.StringSeparator)), nil
 }
 
+func (formatter *formatter) OutputScaffoldDomainEntityStructConstructorFunctionId(entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{"new", entity.Name}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldDomainEntityScaffoldStructConstructorFunctionId(entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{"new", entity.Name, "struct"}, formatter.config.StringSeparator)), nil
+}
+
+
 func (formatter *formatter) OutputDomainEntitySliceInterfaceConstructorFunctionId(entity model.Entity) (string, error) {
 	pluralize := pluralize.NewClient()
 	return strcase.ToCamel(strings.Join([]string{"new", pluralize.Plural(entity.Name)}, formatter.config.StringSeparator)), nil
@@ -657,6 +669,10 @@ func (formatter *formatter) OutputDomainEntitySliceInterfaceConstructorFunctionI
 func (formatter *formatter) OutputScaffoldDomainEntitySliceInterfaceConstructorFunctionId(entity model.Entity) (string, error) {
 	pluralize := pluralize.NewClient()
 	return strcase.ToCamel(strings.Join([]string{"new", pluralize.Plural(entity.Name), formatter.config.Scaffold.Name, "struct"}, formatter.config.StringSeparator)), nil
+}
+
+func (formatter *formatter) OutputScaffoldDomainEntityMarshalStructId(driver string, entity model.Entity) (string, error) {
+	return strcase.ToLowerCamel(strings.Join([]string{driver, entity.Name}, formatter.config.StringSeparator)), nil
 }
 
 func (formatter *formatter) OutputScaffoldDomainEntityJSONTagId(field model.Field) (string, error) {

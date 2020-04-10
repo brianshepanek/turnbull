@@ -23,7 +23,9 @@ func (r *mongoFooRepositoryStruct) Browse(ctx context.Context, req *[]entity.Foo
 
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		return err
+		if err != mongo.ErrNoDocuments {
+			return err
+		}
 	}
 
 	for cursor.Next(ctx) {
@@ -47,7 +49,9 @@ func (r *mongoFooRepositoryStruct) Read(ctx context.Context, id int64, req *enti
 
 	err := collection.FindOne(ctx, filter).Decode(req)
 	if err != nil {
-		return err
+		if err != mongo.ErrNoDocuments {
+			return err
+		}
 	}
 
 	return nil
@@ -64,7 +68,9 @@ func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id int64, req *enti
 
 	err := collection.FindOne(ctx, filter).Decode(&current)
 	if err != nil {
-		return err
+		if err != mongo.ErrNoDocuments {
+			return err
+		}
 	}
 
 	if req.Identifier != nil {
@@ -81,7 +87,9 @@ func (r *mongoFooRepositoryStruct) Edit(ctx context.Context, id int64, req *enti
 
 	err = collection.FindOneAndReplace(ctx, filter, current).Decode(&current)
 	if err != nil {
-		return err
+		if err != mongo.ErrNoDocuments {
+			return err
+		}
 	}
 
 	return nil
