@@ -17,7 +17,6 @@ type luckiesStruct []luckyInterface
 type luckyInterface interface {
 	Thing() *string
 	SetThing(thing *string)
-	SetAll(req luckyInterface)
 }
 type luckiesInterface interface {
 	Len() int
@@ -45,8 +44,4 @@ func (m *luckyStruct) Thing() *string {
 
 func (m *luckyStruct) SetThing(thing *string) {
 	m.thing = thing
-}
-
-func (m *luckyStruct) SetAll(req luckyInterface) {
-	m.SetThing(req.Thing())
 }

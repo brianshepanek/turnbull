@@ -239,13 +239,13 @@ func (entityGenerator *entityGenerator) ScaffoldFile(entity model.Entity) (*jen.
 			}	
 		}
 
-		// Set All Setter
-		setAllSetter, err := entityGenerator.scaffoldEntityInterfaceSetAllSetterFunction(entity)
-		if err != nil {
-			return nil, err
-		}
-		f.Add(&setAllSetter)
-		f.Line()
+		// // Set All Setter
+		// setAllSetter, err := entityGenerator.scaffoldEntityInterfaceSetAllSetterFunction(entity)
+		// if err != nil {
+		// 	return nil, err
+		// }
+		// f.Add(&setAllSetter)
+		// f.Line()
 
 	}
 
@@ -505,6 +505,20 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterface(entity model.Ent
 			}
 			fields = append(fields, code)
 
+		} else {
+
+			if field.Entity.Interface {
+
+				interfaceId, err := entityGenerator.formatter.OutputDomainEntityInterfaceId(field.Entity)
+				if err != nil {
+					return nil, err
+				}
+
+				fields = append(fields, jen.Id(interfaceId))
+				
+			}
+			
+
 		}
 
 		
@@ -539,12 +553,12 @@ func (entityGenerator *entityGenerator) scaffoldEntityInterface(entity model.Ent
 		}
 	}
 
-	// Set All
-	setAllCode, err := entityGenerator.scaffoldEntityInterfaceSetAllSetter(entity)
-	if err != nil {
-		return nil, err
-	}
-	fields = append(fields, setAllCode)
+	// // Set All
+	// setAllCode, err := entityGenerator.scaffoldEntityInterfaceSetAllSetter(entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// fields = append(fields, setAllCode)
 
 	// To Primary
 	if entityGenerator.hasPrimary(entity) {

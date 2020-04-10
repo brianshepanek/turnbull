@@ -4,6 +4,5 @@ type fooInterface interface {
 	SetId(id *int64)
 	SetTitle(title *string)
 	BeforeAdd(ctx context.Context) error
-	SetAll(req fooInterface)
 	ToPrimary(ctx context.Context, req interface{}) (int64, error)
 }

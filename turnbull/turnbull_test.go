@@ -113,49 +113,43 @@ var (
 					Private : true,
 				},
 			},
-			// Methods : []model.Method {
-			// 	model.Method{
-			// 		Name : "browse",
-			// 		Type : "browse",
-			// 	},
-			// 	model.Method{
-			// 		Name : "read",
-			// 		Type : "read",
-			// 		Callbacks : []model.Callback {
-			// 			model.Callback {
-			// 				Type : "before",
-			// 			},
-			// 		},
-			// 	},
-			// 	model.Method{
-			// 		Name : "edit",
-			// 		Type : "edit",
-			// 	},
-			// 	model.Method{
-			// 		Name : "add",
-			// 		Type : "add",
-			// 		Callbacks : []model.Callback {
-			// 			model.Callback {
-			// 				Type : "before",
-			// 			},
-			// 		},
-			// 	},
-			// 	model.Method{
-			// 		Name : "delete",
-			// 		Type : "delete",
-			// 	},
-			// },
+			Methods : []model.Method {
+				model.Method{
+					Name : "browse",
+					Type : "browse",
+				},
+				model.Method{
+					Name : "read",
+					Type : "read",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "edit",
+					Type : "edit",
+				},
+				model.Method{
+					Name : "add",
+					Type : "add",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "delete",
+					Type : "delete",
+				},
+			},
 			// Repositories : []model.Repository {
 			// 	model.Repository {
 			// 		Type : "mongo",
 			// 		Primary : true,
 			// 	},
-			// 	// model.Repository {
-			// 	// 	Type : "mysql",
-			// 	// },
-			// 	// model.Repository {
-			// 	// 	Type : "redis",
-			// 	// },
 			// },
 			// Presenters : []model.Presenter {
 			// 	model.Presenter {
@@ -518,6 +512,13 @@ func init(){
 	generator := generator.New(conf, formatter, interfaceControllerGenerators, interfacePresenterGenerators, interfaceRepositoryGenerators)
 
 	testTurnbull = New(formatter, structure, generator)
+
+	err := testTurnbull.formatDomainEntities(&testEntities)
+
+	// Return
+	if err != nil {
+		
+	}
 }
 
 // Test Build Structure

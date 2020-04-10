@@ -1,5 +1,7 @@
 package entity
 
+import "context"
+
 type accountStruct struct {
 	*model
 	*lucky
@@ -21,11 +23,14 @@ func newAccountStruct() *accountStruct {
 type accountsStruct []accountInterface
 
 type accountInterface interface {
+	Model
+	Lucky
 	Name() *string
 	Email() *string
 	SetName(name *string)
 	SetEmail(email *string)
-	SetAll(req accountInterface)
+	BeforeRead(ctx context.Context) error
+	BeforeAdd(ctx context.Context) error
 }
 type accountsInterface interface {
 	Len() int
@@ -63,7 +68,10 @@ func (m *accountStruct) SetEmail(email *string) {
 	m.email = email
 }
 
-func (m *accountStruct) SetAll(req accountInterface) {
-	m.SetName(req.Name())
-	m.SetEmail(req.Email())
+func (m *accountStruct) BeforeRead(ctx context.Context) error {
+	return nil
+}
+
+func (m *accountStruct) BeforeAdd(ctx context.Context) error {
+	return nil
 }

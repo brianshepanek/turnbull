@@ -28,7 +28,6 @@ type modelInterface interface {
 	SetId(id *int64)
 	SetCreated(created *time.Time)
 	SetModified(modified *time.Time)
-	SetAll(req modelInterface)
 	ToPrimary(ctx context.Context, req interface{}) (int64, error)
 }
 type modelsInterface interface {
@@ -73,12 +72,6 @@ func (m *modelStruct) SetCreated(created *time.Time) {
 
 func (m *modelStruct) SetModified(modified *time.Time) {
 	m.modified = modified
-}
-
-func (m *modelStruct) SetAll(req modelInterface) {
-	m.SetId(req.Id())
-	m.SetCreated(req.Created())
-	m.SetModified(req.Modified())
 }
 
 func (m *modelStruct) ToPrimary(ctx context.Context, req interface{}) (int64, error) {

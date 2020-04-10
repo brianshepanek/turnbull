@@ -23,7 +23,6 @@ type fooInterface interface {
 	SetId(id *int64)
 	SetTitle(title *string)
 	BeforeAdd(ctx context.Context) error
-	SetAll(req fooInterface)
 	ToPrimary(ctx context.Context, req interface{}) (int64, error)
 }
 type foosInterface interface {
@@ -60,11 +59,6 @@ func (m *fooStruct) SetId(id *int64) {
 
 func (m *fooStruct) SetTitle(title *string) {
 	m.title = title
-}
-
-func (m *fooStruct) SetAll(req fooInterface) {
-	m.SetId(req.Id())
-	m.SetTitle(req.Title())
 }
 
 func (m *fooStruct) BeforeAdd(ctx context.Context) error {

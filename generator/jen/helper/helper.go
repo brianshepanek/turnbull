@@ -110,12 +110,12 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 				statement.Qual(importPath, id)
 	
 			} else if (field.Type == "primary"){ 
-	
-				for _, entityField := range entity.Fields {
-					if entityField.Primary {
-						statement.Qual(entityField.Package, entityField.Type)
-					}
+				
+				p, t, err := generator.primary(entity)
+				if err != nil {
+					return nil
 				}
+				statement.Qual(p, t)
 	
 			} else {
 				statement.Qual(field.Package, field.Type)
@@ -126,4 +126,25 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 
 	
 	return nil
+}
+
+func (generator *generator) primary(entity model.Entity) (string, string, error){
+	var p, t string
+
+	for _, field := range entity.Fields {
+		if field.Primary {
+			return field.Package, field.Type, nil
+		}
+	}
+	for _, field := range entity.Fields {
+		if field.Embedded {
+			for _, embeddedField := range field.Entity.Fields {
+				if embeddedField.Primary {
+					return embeddedField.Package, embeddedField.Type, nil
+				}
+			}
+		}
+	}
+
+	return p, t , nil
 }
