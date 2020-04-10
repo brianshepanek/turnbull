@@ -62,7 +62,7 @@ func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req e
 
 	filter := bson.M{"id": id}
 
-	err := collection.FindOne(ctx, filter).Decode(&current)
+	err := collection.FindOne(ctx, filter).Decode(current)
 	if err != nil {
 		if err != mongo.ErrNoDocuments {
 			return err
@@ -77,7 +77,7 @@ func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req e
 		current.SetEmail(req.Email())
 	}
 
-	err = collection.FindOneAndReplace(ctx, filter, current).Decode(&current)
+	err = collection.FindOneAndReplace(ctx, filter, current).Decode(current)
 	if err != nil {
 		if err != mongo.ErrNoDocuments {
 			return err

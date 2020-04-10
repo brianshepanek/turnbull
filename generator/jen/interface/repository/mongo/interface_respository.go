@@ -1014,8 +1014,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 		).
 		Dot("Decode").
 		Params(
-			jen.Op("&").
-			Id("current"),
+			jen.Id("current"),
 		),
 	)	
 
@@ -1120,8 +1119,7 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 		).
 		Dot("Decode").
 		Params(
-			jen.Op("&").
-			Id("current"),
+			jen.Id("current"),
 		),
 	)	
 
