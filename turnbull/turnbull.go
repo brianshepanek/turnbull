@@ -36,30 +36,6 @@ func (turnbull *turnbull) buildStructure() (error){
 	return nil
 }
 
-func (turnbull *turnbull) formatDomainEntities(req *[]model.Entity) (error){
-
-	if req != nil {
-		entities := *req
-
-		for entityKey, entity := range entities {
-			for fieldKey, field := range entity.Fields {
-				if field.Embedded {
-					for _, embeddedEntity := range entities {
-						if embeddedEntity.Name == field.Type {
-							entities[entityKey].Fields[fieldKey].Entity = embeddedEntity
-						}
-					}
-				}
-			}
-		}
-
-		req = &entities
-	}
-
-	return nil
-}
-
-
 // Build Domain Entity
 func (turnbull *turnbull) buildDomainEntity(entity model.Entity) (error){
 

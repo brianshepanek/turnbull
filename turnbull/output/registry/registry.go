@@ -5,6 +5,8 @@ import http "github.com/brianshepanek/turnbull/turnbull/output/interface/control
 type registry struct {
 	accountMongoRepositoryRegistry
 	accountDefaultPresenterRegistry
+	enhancedAccountMongoRepositoryRegistry
+	enhancedAccountDefaultPresenterRegistry
 }
 
 func New() *registry {
@@ -12,5 +14,6 @@ func New() *registry {
 }
 func (r *registry) NewHttpAppController() http.HttpAppController {
 	r.NewHttpAccountController()
+	r.NewHttpEnhancedAccountController()
 	return r
 }

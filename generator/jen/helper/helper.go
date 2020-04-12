@@ -15,6 +15,8 @@ type Generator interface{
 	// General
 	Field(id string, field model.Field, entity model.Entity, statement *jen.Statement) (error)
 	PrimaryField(entity model.Entity) (*model.Field, error)
+	ExpandedFields(entity model.Entity) (*[]model.Field, error)
+	FormatDomainEntities(entities *[]model.Entity) (error)
 
 }	
 
@@ -112,11 +114,14 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 	
 			} else if (field.Type == "primary"){ 
 				
-				p, t, err := generator.primary(entity)
+				fieldPointer, err := generator.PrimaryField(entity)
 				if err != nil {
-					return nil
+					return err
 				}
-				statement.Qual(p, t)
+				if fieldPointer != nil {
+					field := *fieldPointer
+					statement.Qual(field.Package, field.Type)
+				}
 	
 			} else {
 				statement.Qual(field.Package, field.Type)
@@ -130,43 +135,72 @@ func (generator *generator) Field(id string, field model.Field, entity model.Ent
 }
 
 func (generator *generator) PrimaryField(entity model.Entity) (*model.Field, error){
-	var primaryField model.Field
-
 	for _, field := range entity.Fields {
 		if field.Primary {
-			return &primaryField, nil
+			return &field, nil
 		}
 	}
 	for _, field := range entity.Fields {
 		if field.Embedded {
-			for _, embeddedField := range field.Entity.Fields {
-				if embeddedField.Primary {
-					return &embeddedField, nil
-				}
-			}
+			return generator.PrimaryField(field.Entity)
 		}
 	}
 
 	return nil, nil
 }
 
-func (generator *generator) primary(entity model.Entity) (string, string, error){
-	var p, t string
 
+func (generator *generator) FormatDomainEntities(req *[]model.Entity) (error){
+
+	if req != nil {
+		entities := *req
+
+		for entityKey, entity := range entities {
+			for fieldKey, field := range entity.Fields {
+				if field.Embedded {
+					for _, embeddedEntity := range entities {
+						if embeddedEntity.Name == field.Type {
+							entities[entityKey].Fields[fieldKey].Entity = embeddedEntity
+						}
+					}
+				}
+			}
+		}
+
+		req = &entities
+	}
+
+	return nil
+}
+
+
+func (generator *generator) ExpandedFields(entity model.Entity) (*[]model.Field, error){
+	
+	var fields []model.Field
+
+	err := generator.expandedFields(entity, &fields)
+	if err != nil {
+		return nil, err
+	}
+	
+	return &fields, nil
+}
+
+func (generator *generator) expandedFields(entity model.Entity, fields *[]model.Field) (error){
+	
 	for _, field := range entity.Fields {
-		if field.Primary {
-			return field.Package, field.Type, nil
+		if !field.Embedded {
+			*fields = append(*fields, field)
 		}
 	}
 	for _, field := range entity.Fields {
 		if field.Embedded {
-			for _, embeddedField := range field.Entity.Fields {
-				if embeddedField.Primary {
-					return embeddedField.Package, embeddedField.Type, nil
-				}
+			err := generator.expandedFields(field.Entity, fields)
+			if err != nil {
+				return err
 			}
 		}
 	}
 
-	return p, t , nil
+	return nil
 }

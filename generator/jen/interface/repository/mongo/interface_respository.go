@@ -1041,93 +1041,29 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 	// Line
 	block = append(block, jen.Line())
 
+	// Expanded Fields
+	expandedFieldsPointer, err := repositoryGenerator.helperGenerator.ExpandedFields(entity)
+	if err != nil {
+		return nil, err
+	}
+
 	// Fields
-	for _, field := range entity.Fields {
+	if expandedFieldsPointer != nil {
+
+		for _, field := range *expandedFieldsPointer {
 		
-		var getterId, setterId string
-		
-		if field.Embedded {
-
-			for _, embeddedField := range field.Entity.Fields {
-
-				// Getter
-				getter , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(embeddedField)
-				if err != nil {
-					return block, err
-				}
-
-				getterId = getter
-
-				// Setter
-				setter , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(embeddedField)
-				if err != nil {
-					return block, err
-				}
-
-				setterId = setter
-
-				// Check
-				if entity.Interface {
-					block = append(block,
-						jen.If(
-							jen.Id("req").
-							Dot(getterId).
-							Call().
-							Op("!=").
-							Nil().
-							Block(
-								jen.Id("current").
-								Dot(setterId).
-								Params(
-									jen.Id("req").
-									Dot(getterId).
-									Call(),
-								),
-							),
-						),
-					)
-				} else {
-					block = append(block,
-						jen.If(
-							jen.Id("req").
-							Dot(getterId).
-							Op("!=").
-							Nil().
-							Block(
-								jen.Id("current").
-								Dot(getterId).
-								Op("=").
-								Id("req").
-								Dot(getterId),
-							),
-						),
-					)
-				}
-					
-
-				// Line
-				block = append(block, jen.Line())
-			}
-
-
-		} else {
-
 			// Getter
-			getter , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
+			getterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntityGetterId(field)
 			if err != nil {
 				return block, err
 			}
-
-			getterId = getter
-
+	
 			// Setter
-			setter , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
+			setterId , err := repositoryGenerator.formatter.OutputScaffoldDomainEntitySetterId(field)
 			if err != nil {
 				return block, err
 			}
-
-			setterId = setter
-
+	
 			// Check
 			if entity.Interface {
 				block = append(block,
@@ -1166,16 +1102,13 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryEditM
 				)
 			}
 				
-
+	
 			// Line
 			block = append(block, jen.Line())
-
+	
 		}
-
-		
-		
-
 	}
+	
 
 	block = append(block, 
 		jen.List(

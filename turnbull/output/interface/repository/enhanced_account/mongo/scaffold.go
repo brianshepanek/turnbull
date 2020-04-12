@@ -7,13 +7,13 @@ import (
 	mongo "go.mongodb.org/mongo-driver/mongo"
 )
 
-type mongoAccountRepositoryStruct struct {
+type mongoEnhancedAccountRepositoryStruct struct {
 	client     *mongo.Client
 	db         string
 	collection string
 }
 
-func (r *mongoAccountRepositoryStruct) Browse(ctx context.Context, req entity.Accounts) error {
+func (r *mongoEnhancedAccountRepositoryStruct) Browse(ctx context.Context, req entity.EnhancedAccounts) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -25,7 +25,7 @@ func (r *mongoAccountRepositoryStruct) Browse(ctx context.Context, req entity.Ac
 	}
 
 	for cursor.Next(ctx) {
-		elem := entity.NewAccount()
+		elem := entity.NewEnhancedAccount()
 		err := cursor.Decode(elem)
 		if err != nil {
 			return err
@@ -37,7 +37,7 @@ func (r *mongoAccountRepositoryStruct) Browse(ctx context.Context, req entity.Ac
 
 }
 
-func (r *mongoAccountRepositoryStruct) Read(ctx context.Context, id int64, req entity.Account) error {
+func (r *mongoEnhancedAccountRepositoryStruct) Read(ctx context.Context, id int64, req entity.EnhancedAccount) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -54,9 +54,9 @@ func (r *mongoAccountRepositoryStruct) Read(ctx context.Context, id int64, req e
 
 }
 
-func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Account) error {
+func (r *mongoEnhancedAccountRepositoryStruct) Edit(ctx context.Context, id int64, req entity.EnhancedAccount) error {
 
-	current := entity.NewAccount()
+	current := entity.NewEnhancedAccount()
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -67,6 +67,10 @@ func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req e
 		if err != mongo.ErrNoDocuments {
 			return err
 		}
+	}
+
+	if req.Enhancement() != nil {
+		current.SetEnhancement(req.Enhancement())
 	}
 
 	if req.Name() != nil {
@@ -100,7 +104,7 @@ func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req e
 
 }
 
-func (r *mongoAccountRepositoryStruct) Add(ctx context.Context, req entity.Account) error {
+func (r *mongoEnhancedAccountRepositoryStruct) Add(ctx context.Context, req entity.EnhancedAccount) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -113,7 +117,7 @@ func (r *mongoAccountRepositoryStruct) Add(ctx context.Context, req entity.Accou
 
 }
 
-func (r *mongoAccountRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Account) error {
+func (r *mongoEnhancedAccountRepositoryStruct) Delete(ctx context.Context, id int64, req entity.EnhancedAccount) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 

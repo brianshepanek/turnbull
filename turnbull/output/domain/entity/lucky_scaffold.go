@@ -1,7 +1,8 @@
 package entity
 
 type luckyStruct struct {
-	thing *string
+	thing  *string
+	thing2 *int64
 }
 
 func newLucky() *lucky {
@@ -16,7 +17,9 @@ type luckiesStruct []luckyInterface
 
 type luckyInterface interface {
 	Thing() *string
+	Thing2() *int64
 	SetThing(thing *string)
+	SetThing2(thing2 *int64)
 }
 type luckiesInterface interface {
 	Len() int
@@ -42,6 +45,14 @@ func (m *luckyStruct) Thing() *string {
 	return m.thing
 }
 
+func (m *luckyStruct) Thing2() *int64 {
+	return m.thing2
+}
+
 func (m *luckyStruct) SetThing(thing *string) {
 	m.thing = thing
+}
+
+func (m *luckyStruct) SetThing2(thing2 *int64) {
+	m.thing2 = thing2
 }

@@ -50,27 +50,11 @@ var (
 			},
 		},
 		model.Entity{
-			Name : "lucky",
-			Interface : true,
-			Fields : []model.Field{
-				model.Field{
-					Name : "thing",
-					Type : "string",
-					Private : true,
-				},
-			},
-		},
-		model.Entity{
 			Name : "account",
 			Interface : true,
 			Fields : []model.Field{
 				model.Field{
 					Type : "model",
-					Private : true,
-					Embedded : true,
-				},
-				model.Field{
-					Type : "lucky",
 					Private : true,
 					Embedded : true,
 				},
@@ -135,6 +119,71 @@ var (
 				},
 			},
 		},
+		model.Entity{
+			Name : "enhanced_account",
+			Interface : true,
+			Fields : []model.Field{
+				model.Field{
+					Type : "account",
+					Private : true,
+					Embedded : true,
+				},
+				model.Field{
+					Name : "enhancement",
+					Type : "string",
+					Private : true,
+				},
+			},
+			Methods : []model.Method {
+				model.Method{
+					Name : "browse",
+					Type : "browse",
+				},
+				model.Method{
+					Name : "read",
+					Type : "read",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "edit",
+					Type : "edit",
+				},
+				model.Method{
+					Name : "add",
+					Type : "add",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "delete",
+					Type : "delete",
+				},
+			},
+			Repositories : []model.Repository {
+				model.Repository {
+					Type : "mongo",
+					Primary : true,
+				},
+			},
+			Presenters : []model.Presenter {
+				model.Presenter {
+					Type : "default",
+					Primary : true,
+				},
+			},
+			Controllers : []model.Controller {
+				model.Controller {
+					Type : "http",
+				},
+			},
+		},	
 	}
 )
 
@@ -163,7 +212,7 @@ func init(){
 
 	testTurnbull = New(formatter, structure, generator)
 
-	err := testTurnbull.formatDomainEntities(&testEntities)
+	err := testHelperGenerator.FormatDomainEntities(&testEntities)
 
 	// Return
 	if err != nil {
@@ -183,30 +232,9 @@ func TestBuildStructure(t *testing.T){
 	}
 }
 
-// Test Format Domain Entities
-func TestFormatDomainEntities(t *testing.T){
-	
-
-	err := testTurnbull.formatDomainEntities(&testEntities)
-
-	// Return
-	if err != nil {
-		t.Errorf(`buildDomainEntity() failed with error %v`, err)
-	}
-	
-}
-
-
 // Test Build Domain Entity
 func TestBuildDomainEntity(t *testing.T){
 	
-	err := testTurnbull.formatDomainEntities(&testEntities)
-
-	// Return
-	if err != nil {
-		t.Errorf(`buildDomainEntity() failed with error %v`, err)
-	}
-
 	// Build
 	for _, testEntity := range testEntities {
 		err := testTurnbull.buildDomainEntity(testEntity)

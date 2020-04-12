@@ -3,7 +3,8 @@ package entity
 import bson "go.mongodb.org/mongo-driver/bson"
 
 type bsonLucky struct {
-	Thing *string `bson:"thing,omitempty"`
+	Thing  *string `bson:"thing,omitempty"`
+	Thing2 *int64  `bson:"thing_2,omitempty"`
 }
 
 func (m *luckyStruct) marshalBSON() *bsonLucky {
@@ -11,12 +12,14 @@ func (m *luckyStruct) marshalBSON() *bsonLucky {
 	bsonStruct := bsonLucky{}
 
 	bsonStruct.Thing = m.Thing()
+	bsonStruct.Thing2 = m.Thing2()
 
 	return &bsonStruct
 }
 
 func (m *luckyStruct) unmarshalBSON(bsonStruct *bsonLucky) {
 	m.SetThing(bsonStruct.Thing)
+	m.SetThing2(bsonStruct.Thing2)
 }
 
 func (m *luckyStruct) MarshalBSON() ([]byte, error) {

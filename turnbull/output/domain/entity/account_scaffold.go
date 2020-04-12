@@ -4,7 +4,6 @@ import "context"
 
 type accountStruct struct {
 	*model
-	*lucky
 	name  *string
 	email *string
 }
@@ -14,17 +13,13 @@ func newAccount() *account {
 }
 
 func newAccountStruct() *accountStruct {
-	return &accountStruct{
-		lucky: newLucky(),
-		model: newModel(),
-	}
+	return &accountStruct{model: newModel()}
 }
 
 type accountsStruct []accountInterface
 
 type accountInterface interface {
 	Model
-	Lucky
 	Name() *string
 	Email() *string
 	SetName(name *string)
