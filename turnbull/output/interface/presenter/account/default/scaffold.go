@@ -10,6 +10,9 @@ type defaultAccountPresenterStruct struct{}
 func (r *defaultAccountPresenterStruct) Browse(ctx context.Context, req entity.Accounts) (entity.Accounts, error) {
 	return req, nil
 }
+func (r *defaultAccountPresenterStruct) ReadByAccountId(ctx context.Context, req entity.Account) (entity.Account, error) {
+	return req, nil
+}
 func (r *defaultAccountPresenterStruct) Read(ctx context.Context, req entity.Account) (entity.Account, error) {
 	return req, nil
 }

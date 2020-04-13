@@ -4,8 +4,7 @@ import "encoding/json"
 
 type jsonAccount struct {
 	*jsonModel
-	Name  *string `json:"name,omitempty"`
-	Email *string `json:"email,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
 func (m *accountStruct) marshalJSON() *jsonAccount {
@@ -14,7 +13,6 @@ func (m *accountStruct) marshalJSON() *jsonAccount {
 
 	jsonStruct.jsonModel = m.model.marshalJSON()
 	jsonStruct.Name = m.Name()
-	jsonStruct.Email = m.Email()
 
 	return &jsonStruct
 }
@@ -22,7 +20,6 @@ func (m *accountStruct) marshalJSON() *jsonAccount {
 func (m *accountStruct) unmarshalJSON(jsonStruct *jsonAccount) {
 	m.model.unmarshalJSON(jsonStruct.jsonModel)
 	m.SetName(jsonStruct.Name)
-	m.SetEmail(jsonStruct.Email)
 }
 
 func (m *accountStruct) MarshalJSON() ([]byte, error) {

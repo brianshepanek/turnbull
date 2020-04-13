@@ -67,23 +67,7 @@ type InterfacePresenter struct {
 	Name string
 }
 
-type Method struct {
-	Type string
-	Repository RepositoryMethod
-	Presenter PresenterMethod
-}
 
-type RepositoryMethod struct {
-	Name string
-	Arguments []model.Field
-	ReturnValues []model.Field
-}
-
-type PresenterMethod struct {
-	Name string
-	Arguments []model.Field
-	ReturnValues []model.Field
-}
 
 type Registry struct {
 	Name string
@@ -97,7 +81,7 @@ type Config struct {
 	StringSeparator string
 	Scaffold Scaffold
 	Layers Layers
-	Methods []Method
+	Methods []model.Method
 	Registry Registry
 	// EntityName string
 	// entitiesDirName string
@@ -169,10 +153,10 @@ func New(configPath string, outputPath string) (*Config, error) {
 				},
 			},
 		},
-		Methods : []Method {
-			Method {
+		Methods : []model.Method {
+			model.Method {
 				Type : "add",
-				Presenter : PresenterMethod {
+				Presenter : model.PresenterMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -195,7 +179,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 					},
 				},
-				Repository : RepositoryMethod {
+				Repository : model.RepositoryMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -215,9 +199,9 @@ func New(configPath string, outputPath string) (*Config, error) {
 					},
 				},
 			},
-			Method {
+			model.Method {
 				Type : "browse",
-				Presenter : PresenterMethod {
+				Presenter : model.PresenterMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -242,7 +226,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 					},
 				},
-				Repository : RepositoryMethod {
+				Repository : model.RepositoryMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -263,9 +247,9 @@ func New(configPath string, outputPath string) (*Config, error) {
 					},
 				},
 			},
-			Method {
+			model.Method {
 				Type : "read",
-				Presenter : PresenterMethod {
+				Presenter : model.PresenterMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -288,7 +272,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 					},
 				},
-				Repository : RepositoryMethod {
+				Repository : model.RepositoryMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -312,9 +296,9 @@ func New(configPath string, outputPath string) (*Config, error) {
 					},
 				},
 			},
-			Method {
+			model.Method {
 				Type : "delete",
-				Presenter : PresenterMethod {
+				Presenter : model.PresenterMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -337,7 +321,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 					},
 				},
-				Repository : RepositoryMethod {
+				Repository : model.RepositoryMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -361,9 +345,9 @@ func New(configPath string, outputPath string) (*Config, error) {
 					},
 				},
 			},
-			Method {
+			model.Method {
 				Type : "edit",
-				Presenter : PresenterMethod {
+				Presenter : model.PresenterMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -386,7 +370,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 					},
 				},
-				Repository : RepositoryMethod {
+				Repository : model.RepositoryMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -410,9 +394,9 @@ func New(configPath string, outputPath string) (*Config, error) {
 					},
 				},
 			},
-			Method {
+			model.Method {
 				Type : "count",
-				Presenter : PresenterMethod {
+				Presenter : model.PresenterMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -435,7 +419,7 @@ func New(configPath string, outputPath string) (*Config, error) {
 						},
 					},
 				},
-				Repository : RepositoryMethod {
+				Repository : model.RepositoryMethod {
 					Arguments : []model.Field {
 						model.Field {
 							Name : "ctx",
@@ -459,12 +443,11 @@ func New(configPath string, outputPath string) (*Config, error) {
 	}, nil
 }
 
-func (conf *Config) Method(method model.Method) (Method, error){
-	var resp Method
+func (conf *Config) Method(method model.Method) (model.Method, error){
 	for _, confMethod := range conf.Methods {
 		if confMethod.Type == method.Type {
-			resp = confMethod
+			return confMethod, nil
 		}
 	}
-	return resp, nil
+	return method, nil
 }

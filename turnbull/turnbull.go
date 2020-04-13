@@ -103,31 +103,37 @@ func (turnbull *turnbull) buildScaffoldDomainEntity(entity model.Entity) (error)
 // Build Usecase Repository
 func (turnbull *turnbull) buildUsecaseRepository(entity model.Entity) (error){
 
-	// Build
-	buf := &bytes.Buffer{}
-	err := turnbull.generator.UsecaseRepository(entity, buf)
-	if err != nil {
-		return err
+	if len(entity.Repositories) > 0 {
+
+		// Build
+		buf := &bytes.Buffer{}
+		err := turnbull.generator.UsecaseRepository(entity, buf)
+		if err != nil {
+			return err
+		}
+
+		// File Name
+		fileName, err := turnbull.formatter.OutputUsecaseRepositoryFile(entity)
+		if err != nil {
+			return err
+		}
+
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+
 	}
 
-	// File Name
-	fileName, err := turnbull.formatter.OutputUsecaseRepositoryFile(entity)
-	if err != nil {
-		return err
-	}
-
-	// File
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	// Write
-	_, err = file.WriteString(buf.String())
-	if err != nil {
-		return err
-	}
+	
 
 	return nil
 }
@@ -135,30 +141,34 @@ func (turnbull *turnbull) buildUsecaseRepository(entity model.Entity) (error){
 // Build Scaffold Usecase Repository
 func (turnbull *turnbull) buildScaffoldUsecaseRepository(entity model.Entity) (error){
 
-	// Build
-	buf := &bytes.Buffer{}
-	err := turnbull.generator.ScaffoldUsecaseRepository(entity, buf)
-	if err != nil {
-		return err
-	}
+	if len(entity.Repositories) > 0 {
 
-	// File Name
-	fileName, err := turnbull.formatter.OutputScaffoldUsecaseRepositoryFile(entity)
-	if err != nil {
-		return err
-	}
+		// Build
+		buf := &bytes.Buffer{}
+		err := turnbull.generator.ScaffoldUsecaseRepository(entity, buf)
+		if err != nil {
+			return err
+		}
 
-	// File
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+		// File Name
+		fileName, err := turnbull.formatter.OutputScaffoldUsecaseRepositoryFile(entity)
+		if err != nil {
+			return err
+		}
 
-	// Write
-	_, err = file.WriteString(buf.String())
-	if err != nil {
-		return err
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+	
 	}
 
 	return nil
@@ -167,31 +177,35 @@ func (turnbull *turnbull) buildScaffoldUsecaseRepository(entity model.Entity) (e
 // Build Usecase Presenter
 func (turnbull *turnbull) buildUsecasePresenter(entity model.Entity) (error){
 
-	// Build
-	buf := &bytes.Buffer{}
-	err := turnbull.generator.UsecasePresenter(entity, buf)
-	if err != nil {
-		return err
-	}
+	if len(entity.Presenters) > 0 {
 
-	// File Name
-	fileName, err := turnbull.formatter.OutputUsecasePresenterFile(entity)
-	if err != nil {
-		return err
-	}
+		// Build
+		buf := &bytes.Buffer{}
+		err := turnbull.generator.UsecasePresenter(entity, buf)
+		if err != nil {
+			return err
+		}
 
-	// File
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+		// File Name
+		fileName, err := turnbull.formatter.OutputUsecasePresenterFile(entity)
+		if err != nil {
+			return err
+		}
 
-	// Write
-	_, err = file.WriteString(buf.String())
-	if err != nil {
-		return err
-	}
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+
+	}	
 
 	return nil
 }
@@ -199,31 +213,35 @@ func (turnbull *turnbull) buildUsecasePresenter(entity model.Entity) (error){
 // Build Scaffold Usecase Presenter
 func (turnbull *turnbull) buildScaffoldUsecasePresenter(entity model.Entity) (error){
 
-	// Build
-	buf := &bytes.Buffer{}
-	err := turnbull.generator.ScaffoldUsecasePresenter(entity, buf)
-	if err != nil {
-		return err
-	}
+	if len(entity.Presenters) > 0 {
 
-	// File Name
-	fileName, err := turnbull.formatter.OutputScaffoldUsecasePresenterFile(entity)
-	if err != nil {
-		return err
-	}
+		// Build
+		buf := &bytes.Buffer{}
+		err := turnbull.generator.ScaffoldUsecasePresenter(entity, buf)
+		if err != nil {
+			return err
+		}
 
-	// File
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+		// File Name
+		fileName, err := turnbull.formatter.OutputScaffoldUsecasePresenterFile(entity)
+		if err != nil {
+			return err
+		}
 
-	// Write
-	_, err = file.WriteString(buf.String())
-	if err != nil {
-		return err
-	}
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+
+	}	
 
 	return nil
 }
@@ -231,30 +249,34 @@ func (turnbull *turnbull) buildScaffoldUsecasePresenter(entity model.Entity) (er
 // Build Usecase Interactor
 func (turnbull *turnbull) buildUsecaseInteractor(entity model.Entity) (error){
 
-	// Build
-	buf := &bytes.Buffer{}
-	err := turnbull.generator.UsecaseInteractor(entity, buf)
-	if err != nil {
-		return err
-	}
+	if len(entity.Repositories) > 0 && len(entity.Presenters) > 0 {
 
-	// File Name
-	fileName, err := turnbull.formatter.OutputUsecaseInteractorFile(entity)
-	if err != nil {
-		return err
-	}
+		// Build
+		buf := &bytes.Buffer{}
+		err := turnbull.generator.UsecaseInteractor(entity, buf)
+		if err != nil {
+			return err
+		}
 
-	// File
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+		// File Name
+		fileName, err := turnbull.formatter.OutputUsecaseInteractorFile(entity)
+		if err != nil {
+			return err
+		}
 
-	// Write
-	_, err = file.WriteString(buf.String())
-	if err != nil {
-		return err
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+	
 	}
 
 	return nil
@@ -263,32 +285,36 @@ func (turnbull *turnbull) buildUsecaseInteractor(entity model.Entity) (error){
 // Build Scaffold Usecase Interactor
 func (turnbull *turnbull) buildScaffoldUsecaseInteractor(entity model.Entity) (error){
 
-	// Build
-	buf := &bytes.Buffer{}
-	err := turnbull.generator.ScaffoldUsecaseInteractor(entity, buf)
-	if err != nil {
-		return err
-	}
+	if len(entity.Repositories) > 0 && len(entity.Presenters) > 0 {
 
-	// File Name
-	fileName, err := turnbull.formatter.OutputScaffoldUsecaseInteractorFile(entity)
-	if err != nil {
-		return err
-	}
+		// Build
+		buf := &bytes.Buffer{}
+		err := turnbull.generator.ScaffoldUsecaseInteractor(entity, buf)
+		if err != nil {
+			return err
+		}
 
-	// File
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+		// File Name
+		fileName, err := turnbull.formatter.OutputScaffoldUsecaseInteractorFile(entity)
+		if err != nil {
+			return err
+		}
 
-	// Write
-	_, err = file.WriteString(buf.String())
-	if err != nil {
-		return err
-	}
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
 
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+
+	}
+		
 	return nil
 }
 
@@ -857,6 +883,54 @@ func (turnbull *turnbull) buildRegistryInterfaceController(driver string, entity
 
 		// File Name
 		fileName, err := turnbull.formatter.OutputInterfaceControllerRegistryFile(driver, entity)
+		if err != nil {
+			return err
+		}
+
+		// Ensure
+		dirName := filepath.Dir(fileName)
+		if _, serr := os.Stat(dirName); serr != nil {
+			merr := os.MkdirAll(dirName, os.ModePerm)
+			if merr != nil {
+				return err
+			}
+		}
+
+		// File
+		file, err := os.Create(fileName)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Write
+		_, err = file.WriteString(buf.String())
+		if err != nil {
+			return err
+		}
+		
+	}
+
+	
+
+	return nil
+}
+
+// Build Registry Usecase Interactor Controller
+func (turnbull *turnbull) buildRegistryUsecaseInteractor(entity model.Entity) (error){
+
+	// Build
+	buf := &bytes.Buffer{}
+	err := turnbull.generator.UsecaseInteractorRegistry(entity, buf)
+	if err != nil {
+		return err
+	}
+
+	// Exists
+	if len(buf.String()) > 0 {
+
+		// File Name
+		fileName, err := turnbull.formatter.OutputUsecaseInteractorRegistryFile(entity)
 		if err != nil {
 			return err
 		}

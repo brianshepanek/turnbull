@@ -4,8 +4,7 @@ import "context"
 
 type accountStruct struct {
 	*model
-	name  *string
-	email *string
+	name *string
 }
 
 func newAccount() *account {
@@ -21,9 +20,7 @@ type accountsStruct []accountInterface
 type accountInterface interface {
 	Model
 	Name() *string
-	Email() *string
 	SetName(name *string)
-	SetEmail(email *string)
 	BeforeRead(ctx context.Context) error
 	BeforeAdd(ctx context.Context) error
 }
@@ -51,16 +48,8 @@ func (m *accountStruct) Name() *string {
 	return m.name
 }
 
-func (m *accountStruct) Email() *string {
-	return m.email
-}
-
 func (m *accountStruct) SetName(name *string) {
 	m.name = name
-}
-
-func (m *accountStruct) SetEmail(email *string) {
-	m.email = email
 }
 
 func (m *accountStruct) BeforeRead(ctx context.Context) error {

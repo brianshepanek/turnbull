@@ -13,6 +13,7 @@ type accountInteractorStruct struct {
 }
 type accountInteractorInterface interface {
 	Browse(ctx context.Context, req entity.Accounts) (entity.Accounts, error)
+	ReadByAccountId(ctx context.Context, id int64, req entity.Account) (entity.Account, error)
 	Read(ctx context.Context, id int64, req entity.Account) (entity.Account, error)
 	Edit(ctx context.Context, id int64, req entity.Account) (entity.Account, error)
 	Add(ctx context.Context, req entity.Account) (entity.Account, error)
@@ -26,6 +27,14 @@ func (i *accountInteractorStruct) Browse(ctx context.Context, req entity.Account
 		return nil, err
 	}
 	return i.presenter.Browse(ctx, req)
+}
+func (i *accountInteractorStruct) ReadByAccountId(ctx context.Context, id int64, req entity.Account) (entity.Account, error) {
+	var err error
+	err = i.repository.ReadByAccountId(ctx, id, req)
+	if err != nil {
+		return nil, err
+	}
+	return i.presenter.ReadByAccountId(ctx, req)
 }
 func (i *accountInteractorStruct) Read(ctx context.Context, id int64, req entity.Account) (entity.Account, error) {
 	var err error

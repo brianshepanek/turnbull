@@ -177,6 +177,22 @@ func (generator *Generator) ScaffoldUsecaseInteractor(entity model.Entity, write
 	return nil
 }
 
+func (generator *Generator) UsecaseInteractorRegistry(entity model.Entity, writer io.Writer) (error){
+
+	// File
+	file, err := generator.usecaseInteractorGenerator.RegistryFile(entity)
+	if err != nil {
+		return err
+	}
+
+	// Render
+	if file != nil {
+		file.Render(writer)
+	}
+
+	return nil
+}
+
 func (generator *Generator) InterfaceRepository(driver string, entity model.Entity, writer io.Writer) (error){
 
 	// Vars

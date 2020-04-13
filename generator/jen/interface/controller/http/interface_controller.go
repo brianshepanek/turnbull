@@ -2375,22 +2375,10 @@ func (controllerGenerator *controllerGenerator) interfaceControllerRegistryLocal
 		return nil, err
 	}
 
-	// // ID
-	// registryStructId , err := controllerGenerator.formatter.OutputScaffoldInterfaceControllerRegistryStructId("http", entity)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	interfaceId , err := controllerGenerator.formatter.OutputInterfaceControllerInterfaceId("http", entity)
 	if err != nil {
 		return nil, err
 	}
-
-	// interfaceImportPath , err := controllerGenerator.formatter.OutputInterfaceControllerDirectoryImportPath("http", entity)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	usecaseImportPath , err := controllerGenerator.formatter.OutputInterfaceControllerDirectoryImportPath("http", entity)
 	if err != nil {
 		return nil, err
@@ -2412,47 +2400,12 @@ func (controllerGenerator *controllerGenerator) interfaceControllerRegistryLocal
 	}
 
 	// Interactor Import Path
-	interactorImportPath , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorDirectoryImportPath()
+	interactorContstructorFunctionId , err := controllerGenerator.formatter.OutputScaffoldUsecaseInteractorRegistryLocalConstructorFunctionId(entity)
 	if err != nil {
 		return nil, err
 	}
 	
 
-	// Local Interactor Id
-	interactorId , err := controllerGenerator.formatter.OutputUsecaseInteractorInterfaceConstructorFunctionId(entity)
-	if err != nil {
-		return nil, err
-	}
-
-	// Primary Repository Function
-	var primaryRepositoryConstructorId string
-	for _, repository := range entity.Repositories {
-		if repository.Primary {
-
-			// ID
-			id, err := controllerGenerator.formatter.OutputScaffoldInterfaceRepositoryRegistryLocalConstructorFunctionId(repository.Type, entity)
-			if err != nil {
-				return nil, err
-			}
-			primaryRepositoryConstructorId = id
-
-		}
-	}
-
-	// Primary Presenter Function
-	var primaryPresenterConstructorId string
-	for _, presenter := range entity.Presenters {
-		if presenter.Primary {
-
-			// ID
-			id, err := controllerGenerator.formatter.OutputScaffoldInterfacePresenterRegistryLocalConstructorFunctionId(presenter.Type, entity)
-			if err != nil {
-				return nil, err
-			}
-			primaryPresenterConstructorId = id
-
-		}
-	}
 	
 
 	resp.Id(id)
@@ -2470,18 +2423,9 @@ func (controllerGenerator *controllerGenerator) interfaceControllerRegistryLocal
 		jen.Return(
 			jen.Qual(usecaseImportPath, "New").
 			Params(
-				jen.Qual(interactorImportPath, interactorId).
-				Params(
-					
-					jen.Id("r").
-					Dot(primaryRepositoryConstructorId).
-					Call(),
-
-					jen.Id("r").
-					Dot(primaryPresenterConstructorId).
-					Call(),
-
-				),
+				jen.Id("r").
+				Dot(interactorContstructorFunctionId).
+				Call(),
 			),
 		),
 	)

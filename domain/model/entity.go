@@ -26,6 +26,8 @@ type Method struct {
 	Name string
 	Type string
 	Callbacks []Callback
+	Repository RepositoryMethod
+	Presenter PresenterMethod
 }
 
 type Callback struct {
@@ -46,4 +48,16 @@ type Presenter struct {
 type Controller struct {
 	Type string
 	Primary bool
+}
+
+type RepositoryMethod struct {
+	Name string
+	Arguments []Field
+	ReturnValues []Field
+}
+
+type PresenterMethod struct {
+	Name string
+	Arguments []Field
+	ReturnValues []Field
 }

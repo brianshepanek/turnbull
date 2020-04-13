@@ -7,13 +7,13 @@ import (
 	mongo "go.mongodb.org/mongo-driver/mongo"
 )
 
-type mongoAccountRepositoryStruct struct {
+type mongoUserRepositoryStruct struct {
 	client     *mongo.Client
 	db         string
 	collection string
 }
 
-func (r *mongoAccountRepositoryStruct) Browse(ctx context.Context, req entity.Accounts) error {
+func (r *mongoUserRepositoryStruct) Browse(ctx context.Context, req entity.Users) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -25,7 +25,7 @@ func (r *mongoAccountRepositoryStruct) Browse(ctx context.Context, req entity.Ac
 	}
 
 	for cursor.Next(ctx) {
-		elem := entity.NewAccount()
+		elem := entity.NewUser()
 		err := cursor.Decode(elem)
 		if err != nil {
 			return err
@@ -37,13 +37,13 @@ func (r *mongoAccountRepositoryStruct) Browse(ctx context.Context, req entity.Ac
 
 }
 
-func (r *mongoAccountRepositoryStruct) ReadByAccountId(ctx context.Context, id int64, req entity.Account) error {
+func (r *mongoUserRepositoryStruct) BrowseByAccountId(ctx context.Context, id int64, req entity.Users) error {
 
 	return nil
 
 }
 
-func (r *mongoAccountRepositoryStruct) Read(ctx context.Context, id int64, req entity.Account) error {
+func (r *mongoUserRepositoryStruct) Read(ctx context.Context, id int64, req entity.User) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -60,9 +60,9 @@ func (r *mongoAccountRepositoryStruct) Read(ctx context.Context, id int64, req e
 
 }
 
-func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Account) error {
+func (r *mongoUserRepositoryStruct) Edit(ctx context.Context, id int64, req entity.User) error {
 
-	current := entity.NewAccount()
+	current := entity.NewUser()
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -75,8 +75,20 @@ func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req e
 		}
 	}
 
-	if req.Name() != nil {
-		current.SetName(req.Name())
+	if req.AccountId() != nil {
+		current.SetAccountId(req.AccountId())
+	}
+
+	if req.FirstName() != nil {
+		current.SetFirstName(req.FirstName())
+	}
+
+	if req.LastName() != nil {
+		current.SetLastName(req.LastName())
+	}
+
+	if req.Email() != nil {
+		current.SetEmail(req.Email())
 	}
 
 	if req.Id() != nil {
@@ -102,7 +114,7 @@ func (r *mongoAccountRepositoryStruct) Edit(ctx context.Context, id int64, req e
 
 }
 
-func (r *mongoAccountRepositoryStruct) Add(ctx context.Context, req entity.Account) error {
+func (r *mongoUserRepositoryStruct) Add(ctx context.Context, req entity.User) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -115,7 +127,7 @@ func (r *mongoAccountRepositoryStruct) Add(ctx context.Context, req entity.Accou
 
 }
 
-func (r *mongoAccountRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Account) error {
+func (r *mongoUserRepositoryStruct) Delete(ctx context.Context, id int64, req entity.User) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 

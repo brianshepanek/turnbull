@@ -2,10 +2,10 @@ package controller
 
 import (
 	http "github.com/brianshepanek/turnbull/turnbull/output/interface/controller/account/http"
-	http1 "github.com/brianshepanek/turnbull/turnbull/output/interface/controller/enhanced_account/http"
+	http1 "github.com/brianshepanek/turnbull/turnbull/output/interface/controller/user/http"
 )
 
 type HttpAppController interface {
 	NewHttpAccountController() http.HttpAccountController
-	NewHttpEnhancedAccountController() http1.HttpEnhancedAccountController
+	NewHttpUserController() http1.HttpUserController
 }

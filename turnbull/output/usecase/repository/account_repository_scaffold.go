@@ -7,6 +7,7 @@ import (
 
 type accountRepository interface {
 	Browse(ctx context.Context, req entity.Accounts) error
+	ReadByAccountId(ctx context.Context, id int64, req entity.Account) error
 	Read(ctx context.Context, id int64, req entity.Account) error
 	Edit(ctx context.Context, id int64, req entity.Account) error
 	Add(ctx context.Context, req entity.Account) error

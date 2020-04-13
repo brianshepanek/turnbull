@@ -19,12 +19,16 @@ type DomainGenerator interface {
 }
 
 type UsecaseGenerator interface {
+
 	UsecaseRepository(entity model.Entity, writer io.Writer) (error)
 	ScaffoldUsecaseRepository(entity model.Entity, writer io.Writer) (error)
+
 	UsecasePresenter(entity model.Entity, writer io.Writer) (error)
 	ScaffoldUsecasePresenter(entity model.Entity, writer io.Writer) (error)
+
 	UsecaseInteractor(entity model.Entity, writer io.Writer) (error)
 	ScaffoldUsecaseInteractor(entity model.Entity, writer io.Writer) (error)
+	UsecaseInteractorRegistry(entity model.Entity, writer io.Writer) (error)
 }
 
 type InterfaceGenerator interface {

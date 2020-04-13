@@ -33,14 +33,18 @@ type Formatter interface{
 	OutputScaffoldDomainEntityFile(entity model.Entity) (string, error)
 
 	OutputScaffoldUsecaseDirectory() (string, error)
+
 	OutputScaffoldUsecaseInteractorDirectory() (string, error)
 	OutputScaffoldUsecaseInteractorDirectoryImportPath() (string, error)
 	OutputUsecaseInteractorFile(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseInteractorFile(entity model.Entity) (string, error)
+	OutputUsecaseInteractorRegistryFile(entity model.Entity) (string, error)
+
 	OutputScaffoldUsecaseRepositoryDirectory() (string, error)
 	OutputScaffoldUsecaseRepositoryDirectoryImportPath() (string, error)
 	OutputUsecaseRepositoryFile(entity model.Entity) (string, error)
 	OutputScaffoldUsecaseRepositoryFile(entity model.Entity) (string, error)
+
 	OutputScaffoldUsecasePresenterDirectory() (string, error)
 	OutputScaffoldUsecasePresenterDirectoryImportPath() (string, error)
 	OutputUsecasePresenterFile(entity model.Entity) (string, error)
@@ -284,6 +288,17 @@ func (formatter *formatter) OutputScaffoldUsecaseInteractorFile(entity model.Ent
 		return "", nil
 	}
 	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name, formatter.config.Scaffold.Name}, " ")), "go"}, formatter.config.StringSeparator)
+	
+	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
+}
+
+func (formatter *formatter) OutputUsecaseInteractorRegistryFile(entity model.Entity) (string, error) {
+	
+	path, err  := formatter.OutputRegistryDirectory()
+	if err != nil {
+		return "", nil
+	}
+	file := strings.Join([]string{strcase.ToSnake(strings.Join([]string{entity.Name, formatter.config.Layers.Usecase.Interactor.Name, formatter.config.Registry.Name}, " ")), "go"}, formatter.config.StringSeparator)
 	
 	return strings.Join([]string{path, file}, formatter.config.PathSeparator), nil
 }

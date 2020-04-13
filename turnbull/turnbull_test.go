@@ -18,8 +18,8 @@ import(
 
 const(
 	testConfigPath = "./config"
-	// testOutputPath = "/go/src/github.com/brianshepanek/blog2"
-	testOutputPath = "./output"
+	testOutputPath = "/go/src/github.com/brianshepanek/blog1"
+	// testOutputPath = "./output"
 )
 
 var (
@@ -63,16 +63,60 @@ var (
 					Type : "string",
 					Private : true,
 				},
-				model.Field{
-					Name : "email",
-					Type : "string",
-					Private : true,
-				},
 			},
 			Methods : []model.Method {
 				model.Method{
 					Name : "browse",
 					Type : "browse",
+				},
+				model.Method{
+					Name : "read_by_account_id",
+					Presenter : model.PresenterMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Name : "resp",
+								Type : "self",
+							},
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+					Repository : model.RepositoryMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Name : "id",
+								Type : "primary",
+							},
+							model.Field {
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
 				},
 				model.Method{
 					Name : "read",
@@ -120,16 +164,31 @@ var (
 			},
 		},
 		model.Entity{
-			Name : "enhanced_account",
+			Name : "user",
 			Interface : true,
 			Fields : []model.Field{
 				model.Field{
-					Type : "account",
+					Type : "model",
 					Private : true,
 					Embedded : true,
 				},
 				model.Field{
-					Name : "enhancement",
+					Name : "account_id",
+					Type : "int64",
+					Private : true,
+				},
+				model.Field{
+					Name : "first_name",
+					Type : "string",
+					Private : true,
+				},
+				model.Field{
+					Name : "last_name",
+					Type : "string",
+					Private : true,
+				},
+				model.Field{
+					Name : "email",
 					Type : "string",
 					Private : true,
 				},
@@ -138,6 +197,58 @@ var (
 				model.Method{
 					Name : "browse",
 					Type : "browse",
+				},
+				model.Method{
+					Name : "browse_by_account_id",
+					Presenter : model.PresenterMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Slice : true,
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Slice : true,
+								Name : "resp",
+								Type : "self",
+							},
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+					Repository : model.RepositoryMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Name : "id",
+								Type : "primary",
+							},
+							model.Field {
+								Slice : true,
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
 				},
 				model.Method{
 					Name : "read",
@@ -342,6 +453,22 @@ func TestBuildScaffoldUsecaseInteractor(t *testing.T){
 		if err != nil {
 			t.Errorf(`buildScaffoldUsecaseInteractor() failed with error %v`, err)
 		}
+	}	
+}
+
+// Test Build Interface Repository Registry
+func TestBuildUsecaseInteractorRegistry(t *testing.T){
+
+	// Build
+	for _, testEntity := range testEntities {
+
+		err := testTurnbull.buildRegistryUsecaseInteractor(testEntity)
+
+		// Return
+		if err != nil {
+			t.Errorf(`buildRegistryUsecaseInteractor() failed with error %v`, err)
+		}
+
 	}	
 }
 

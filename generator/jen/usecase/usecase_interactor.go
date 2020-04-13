@@ -18,6 +18,7 @@ type InteractorGenerator interface{
 
 	File(entity model.Entity) (*jen.File, error)
 	ScaffoldFile(entity model.Entity) (*jen.File, error)
+	RegistryFile(entity model.Entity) (*jen.File, error)
 
 	scaffoldUsecaseInteractorStruct(entity model.Entity) (jen.Statement, error)
 	scaffoldUsecaseInteractorInterface(entity model.Entity) (jen.Statement, error)
@@ -107,6 +108,134 @@ func (interactorGenerator *interactorGenerator) ScaffoldFile(entity model.Entity
 
 	return f, nil
 }	
+
+func (interactorGenerator *interactorGenerator) RegistryFile(entity model.Entity) (*jen.File, error){
+
+	// File
+	packageName , err := interactorGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+	f := jen.NewFile(packageName)
+	
+	// Local Constructor Function
+	usecaseInteractorRegistryLocalConstructorFunction, err := interactorGenerator.usecaseInteractorRegistryLocalConstructorFunction(entity)
+	if err != nil {
+		return nil, err
+	}
+	f.Add(&usecaseInteractorRegistryLocalConstructorFunction)
+
+
+	return f, nil
+}
+
+func (interactorGenerator *interactorGenerator) usecaseInteractorRegistryLocalConstructorFunction(entity model.Entity) (jen.Statement, error){
+
+	// Vars
+	var resp jen.Statement
+
+	// Registry
+	registryName , err := interactorGenerator.formatter.OutputRegistryPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	interfaceId , err := interactorGenerator.formatter.OutputUsecaseInteractorInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Interactor Import Path
+	importPath , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorDirectoryImportPath()
+	if err != nil {
+		return nil, err
+	}
+	
+	// ID
+	id , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorRegistryLocalConstructorFunctionId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	constructorFunctionId , err := interactorGenerator.formatter.OutputUsecaseInteractorInterfaceConstructorFunctionId(entity)
+	if err != nil {
+		return nil, err
+	}
+	
+
+
+	// Primary Repository Function
+	var primaryRepositoryConstructorId string
+	for _, repository := range entity.Repositories {
+		if repository.Primary {
+
+			// ID
+			id, err := interactorGenerator.formatter.OutputScaffoldInterfaceRepositoryRegistryLocalConstructorFunctionId(repository.Type, entity)
+			if err != nil {
+				return nil, err
+			}
+			primaryRepositoryConstructorId = id
+
+		}
+	}
+
+	// Primary Presenter Function
+	var primaryPresenterConstructorId string
+	for _, presenter := range entity.Presenters {
+		if presenter.Primary {
+
+			// ID
+			id, err := interactorGenerator.formatter.OutputScaffoldInterfacePresenterRegistryLocalConstructorFunctionId(presenter.Type, entity)
+			if err != nil {
+				return nil, err
+			}
+			primaryPresenterConstructorId = id
+
+		}
+	}
+	
+
+	// Type
+	resp.Func()
+
+	resp.Params(
+		jen.Id("r").
+		Op("*").
+		Qual("", registryName),
+	)
+
+	// ID
+	resp.Id(id)
+
+	// Params
+	resp.Params()
+
+	resp.Parens(
+		jen.List(
+			jen.Qual(importPath, interfaceId),
+		),
+	)
+
+	resp.Block(
+		jen.Return(
+			jen.Qual(importPath, constructorFunctionId).
+			Params(
+				
+				jen.Id("r").
+				Dot(primaryRepositoryConstructorId).
+				Call(),
+
+				jen.Id("r").
+				Dot(primaryPresenterConstructorId).
+				Call(),
+
+			),
+		),
+	)
+	
+	return resp, nil
+
+}
 
 func (interactorGenerator *interactorGenerator) usecaseInteractorStruct(entity model.Entity) (jen.Statement, error){
 

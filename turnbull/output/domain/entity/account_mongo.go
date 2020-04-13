@@ -5,7 +5,6 @@ import bson "go.mongodb.org/mongo-driver/bson"
 type bsonAccount struct {
 	Model *bsonModel `bson:"inline"`
 	Name  *string    `bson:"name,omitempty"`
-	Email *string    `bson:"email,omitempty"`
 }
 
 func (m *accountStruct) marshalBSON() *bsonAccount {
@@ -14,7 +13,6 @@ func (m *accountStruct) marshalBSON() *bsonAccount {
 
 	bsonStruct.Model = m.model.marshalBSON()
 	bsonStruct.Name = m.Name()
-	bsonStruct.Email = m.Email()
 
 	return &bsonStruct
 }
@@ -22,7 +20,6 @@ func (m *accountStruct) marshalBSON() *bsonAccount {
 func (m *accountStruct) unmarshalBSON(bsonStruct *bsonAccount) {
 	m.model.unmarshalBSON(bsonStruct.Model)
 	m.SetName(bsonStruct.Name)
-	m.SetEmail(bsonStruct.Email)
 }
 
 func (m *accountStruct) MarshalBSON() ([]byte, error) {

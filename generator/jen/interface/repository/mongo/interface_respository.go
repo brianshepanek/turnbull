@@ -632,6 +632,17 @@ func (repositoryGenerator *repositoryGenerator) scaffoldInterfaceRepositoryMetho
 
 	default:
 		
+		// Line
+		block = append(block, jen.Line())
+
+		block = append(block,
+			jen.Return(
+				jen.Nil(),
+			),
+		)	
+
+		// Line
+		block = append(block, jen.Line())
 	}
 
 	resp.Block(block...)
