@@ -12,6 +12,6 @@ type UserInteractor interface {
 	userInteractorInterface
 }
 
-func NewUserInteractor(r repository.UserRepository, p presenter.UserPresenter) UserInteractor {
-	return &userInteractor{userInteractorStruct{r, p}}
+func NewUserInteractor(repository repository.UserRepository, presenter presenter.UserPresenter, accountInteractor AccountInteractor) UserInteractor {
+	return &userInteractor{userInteractorStruct{repository, presenter, accountInteractor}}
 }

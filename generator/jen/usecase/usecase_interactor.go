@@ -216,20 +216,43 @@ func (interactorGenerator *interactorGenerator) usecaseInteractorRegistryLocalCo
 		),
 	)
 
+	// Fields
+	var fields []jen.Code
+
+	fields = append(fields, 
+		jen.Id("r").
+		Dot(primaryRepositoryConstructorId).
+		Call(),
+	)
+
+	fields = append(fields, 
+		jen.Id("r").
+		Dot(primaryPresenterConstructorId).
+		Call(),
+	)
+
+	for _, interactor := range entity.Interactors {
+		
+		// ID
+		injectedInteractorConstructorFunctionId , err := interactorGenerator.formatter.OutputScaffoldUsecaseInteractorRegistryLocalConstructorFunctionId(model.Entity{Name : interactor})
+		if err != nil {
+			return nil, err
+		}
+
+		fields = append(fields, 
+			jen.Id("r").
+			Dot(injectedInteractorConstructorFunctionId).
+			Call(),
+		)
+
+	}
+
+	
+
 	resp.Block(
 		jen.Return(
 			jen.Qual(importPath, constructorFunctionId).
-			Params(
-				
-				jen.Id("r").
-				Dot(primaryRepositoryConstructorId).
-				Call(),
-
-				jen.Id("r").
-				Dot(primaryPresenterConstructorId).
-				Call(),
-
-			),
+			Params(fields...),
 		),
 	)
 	
@@ -307,7 +330,6 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorStruct(
 
 	// Vars
 	var resp jen.Statement
-	var fields []jen.Code
 
 	// Type
 	resp.Type()
@@ -319,50 +341,11 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorStruct(
 	}
 	resp.Id(id)
 
-	// Repository
-	repositoryId , err := interactorGenerator.formatter.OutputUsecaseRepositoryInterfaceId(entity)
+	fields, err := interactorGenerator.scaffoldUsecaseInteractorStructFields(entity)
 	if err != nil {
 		return nil, err
 	}
-
-	repositoryImportPath , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryDirectoryImportPath()
-	if err != nil {
-		return nil, err
-	}
-
-	repositoryPackageName , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryPackageName()
-	if err != nil {
-		return nil, err
-	}
-
-	// Presenter
-	presenterId , err := interactorGenerator.formatter.OutputUsecasePresenterInterfaceId(entity)
-	if err != nil {
-		return nil, err
-	}
-
-	presenterImportPath , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterDirectoryImportPath()
-	if err != nil {
-		return nil, err
-	}
-
-	presenterPackageName , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterPackageName()
-	if err != nil {
-		return nil, err
-	}
-
-	// Repository
-	fields = append(fields, 
-		jen.Id(repositoryPackageName).
-		Qual(repositoryImportPath, repositoryId), 
-	)
-
-	// Presenter
-	fields = append(fields, 
-		jen.Id(presenterPackageName).
-		Qual(presenterImportPath, presenterId), 
-	)
-
+	
 	// Struct
 	resp.Struct(fields...)
 
@@ -421,27 +404,27 @@ func (interactorGenerator *interactorGenerator) usecaseInteractorConstructorFunc
 	}
 	resp.Id(id)
 
-	// Repository
-	repositoryId , err := interactorGenerator.formatter.OutputUsecaseRepositoryInterfaceId(entity)
-	if err != nil {
-		return nil, err
-	}
+	// // Repository
+	// repositoryId , err := interactorGenerator.formatter.OutputUsecaseRepositoryInterfaceId(entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	repositoryImportPath , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryDirectoryImportPath()
-	if err != nil {
-		return nil, err
-	}
+	// repositoryImportPath , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryDirectoryImportPath()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	// Presenter
-	presenterId , err := interactorGenerator.formatter.OutputUsecasePresenterInterfaceId(entity)
-	if err != nil {
-		return nil, err
-	}
+	// // Presenter
+	// presenterId , err := interactorGenerator.formatter.OutputUsecasePresenterInterfaceId(entity)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	presenterImportPath , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterDirectoryImportPath()
-	if err != nil {
-		return nil, err
-	}
+	// presenterImportPath , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterDirectoryImportPath()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	// Struct ID
 	structId , err := interactorGenerator.formatter.OutputUsecaseInteractorStructId(entity)
@@ -461,12 +444,19 @@ func (interactorGenerator *interactorGenerator) usecaseInteractorConstructorFunc
 		return nil, err
 	}
 
+	fields, err := interactorGenerator.scaffoldUsecaseInteractorStructFields(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	fieldNames, err := interactorGenerator.scaffoldUsecaseInteractorStructFieldNames(entity)
+	if err != nil {
+		return nil, err
+	}
+
 	// Params
 	resp.Params(
-		jen.Id("r").
-		Qual(repositoryImportPath, repositoryId),
-		jen.Id("p").
-		Qual(presenterImportPath, presenterId),
+		fields...,
 	).
 	Qual("", interfaceId).
 	Block(
@@ -476,8 +466,7 @@ func (interactorGenerator *interactorGenerator) usecaseInteractorConstructorFunc
 			Values(
 				jen.Id(scaffoldStructId).
 				Values(
-					jen.Id("r"),
-					jen.Id("p"),
+					fieldNames...,
 				),
 			),
 		),
@@ -817,4 +806,120 @@ func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorInterfa
 	)	
 	
 	return resp, nil
+}
+
+func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorStructFields(entity model.Entity) ([]jen.Code, error){
+
+	// Vars
+	var fields []jen.Code
+
+	// Repository
+	repositoryId , err := interactorGenerator.formatter.OutputUsecaseRepositoryInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	repositoryImportPath , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryDirectoryImportPath()
+	if err != nil {
+		return nil, err
+	}
+
+	repositoryPackageName , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// Presenter
+	presenterId , err := interactorGenerator.formatter.OutputUsecasePresenterInterfaceId(entity)
+	if err != nil {
+		return nil, err
+	}
+
+	presenterImportPath , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterDirectoryImportPath()
+	if err != nil {
+		return nil, err
+	}
+
+	presenterPackageName , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// Repository
+	fields = append(fields, 
+		jen.Id(repositoryPackageName).
+		Qual(repositoryImportPath, repositoryId), 
+	)
+
+	// Presenter
+	fields = append(fields, 
+		jen.Id(presenterPackageName).
+		Qual(presenterImportPath, presenterId), 
+	)
+
+	for _, interactor := range entity.Interactors {
+		
+		injectedInteractorStructId , err := interactorGenerator.formatter.OutputUsecaseInteractorStructId(model.Entity{Name : interactor})
+		if err != nil {
+			return nil, err
+		}
+
+		injectedInteractorInterfaceId , err := interactorGenerator.formatter.OutputUsecaseInteractorInterfaceId(model.Entity{Name : interactor})
+		if err != nil {
+			return nil, err
+		}
+		
+		// Presenter
+		fields = append(fields, 
+			jen.Id(injectedInteractorStructId).
+			Qual("", injectedInteractorInterfaceId), 
+		)
+
+	}
+
+	return fields, nil
+
+}
+
+func (interactorGenerator *interactorGenerator) scaffoldUsecaseInteractorStructFieldNames(entity model.Entity) ([]jen.Code, error){
+
+	// Vars
+	var fields []jen.Code
+
+	repositoryPackageName , err := interactorGenerator.formatter.OutputScaffoldUsecaseRepositoryPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	presenterPackageName , err := interactorGenerator.formatter.OutputScaffoldUsecasePresenterPackageName()
+	if err != nil {
+		return nil, err
+	}
+
+	// Repository
+	fields = append(fields, 
+		jen.Id(repositoryPackageName),
+	)
+
+	// Presenter
+	fields = append(fields, 
+		jen.Id(presenterPackageName),
+	)
+
+	for _, interactor := range entity.Interactors {
+		
+		injectedInteractorStructId , err := interactorGenerator.formatter.OutputUsecaseInteractorStructId(model.Entity{Name : interactor})
+		if err != nil {
+			return nil, err
+		}
+
+		// Presenter
+		fields = append(fields, 
+			jen.Id(injectedInteractorStructId),
+		)
+
+	}
+
+	return fields, nil
+
 }

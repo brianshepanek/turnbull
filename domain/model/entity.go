@@ -8,6 +8,7 @@ type Entity struct {
 	Repositories []Repository
 	Presenters []Presenter
 	Controllers []Controller
+	Interactors []string
 }
 
 type Field struct {

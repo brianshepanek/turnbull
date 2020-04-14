@@ -18,8 +18,8 @@ import(
 
 const(
 	testConfigPath = "./config"
-	testOutputPath = "/go/src/github.com/brianshepanek/blog1"
-	// testOutputPath = "./output"
+	// testOutputPath = "/go/src/github.com/brianshepanek/blog1"
+	testOutputPath = "./output"
 )
 
 var (
@@ -293,6 +293,9 @@ var (
 				model.Controller {
 					Type : "http",
 				},
+			},
+			Interactors : []string{
+				"account",
 			},
 		},	
 	}

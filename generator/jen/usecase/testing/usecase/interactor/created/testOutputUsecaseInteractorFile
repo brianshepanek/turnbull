@@ -12,6 +12,6 @@ type FooInteractor interface {
 	fooInteractorInterface
 }
 
-func NewFooInteractor(r repository.FooRepository, p presenter.FooPresenter) FooInteractor {
-	return &fooInteractor{fooInteractorStruct{r, p}}
+func NewFooInteractor(repository repository.FooRepository, presenter presenter.FooPresenter) FooInteractor {
+	return &fooInteractor{fooInteractorStruct{repository, presenter}}
 }

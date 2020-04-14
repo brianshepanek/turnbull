@@ -8,8 +8,9 @@ import (
 )
 
 type userInteractorStruct struct {
-	repository repository.UserRepository
-	presenter  presenter.UserPresenter
+	repository        repository.UserRepository
+	presenter         presenter.UserPresenter
+	accountInteractor AccountInteractor
 }
 type userInteractorInterface interface {
 	Browse(ctx context.Context, req entity.Users) (entity.Users, error)
