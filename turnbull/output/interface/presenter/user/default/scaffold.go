@@ -16,6 +16,9 @@ func (r *defaultUserPresenterStruct) BrowseByAccountId(ctx context.Context, req 
 func (r *defaultUserPresenterStruct) Read(ctx context.Context, req entity.User) (entity.User, error) {
 	return req, nil
 }
+func (r *defaultUserPresenterStruct) ReadByAccountIdAndEmail(ctx context.Context, req entity.User) (entity.User, error) {
+	return req, nil
+}
 func (r *defaultUserPresenterStruct) Edit(ctx context.Context, req entity.User) (entity.User, error) {
 	return req, nil
 }

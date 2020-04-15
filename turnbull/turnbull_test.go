@@ -18,8 +18,8 @@ import(
 
 const(
 	testConfigPath = "./config"
-	// testOutputPath = "/go/src/github.com/brianshepanek/blog1"
-	testOutputPath = "./output"
+	testOutputPath = "/go/src/github.com/brianshepanek/blog1"
+	// testOutputPath = "./output"
 )
 
 var (
@@ -233,7 +233,377 @@ var (
 								Type : "Context",
 							},
 							model.Field {
-								Name : "id",
+								Name : "account_id",
+								Type : "primary",
+							},
+							model.Field {
+								Slice : true,
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+				},
+				model.Method{
+					Name : "read",
+					Type : "read",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "read_by_account_id_and_email",
+					Presenter : model.PresenterMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Name : "resp",
+								Type : "self",
+							},
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+					Repository : model.RepositoryMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Name : "account_id",
+								Type : "primary",
+							},
+							model.Field {
+								Name : "email",
+								Type : "string",
+							},
+							model.Field {
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+				},
+				model.Method{
+					Name : "edit",
+					Type : "edit",
+				},
+				model.Method{
+					Name : "add",
+					Type : "add",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "delete",
+					Type : "delete",
+				},
+			},
+			Repositories : []model.Repository {
+				model.Repository {
+					Type : "mongo",
+					Primary : true,
+				},
+			},
+			Presenters : []model.Presenter {
+				model.Presenter {
+					Type : "default",
+					Primary : true,
+				},
+			},
+			Controllers : []model.Controller {
+				model.Controller {
+					Type : "http",
+				},
+			},
+			Interactors : []string{
+				"account",
+			},
+		},
+		model.Entity{
+			Name : "channel",
+			Interface : true,
+			Fields : []model.Field{
+				model.Field{
+					Type : "model",
+					Private : true,
+					Embedded : true,
+				},
+				model.Field{
+					Name : "account_id",
+					Type : "int64",
+					Private : true,
+				},
+				model.Field{
+					Name : "name",
+					Type : "string",
+					Private : true,
+				},
+			},
+			Methods : []model.Method {
+				model.Method{
+					Name : "browse",
+					Type : "browse",
+				},
+				model.Method{
+					Name : "browse_by_account_id",
+					Presenter : model.PresenterMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Slice : true,
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Slice : true,
+								Name : "resp",
+								Type : "self",
+							},
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+					Repository : model.RepositoryMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Name : "account_id",
+								Type : "primary",
+							},
+							model.Field {
+								Slice : true,
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+				},
+				model.Method{
+					Name : "read",
+					Type : "read",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "read_by_account_id_and_name",
+					Presenter : model.PresenterMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Name : "resp",
+								Type : "self",
+							},
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+					Repository : model.RepositoryMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Name : "account_id",
+								Type : "primary",
+							},
+							model.Field {
+								Name : "name",
+								Type : "string",
+							},
+							model.Field {
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+				},
+				model.Method{
+					Name : "edit",
+					Type : "edit",
+				},
+				model.Method{
+					Name : "add",
+					Type : "add",
+					Callbacks : []model.Callback {
+						model.Callback {
+							Type : "before",
+						},
+					},
+				},
+				model.Method{
+					Name : "delete",
+					Type : "delete",
+				},
+			},
+			Repositories : []model.Repository {
+				model.Repository {
+					Type : "mongo",
+					Primary : true,
+				},
+			},
+			Presenters : []model.Presenter {
+				model.Presenter {
+					Type : "default",
+					Primary : true,
+				},
+			},
+			Controllers : []model.Controller {
+				model.Controller {
+					Type : "http",
+				},
+			},
+			Interactors : []string{
+				"account",
+			},
+		},
+		model.Entity{
+			Name : "message",
+			Interface : true,
+			Fields : []model.Field{
+				model.Field{
+					Type : "model",
+					Private : true,
+					Embedded : true,
+				},
+				model.Field{
+					Name : "account_id",
+					Type : "int64",
+					Private : true,
+				},
+				model.Field{
+					Name : "channel_id",
+					Type : "int64",
+					Private : true,
+				},
+				model.Field{
+					Name : "user_id",
+					Type : "int64",
+					Private : true,
+				},
+				model.Field{
+					Name : "message",
+					Type : "string",
+					Private : true,
+				},
+			},
+			Methods : []model.Method {
+				model.Method{
+					Name : "browse",
+					Type : "browse",
+				},
+				model.Method{
+					Name : "browse_by_account_id_channel_id",
+					Presenter : model.PresenterMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Slice : true,
+								Name : "req",
+								Type : "self",
+							},
+						},
+						ReturnValues : []model.Field {
+							model.Field {
+								Slice : true,
+								Name : "resp",
+								Type : "self",
+							},
+							model.Field {
+								Name : "err",
+								Type : "error",
+							},
+						},
+					},
+					Repository : model.RepositoryMethod {
+						Arguments : []model.Field {
+							model.Field {
+								Name : "ctx",
+								Package : "context",
+								Type : "Context",
+							},
+							model.Field {
+								Name : "account_id",
+								Type : "primary",
+							},
+							model.Field {
+								Name : "channel_id",
 								Type : "primary",
 							},
 							model.Field {
@@ -296,6 +666,8 @@ var (
 			},
 			Interactors : []string{
 				"account",
+				"channel",
+				"user",
 			},
 		},	
 	}

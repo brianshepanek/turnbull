@@ -9,23 +9,22 @@ import (
 	"net/http"
 )
 
-type httpUserControllerStruct struct {
-	interactor interactor.UserInteractor
+type httpMessageControllerStruct struct {
+	interactor interactor.MessageInteractor
 }
-type httpUserControllerInterface interface {
+type httpMessageControllerInterface interface {
 	Browse(w http.ResponseWriter, r *http.Request)
-	BrowseByAccountId(w http.ResponseWriter, r *http.Request)
+	BrowseByAccountIdChannelId(w http.ResponseWriter, r *http.Request)
 	Read(w http.ResponseWriter, r *http.Request)
-	ReadByAccountIdAndEmail(w http.ResponseWriter, r *http.Request)
 	Edit(w http.ResponseWriter, r *http.Request)
 	Add(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 }
 
-func (c *httpUserControllerStruct) Browse(w http.ResponseWriter, r *http.Request) {
+func (c *httpMessageControllerStruct) Browse(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := entity.NewUsers()
+	req := entity.NewMessages()
 
 	resp, err := c.interactor.Browse(ctx, req)
 	if err != nil {
@@ -40,12 +39,13 @@ func (c *httpUserControllerStruct) Browse(w http.ResponseWriter, r *http.Request
 
 }
 
-func (c *httpUserControllerStruct) BrowseByAccountId(w http.ResponseWriter, r *http.Request) {}
+func (c *httpMessageControllerStruct) BrowseByAccountIdChannelId(w http.ResponseWriter, r *http.Request) {
+}
 
-func (c *httpUserControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
+func (c *httpMessageControllerStruct) Read(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := entity.NewUser()
+	req := entity.NewMessage()
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -73,12 +73,10 @@ func (c *httpUserControllerStruct) Read(w http.ResponseWriter, r *http.Request) 
 
 }
 
-func (c *httpUserControllerStruct) ReadByAccountIdAndEmail(w http.ResponseWriter, r *http.Request) {}
-
-func (c *httpUserControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
+func (c *httpMessageControllerStruct) Edit(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := entity.NewUser()
+	req := entity.NewMessage()
 
 	var stringId string
 	vars := mux.Vars(r)
@@ -113,10 +111,10 @@ func (c *httpUserControllerStruct) Edit(w http.ResponseWriter, r *http.Request) 
 
 }
 
-func (c *httpUserControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
+func (c *httpMessageControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := entity.NewUser()
+	req := entity.NewMessage()
 
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
@@ -138,10 +136,10 @@ func (c *httpUserControllerStruct) Add(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *httpUserControllerStruct) Delete(w http.ResponseWriter, r *http.Request) {
+func (c *httpMessageControllerStruct) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
-	req := entity.NewUser()
+	req := entity.NewMessage()
 
 	var stringId string
 	vars := mux.Vars(r)

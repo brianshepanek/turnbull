@@ -7,6 +7,10 @@ type registry struct {
 	accountDefaultPresenterRegistry
 	userMongoRepositoryRegistry
 	userDefaultPresenterRegistry
+	channelMongoRepositoryRegistry
+	channelDefaultPresenterRegistry
+	messageMongoRepositoryRegistry
+	messageDefaultPresenterRegistry
 }
 
 func New() *registry {
@@ -15,5 +19,7 @@ func New() *registry {
 func (r *registry) NewHttpAppController() http.HttpAppController {
 	r.NewHttpAccountController()
 	r.NewHttpUserController()
+	r.NewHttpChannelController()
+	r.NewHttpMessageController()
 	return r
 }

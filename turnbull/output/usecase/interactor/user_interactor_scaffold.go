@@ -14,8 +14,9 @@ type userInteractorStruct struct {
 }
 type userInteractorInterface interface {
 	Browse(ctx context.Context, req entity.Users) (entity.Users, error)
-	BrowseByAccountId(ctx context.Context, id int64, req entity.Users) (entity.Users, error)
+	BrowseByAccountId(ctx context.Context, account_id int64, req entity.Users) (entity.Users, error)
 	Read(ctx context.Context, id int64, req entity.User) (entity.User, error)
+	ReadByAccountIdAndEmail(ctx context.Context, account_id int64, email string, req entity.User) (entity.User, error)
 	Edit(ctx context.Context, id int64, req entity.User) (entity.User, error)
 	Add(ctx context.Context, req entity.User) (entity.User, error)
 	Delete(ctx context.Context, id int64, req entity.User) (entity.User, error)
@@ -29,9 +30,9 @@ func (i *userInteractorStruct) Browse(ctx context.Context, req entity.Users) (en
 	}
 	return i.presenter.Browse(ctx, req)
 }
-func (i *userInteractorStruct) BrowseByAccountId(ctx context.Context, id int64, req entity.Users) (entity.Users, error) {
+func (i *userInteractorStruct) BrowseByAccountId(ctx context.Context, account_id int64, req entity.Users) (entity.Users, error) {
 	var err error
-	err = i.repository.BrowseByAccountId(ctx, id, req)
+	err = i.repository.BrowseByAccountId(ctx, account_id, req)
 	if err != nil {
 		return nil, err
 	}
@@ -48,6 +49,14 @@ func (i *userInteractorStruct) Read(ctx context.Context, id int64, req entity.Us
 		return nil, err
 	}
 	return i.presenter.Read(ctx, req)
+}
+func (i *userInteractorStruct) ReadByAccountIdAndEmail(ctx context.Context, account_id int64, email string, req entity.User) (entity.User, error) {
+	var err error
+	err = i.repository.ReadByAccountIdAndEmail(ctx, account_id, email, req)
+	if err != nil {
+		return nil, err
+	}
+	return i.presenter.ReadByAccountIdAndEmail(ctx, req)
 }
 func (i *userInteractorStruct) Edit(ctx context.Context, id int64, req entity.User) (entity.User, error) {
 	var err error

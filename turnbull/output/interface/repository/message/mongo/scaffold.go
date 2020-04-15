@@ -7,13 +7,13 @@ import (
 	mongo "go.mongodb.org/mongo-driver/mongo"
 )
 
-type mongoUserRepositoryStruct struct {
+type mongoMessageRepositoryStruct struct {
 	client     *mongo.Client
 	db         string
 	collection string
 }
 
-func (r *mongoUserRepositoryStruct) Browse(ctx context.Context, req entity.Users) error {
+func (r *mongoMessageRepositoryStruct) Browse(ctx context.Context, req entity.Messages) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -25,7 +25,7 @@ func (r *mongoUserRepositoryStruct) Browse(ctx context.Context, req entity.Users
 	}
 
 	for cursor.Next(ctx) {
-		elem := entity.NewUser()
+		elem := entity.NewMessage()
 		err := cursor.Decode(elem)
 		if err != nil {
 			return err
@@ -37,13 +37,13 @@ func (r *mongoUserRepositoryStruct) Browse(ctx context.Context, req entity.Users
 
 }
 
-func (r *mongoUserRepositoryStruct) BrowseByAccountId(ctx context.Context, account_id int64, req entity.Users) error {
+func (r *mongoMessageRepositoryStruct) BrowseByAccountIdChannelId(ctx context.Context, account_id int64, channel_id int64, req entity.Messages) error {
 
 	return nil
 
 }
 
-func (r *mongoUserRepositoryStruct) Read(ctx context.Context, id int64, req entity.User) error {
+func (r *mongoMessageRepositoryStruct) Read(ctx context.Context, id int64, req entity.Message) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -60,15 +60,9 @@ func (r *mongoUserRepositoryStruct) Read(ctx context.Context, id int64, req enti
 
 }
 
-func (r *mongoUserRepositoryStruct) ReadByAccountIdAndEmail(ctx context.Context, account_id int64, email string, req entity.User) error {
+func (r *mongoMessageRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Message) error {
 
-	return nil
-
-}
-
-func (r *mongoUserRepositoryStruct) Edit(ctx context.Context, id int64, req entity.User) error {
-
-	current := entity.NewUser()
+	current := entity.NewMessage()
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -85,16 +79,16 @@ func (r *mongoUserRepositoryStruct) Edit(ctx context.Context, id int64, req enti
 		current.SetAccountId(req.AccountId())
 	}
 
-	if req.FirstName() != nil {
-		current.SetFirstName(req.FirstName())
+	if req.ChannelId() != nil {
+		current.SetChannelId(req.ChannelId())
 	}
 
-	if req.LastName() != nil {
-		current.SetLastName(req.LastName())
+	if req.UserId() != nil {
+		current.SetUserId(req.UserId())
 	}
 
-	if req.Email() != nil {
-		current.SetEmail(req.Email())
+	if req.Message() != nil {
+		current.SetMessage(req.Message())
 	}
 
 	if req.Id() != nil {
@@ -120,7 +114,7 @@ func (r *mongoUserRepositoryStruct) Edit(ctx context.Context, id int64, req enti
 
 }
 
-func (r *mongoUserRepositoryStruct) Add(ctx context.Context, req entity.User) error {
+func (r *mongoMessageRepositoryStruct) Add(ctx context.Context, req entity.Message) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -133,7 +127,7 @@ func (r *mongoUserRepositoryStruct) Add(ctx context.Context, req entity.User) er
 
 }
 
-func (r *mongoUserRepositoryStruct) Delete(ctx context.Context, id int64, req entity.User) error {
+func (r *mongoMessageRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Message) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 

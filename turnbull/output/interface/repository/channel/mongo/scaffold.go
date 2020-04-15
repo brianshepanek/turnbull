@@ -7,13 +7,13 @@ import (
 	mongo "go.mongodb.org/mongo-driver/mongo"
 )
 
-type mongoUserRepositoryStruct struct {
+type mongoChannelRepositoryStruct struct {
 	client     *mongo.Client
 	db         string
 	collection string
 }
 
-func (r *mongoUserRepositoryStruct) Browse(ctx context.Context, req entity.Users) error {
+func (r *mongoChannelRepositoryStruct) Browse(ctx context.Context, req entity.Channels) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -25,7 +25,7 @@ func (r *mongoUserRepositoryStruct) Browse(ctx context.Context, req entity.Users
 	}
 
 	for cursor.Next(ctx) {
-		elem := entity.NewUser()
+		elem := entity.NewChannel()
 		err := cursor.Decode(elem)
 		if err != nil {
 			return err
@@ -37,13 +37,13 @@ func (r *mongoUserRepositoryStruct) Browse(ctx context.Context, req entity.Users
 
 }
 
-func (r *mongoUserRepositoryStruct) BrowseByAccountId(ctx context.Context, account_id int64, req entity.Users) error {
+func (r *mongoChannelRepositoryStruct) BrowseByAccountId(ctx context.Context, account_id int64, req entity.Channels) error {
 
 	return nil
 
 }
 
-func (r *mongoUserRepositoryStruct) Read(ctx context.Context, id int64, req entity.User) error {
+func (r *mongoChannelRepositoryStruct) Read(ctx context.Context, id int64, req entity.Channel) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -60,15 +60,15 @@ func (r *mongoUserRepositoryStruct) Read(ctx context.Context, id int64, req enti
 
 }
 
-func (r *mongoUserRepositoryStruct) ReadByAccountIdAndEmail(ctx context.Context, account_id int64, email string, req entity.User) error {
+func (r *mongoChannelRepositoryStruct) ReadByAccountIdAndName(ctx context.Context, account_id int64, name string, req entity.Channel) error {
 
 	return nil
 
 }
 
-func (r *mongoUserRepositoryStruct) Edit(ctx context.Context, id int64, req entity.User) error {
+func (r *mongoChannelRepositoryStruct) Edit(ctx context.Context, id int64, req entity.Channel) error {
 
-	current := entity.NewUser()
+	current := entity.NewChannel()
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -85,16 +85,8 @@ func (r *mongoUserRepositoryStruct) Edit(ctx context.Context, id int64, req enti
 		current.SetAccountId(req.AccountId())
 	}
 
-	if req.FirstName() != nil {
-		current.SetFirstName(req.FirstName())
-	}
-
-	if req.LastName() != nil {
-		current.SetLastName(req.LastName())
-	}
-
-	if req.Email() != nil {
-		current.SetEmail(req.Email())
+	if req.Name() != nil {
+		current.SetName(req.Name())
 	}
 
 	if req.Id() != nil {
@@ -120,7 +112,7 @@ func (r *mongoUserRepositoryStruct) Edit(ctx context.Context, id int64, req enti
 
 }
 
-func (r *mongoUserRepositoryStruct) Add(ctx context.Context, req entity.User) error {
+func (r *mongoChannelRepositoryStruct) Add(ctx context.Context, req entity.Channel) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
@@ -133,7 +125,7 @@ func (r *mongoUserRepositoryStruct) Add(ctx context.Context, req entity.User) er
 
 }
 
-func (r *mongoUserRepositoryStruct) Delete(ctx context.Context, id int64, req entity.User) error {
+func (r *mongoChannelRepositoryStruct) Delete(ctx context.Context, id int64, req entity.Channel) error {
 
 	collection := r.client.Database(r.db).Collection(r.collection)
 
