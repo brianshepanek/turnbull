@@ -18,7 +18,7 @@ import(
 
 const(
 	testConfigPath = "./config"
-	testOutputPath = "/go/src/github.com/brianshepanek/blog1"
+	testOutputPath = "/go/src/github.com/brianshepanek/slacker"
 	// testOutputPath = "./output"
 )
 
